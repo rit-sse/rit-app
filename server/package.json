@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "The server for the RIT App",
+  "homepage": "https://github.com/rit-sse/rit-app#readme",
+  "bugs": {
+    "url": "https://github.com/rit-sse/rit-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rit-sse/rit-app.git"
+  },
+  "license": "ISC",
+  "author": "Society of Software Engineers",
+  "type": "commonjs",
+  "main": "App.js",
+  "scripts": {
+    "start": "tsc && node ./dist/App.js"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.5",
+    "express": "^5.1.0"
+  }
+}
