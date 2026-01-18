@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/client";
 
+// Define the structure of a restaurant type
 interface RestaurantType {
     id: number,
     name: string,
@@ -14,17 +15,16 @@ interface RestaurantType {
     busyLevel: number | null,
     hoursOfOperations?: string[] | null
 }
+// Define the dining types to scrape
+const types = ["restaurant", "market", "coffee", "grocery"];
 
+// Prisma Client Setup
 const adapter = new PrismaPg({
     connectionString: process.env.DIRECT_DATABASE_URL || ""
 });
 const prisma = new PrismaClient({
     adapter
 });
-
-const types = ["restaurant", "market", "coffee", "grocery"];
-
-const _debugKeepRefreshing = true;
 
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
@@ -37,7 +37,7 @@ export async function GET(req: Request, res: Response) {
     });
 
     // If cache exists and is recent (within 1 hour), return cached data
-    if (databaseCache && !_debugKeepRefreshing) {
+    if (databaseCache) {
         const cacheTime = databaseCache.cacheTime;
         const currentTime = Date.now();
         const cacheDuration = 1000 * 60 * 60; // 1 hour
@@ -59,20 +59,26 @@ export async function GET(req: Request, res: Response) {
     // Get the HTML text from the response
     const html = await scrape.text();
 
+    // Load HTML into Cheerio for parsing
     const $ = cheerio.load(html);
+    // Initialize restaurant ID counter
     let onId = 0;
 
+    // Initialize array to hold restaurant data
     let restaurants: RestaurantType[] = [];
-    // let restaurants: string[] = [];
 
+    // Loop through each dining type and extract restaurant data
     for (const t of types) {
         $(`li[data-dining-type="${t}"]`).map((i, el) => {
             const name = $(el).find('.font-weight-bold').text()
             const status = $(el).find('.status-text').text();
+            // Link to restaurant details page
             const link = $(el).find('a').attr("href")
             const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
+            // Extract busy level from image's file name. This looks like an interesting way to do it, but it works.
             const busyLevel = $(el).find('img[alt="Density"]').attr("src")?.split("people-")[1][0] || null;
-            console.log(busyLevel)
+            
+            // Push restaurant data to array
             restaurants.push({
                 id: onId++,
                 name: name.trim(),
@@ -90,6 +96,7 @@ export async function GET(req: Request, res: Response) {
     const newCacheData = JSON.stringify(restaurants);
     const currentTime = Date.now();
 
+    // If cache exists, update it; otherwise, create a new cache entry
     if (databaseCache) {
         // Update existing cache
         await prisma.webscrapeCache.update({
