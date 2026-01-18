@@ -22,6 +22,10 @@ const prisma = new PrismaClient({
     adapter
 });
 
+const types = ["restaurant", "market", "coffee", "grocery"];
+
+const _debugKeepRefreshing = true;
+
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
 
@@ -33,14 +37,17 @@ export async function GET(req: Request, res: Response) {
     });
 
     // If cache exists and is recent (within 1 hour), return cached data
-    if (databaseCache) {
+    if (databaseCache && !_debugKeepRefreshing) {
         const cacheTime = databaseCache.cacheTime;
         const currentTime = Date.now();
         const cacheDuration = 1000 * 60 * 60; // 1 hour
         if (currentTime - cacheTime < cacheDuration) {
             // Return cached data
             const cachedData: RestaurantType[] = JSON.parse(databaseCache.data);
-            res.send(cachedData);
+            res.send({
+                cacheTime: cacheTime,
+                data: cachedData
+            });
             return;
         }
     }
@@ -57,76 +64,27 @@ export async function GET(req: Request, res: Response) {
 
     let restaurants: RestaurantType[] = [];
     // let restaurants: string[] = [];
-    $('li[data-dining-type="restaurant"]').map((i, el) => {
-        const name = $(el).find('.font-weight-bold').text()
-        const status = $(el).find('.status-text').text();
-        const link = $(el).find('a').attr("href")
-        const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
-        restaurants.push({
-            id: onId++,
-            name: name.trim(),
-            type: "restaurant",
-            open: status.startsWith("Open"),
-            code: link?.split("location/")[1] || "",
-            image: "https://rit.edu" + imageURL,
-            busyLevel: 0,
-            link: "https://rit.edu" + link || ""
-        });
-    })
 
-    // let markets: string[] = []
-    $('li[data-dining-type="market"]').map((i, el) => {
-        const name = $(el).find('.font-weight-bold').text()
-        const status = $(el).find('.status-text').text();
-        const link = $(el).find('a').attr("href")
-        const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
-        restaurants.push({
-            id: onId++,
-            name: name.trim(),
-            type: "market",
-            open: status.startsWith("Open"),
-            code: link?.split("location/")[1] || "",
-            image: "https://rit.edu" + imageURL,
-            busyLevel: 0,
-            link: "https://rit.edu" + link || ""
-        });
-    })
-
-    // let coffees: string[] = [];
-    $('li[data-dining-type="coffee"]').map((i, el) => {
-        const name = $(el).find('.font-weight-bold').text()
-        const status = $(el).find('.status-text').text();
-        const link = $(el).find('a').attr("href")
-        const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
-        restaurants.push({
-            id: onId++,
-            name: name.trim(),
-            type: "coffee",
-            open: status.startsWith("Open"),
-            code: link?.split("location/")[1] || "",
-            image: "https://rit.edu" + imageURL,
-            busyLevel: 0,
-            link: "https://rit.edu" + link || ""
-        });
-    })
-
-    // let groceries: string[] = [];
-    $('li[data-dining-type="grocery"]').map((i, el) => {
-        const name = $(el).find('.font-weight-bold').text()
-        const status = $(el).find('.status-text').text();
-        const link = $(el).find('a').attr("href")
-        const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
-        restaurants.push({
-            id: onId++,
-            name: name.trim(),
-            type: "grocery",
-            open: status.startsWith("Open"),
-            code: link?.split("location/")[1] || "",
-            image: "https://rit.edu" + imageURL,
-            busyLevel: 0,
-            link: "https://rit.edu" + link || ""
-        });
-    })
+    for (const t of types) {
+        $(`li[data-dining-type="${t}"]`).map((i, el) => {
+            const name = $(el).find('.font-weight-bold').text()
+            const status = $(el).find('.status-text').text();
+            const link = $(el).find('a').attr("href")
+            const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
+            const busyLevel = $(el).find('img[alt="Density"]').attr("src")?.split("people-")[1][0] || null;
+            console.log(busyLevel)
+            restaurants.push({
+                id: onId++,
+                name: name.trim(),
+                type: t,
+                open: status.startsWith("Open"),
+                code: link?.split("location/")[1] || "",
+                image: "https://rit.edu" + imageURL,
+                busyLevel: busyLevel ? parseInt(busyLevel) : null,
+                link: "https://rit.edu" + link || ""
+            });
+        })
+    }
 
     // Update database cache
     const newCacheData = JSON.stringify(restaurants);
@@ -155,5 +113,8 @@ export async function GET(req: Request, res: Response) {
     }
 
     // Return newly scraped data
-    res.send(restaurants);
+    res.send({
+        cacheTime: currentTime,
+        data: restaurants
+    });
 }
