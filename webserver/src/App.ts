@@ -11,27 +11,53 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
 });
 
-// Dynamically load all route files from the routes directory
-fs.readdirSync(SOURCE_DIR).forEach((file) => {
-    if (file.endsWith('.js')) {
-        const route = require(`${SOURCE_DIR}/${file}`);
-        const routePath = `/${file.replace('.js', '')}`;
+const recursiveLoadRoutes = (dir: string) => {
+    fs.readdirSync(dir).forEach((file) => {
+        if(file.toString() == "route.js") {
+            const route = require(`${dir}/${file}`);
+            const routePath = `${dir.split("/webserver/dist/routes")[1]}/`;
+            if (route.GET) {
+                app.get(routePath, route.GET);
+            }
+            if (route.POST) {
+                app.post(routePath, route.POST);
+            }
+            if(route.PUT) {
+                app.put(routePath, route.PUT);
+            }
+            if(route.DELETE) {
+                app.delete(routePath, route.DELETE);
+            }
+            // Add other HTTP methods as needed
+            console.log(`Loaded route: [${routePath}] from file: ${file}`);
+            return;
+        }
+        if (file.endsWith('.js')) {
+            const route = require(`${dir}/${file}`);
+            const routePath = `${dir.split("/webserver/dist/routes")[1]}/${file.replace('.js', '')}`;
 
-        if (route.GET) {
-            app.get(routePath, route.GET);
+            if (route.GET) {
+                app.get(routePath, route.GET);
+            }
+            if (route.POST) {
+                app.post(routePath, route.POST);
+            }
+            if(route.PUT) {
+                app.put(routePath, route.PUT);
+            }
+            if(route.DELETE) {
+                app.delete(routePath, route.DELETE);
+            }
+            // Add other HTTP methods as needed
+            console.log(`Loaded route: [${routePath}] from file: ${file}`);
         }
-        if (route.POST) {
-            app.post(routePath, route.POST);
+        else if(fs.lstatSync(`${dir}/${file}`).isDirectory()) {
+            recursiveLoadRoutes(`${dir}/${file}`);
         }
-        if(route.PUT) {
-            app.put(routePath, route.PUT);
-        }
-        if(route.DELETE) {
-            app.delete(routePath, route.DELETE);
-        }
-        // Add other HTTP methods as needed
-    }
-});
+    });
+}
+
+recursiveLoadRoutes(SOURCE_DIR);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

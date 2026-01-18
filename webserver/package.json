@@ -15,11 +15,13 @@
   "type": "commonjs",
   "main": "App.js",
   "scripts": {
-    "start": "tsc && node ./dist/App.js"
+    "start": "tsc && node ./dist/App.js",
+    "clean": "rm -rf ./dist"
   },
   "dependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
+    "cheerio": "^1.1.2",
     "express": "^5.1.0",
     "prisma": "^6.19.0",
     "tsx": "^4.20.6",
