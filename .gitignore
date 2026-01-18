@@ -57,3 +57,4 @@ node_modules
 /prisma/prisma
 
 webserver/src/generated
+webserver/package-lock.json
