@@ -6,6 +6,8 @@ interface RestaurantType {
     name: string,
     type: string,
     open: boolean,
+    code: string,
+    link: string
 }
 
 export async function GET(req: Request, res: Response) {
@@ -19,44 +21,60 @@ export async function GET(req: Request, res: Response) {
     // let restaurants: string[] = [];
     $('li[data-dining-type="restaurant"]').map((i, el) => {
         const name = $(el).find('.font-weight-bold').text()
+        const status = $(el).find('.status-text').text();
+        const link = $(el).find('a').attr("href")
         restaurants.push({
             id: onId++,
             name: name.trim(),
             type: "restaurant",
-            open: false
+            open: status.startsWith("Open"),
+            code: link?.split("location/")[1] || "",
+            link: "https://rit.edu" + link || ""
         });
     })
 
     // let markets: string[] = []
     $('li[data-dining-type="market"]').map((i, el) => {
         const name = $(el).find('.font-weight-bold').text()
+        const status = $(el).find('.status-text').text();
+        const link = $(el).find('a').attr("href")
         restaurants.push({
             id: onId++,
             name: name.trim(),
             type: "market",
-            open: false
+            open: status.startsWith("Open"),
+            code: link?.split("location/")[1] || "",
+            link: "https://rit.edu" + link || ""
         });
     })
 
     // let coffees: string[] = [];
     $('li[data-dining-type="coffee"]').map((i, el) => {
         const name = $(el).find('.font-weight-bold').text()
+        const status = $(el).find('.status-text').text();
+        const link = $(el).find('a').attr("href")
         restaurants.push({
             id: onId++,
             name: name.trim(),
             type: "coffee",
-            open: false
+            open: status.startsWith("Open"),
+            code: link?.split("location/")[1] || "",
+            link: "https://rit.edu" + link || ""
         });
     })
 
     // let groceries: string[] = [];
     $('li[data-dining-type="grocery"]').map((i, el) => {
         const name = $(el).find('.font-weight-bold').text()
+        const status = $(el).find('.status-text').text();
+        const link = $(el).find('a').attr("href")
         restaurants.push({
             id: onId++,
             name: name.trim(),
             type: "grocery",
-            open: false
+            open: status.startsWith("Open"),
+            code: link?.split("location/")[1] || "",
+            link: "https://rit.edu" + link || ""
         });
     })
 
