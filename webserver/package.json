@@ -15,23 +15,24 @@
   "type": "commonjs",
   "main": "App.js",
   "scripts": {
+    "prisma:check": "prisma validate && prisma generate",
     "start": "tsc && node ./dist/App.js",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "build": "npm run prisma:check && tsc"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@types/express": "^5.0.5",
-    "cheerio": "^1.1.2",
+    "@types/node": "^24.10.1",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1",
+    "express": "^5.1.0",
     "pg": "^8.17.1",
+    "prisma": "^6.19.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@types/node": "^25.0.9",
-    "@types/pg": "^8.16.0",
-    "prisma": "^7.2.0"
+    "@types/pg": "^8.16.0"
   }
 }
