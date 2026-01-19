@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../../generated/client";
+import { getPrisma } from "../../db/client";
 
 // Define the structure of a restaurant type
 interface RestaurantType {
@@ -19,12 +18,7 @@ interface RestaurantType {
 const types = ["restaurant", "market", "coffee", "grocery"];
 
 // Prisma Client Setup
-const adapter = new PrismaPg({
-    connectionString: process.env.DIRECT_DATABASE_URL || ""
-});
-const prisma = new PrismaClient({
-    adapter
-});
+const prisma = getPrisma();
 
 
 // GET /dining/locations
@@ -38,20 +32,22 @@ export async function GET(req: Request, res: Response) {
     });
 
     // // If cache exists and is recent (within 1 hour), return cached data
-    // if (databaseCache) {
-    //     const cacheTime = databaseCache.cacheTime;
-    //     const currentTime = Date.now();
-    //     const cacheDuration = 1000 * 60 * 60; // 1 hour
-    //     if (currentTime - cacheTime < cacheDuration) {
-    //         // Return cached data
-    //         const cachedData: RestaurantType[] = JSON.parse(databaseCache.data);
-    //         res.send({
-    //             cacheTime: cacheTime,
-    //             data: cachedData
-    //         });
-    //         return;
-    //     }
-    // }
+    if (databaseCache) {
+        const cacheTime = databaseCache.cacheTime;
+        const currentTime = Date.now()
+        const cacheDuration = 1000 * 60 * 60; // 1 hour
+        if (currentTime - Number(cacheTime) < cacheDuration) {
+            // Prepare cached data to return
+            const data: string = (databaseCache.data as unknown) as string; // https://discord.com/channels/1156765354861793370/1433936059120488633/1462697517648187455 AND THEREFORE I WILL FORCE IT AS AN UNKNOWN AND THEN CONVERT IT INTO A STRING. TYPESCRIPT BEGONE
+
+            // Return cached data
+            res.send({
+                cacheTime: Number(cacheTime),
+                data: JSON.parse(data)
+            });
+            return;
+        }
+    }
 
     // Otherwise, scrape new data and update cache
     // Scrape dining locations from RIT website
