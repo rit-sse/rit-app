@@ -142,5 +142,5 @@ export async function GET(req: Request, res: Response) {
         });
         return;
     }
-    res.status(400).send("Invalid or missing 'store' query parameter.");
+    res.status(400).send({"error": "Invalid or missing 'store' query parameter."});
 };
