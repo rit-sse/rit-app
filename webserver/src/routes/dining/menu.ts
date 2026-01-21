@@ -1,35 +1,146 @@
 import { Request, Response } from "express";
 
 // Preset Menu codes that correspond to MealPlanner IDs
-const MENU_CODES = {
-    "ctrl-alt-deli" : 4
+const MENU_CODES: Record<string, { accountId: number; locationId: number; mealPeriodIds: {[key: string]: number} }> = {
+    "ctrl-alt-deli" : {
+        "accountId": 6,
+        "locationId": 6,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "beanz": {
+        "accountId": 2,
+        "locationId": 2,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "artesano-bakery-cafe": {
+        "accountId": 1,
+        "locationId": 1,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "cafe-and-market-crossroads": {
+        "accountId": 7,
+        "locationId": 7,
+        "mealPeriodIds": {
+            "default": 2
+        }
+    },
+    "cantina-and-grille-global-village": {
+        "accountId": 8,
+        "locationId": 8,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "gracies": {
+        "accountId": 10,
+        "locationId": 10,
+        "mealPeriodIds": {
+            "breakfast": 1,
+            "lunch": 2,
+            "dinner": 3,
+            "late-night": 6,
+            "default": 2
+        }
+    },
+    "kitchen-brick-city": {
+        "accountId": 4,
+        "locationId": 4,
+        "mealPeriodIds": {
+            "breakfast": 1,
+            "lunch": 2,
+            "default": 2
+        }
+    },
+    "loaded-latke": {
+        "accountId": 11,
+        "locationId": 11,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "midnight-oil": {
+        "accountId": 12,
+        "locationId": 12,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "ritz": {
+        "accountId": 4,
+        "locationId": 14,
+        "mealPeriodIds": {
+            "breakfast": 1,
+            "lunch": 2,
+            "dinner": 3,
+            "default": 2
+        }
+    },
+    "college-grind": {
+        "accountId": 17,
+        "locationId": 18,
+        "mealPeriodIds": {
+            "default": 8
+        }
+    },
+    "commons": {
+        "accountId": 14,
+        "locationId": 15,
+        "mealPeriodIds": {
+            "dinner": 3,
+            "default": 3
+        }
+    }
 };
 
-// TODO: Create a menu route
-/*
-    This has been total pain. FD Mealplanner's API shoves so much megabytes of data that my laptop decided to CRASH since it ran out of memory (HOW??!?!?)
-    If you want to take up this task, here are a few notes to get you started:
+const VALIDSTORES = Object.keys(MENU_CODES);
 
-    Here is an example API that is used to get menu information
-    Ctrl-Alit-Deli API: https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals?menuId=0&accountId=6&locationId=6&mealPeriodId=8&tenantId=20&monthId=01&startDate=01%2F01%2F2026&endDate=01%2F31%2F2026&timeOffset=300
-    This API was retrieved by monitoring network activity (specifically XHR requests) through Inspect Element by going into the restaurant menu.
-    The most important area you might focus on is (lets assume the response is "menudata"):
-        menudata["result"][0]["allMenuRecipes"]
-    This will show you all the foods on the menu, detailing their Category and nutritional information.
-    All menus were retrieved via https://www.fdmealplanner.com/#menu/mp/RIT/ , which lists all accessible restaurant menus
-
-    Why I was facing headwinds:
-    - Not all restaurants have a menu on MealPlanner
-    - Some restaurants dont even have a menu at all
-    - Some restaurants have split sessions (Breakfast, Lunch, Dinner) which need to be accomodated (mealPeriodId)
-    - Each restaurant has their own ID via accountId, locationId (which I was trying to assign through MENU_CODES)
-    - Some responses were 10+ mb in size (which lead to my laptop crashing)
-
-    If you are going to work on this, I wish you good luck (maybe FDMealplanner has updated by now which is better)
+function createMenuAPIURL(store: string, mealPeriodId: number): string {
+    const baseUrl = "https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals";
+    const params = new URLSearchParams({
+        menuId: "0",
+        accountId: MENU_CODES[store].accountId.toString(),
+        locationId: MENU_CODES[store].locationId.toString(),
+        mealPeriodId: mealPeriodId.toString(),
+        tenantId: "20",
+        monthId: "01",
+        startDate: "01/01/2026",
+        endDate: "01/31/2026",
+        timeOffset: "300"
+    });
     
-    (last updated: Janurary 21, 2026)
-*/ 
+    const url = `${baseUrl}?${params.toString()}`;
+    return url;
+}
 
-// export function GET(req: Request, res: Response) {
-//     res.send(req.query);
-// };
+export async function GET(req: Request, res: Response) {
+    if(req.query["store"] && VALIDSTORES.includes(req.query["store"].toString())) {
+        let data = await fetch(createMenuAPIURL(req.query["store"].toString(), MENU_CODES[req.query["store"].toString()].mealPeriodIds[req.query["mealPeriod"]?.toString() || "default"]))
+        let menuData = (await data.json())["result"][0]["allMenuRecipes"];
+
+        let formattedMenu: any[] = [];
+
+        for(let item of menuData) {
+            formattedMenu.push({
+                name: item["englishAlternateName"],
+                category: item["category"],
+                calories: item["calories"],
+                allergens: item["allergenName"].split(","),
+            });
+        }
+
+        res.status(200).json({
+            store: req.query["store"].toString(),
+            mealPeriod: req.query["mealPeriod"]?.toString() || "default",
+            cacheTime: Date.now(),
+            data: formattedMenu 
+        });
+        return;
+    }
+    res.status(400).send("Invalid or missing 'store' query parameter.");
+};
