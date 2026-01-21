@@ -15,9 +15,7 @@
   "type": "commonjs",
   "main": "App.js",
   "scripts": {
-    "prisma:check": "prisma validate && prisma generate",
     "start": "tsc && node ./dist/App.js",
-    "build": "npm run prisma:check && tsc"
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
