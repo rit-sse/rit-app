@@ -4,9 +4,15 @@ export interface Stop {
 }
 
 export interface Route {
-    rId: number;
+    rId: string;
     routeName: string;
-    stops: Stop[];
+    timeRange: string;
+    days: string;
+}
+
+export interface ResidenceSchedule {
+    name: string;
+    routes: Route[];
 }
 
 export interface InferredStop extends Stop {
