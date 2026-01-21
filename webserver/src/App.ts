@@ -1,11 +1,9 @@
-import 'dotenv/config'
-import express, {Request, Response} from 'express';
-import fs from 'node:fs';
-import {resolve} from "node:path";
+import express, { Request, Response } from 'express';
+import fs from 'fs';
 
-const PORT: number = Number(process.env.PORT);
-const SOURCE_DIR: string = resolve(__dirname + '/routes');
-
+// TODO: Shove this into a .env file
+const PORT: number = 3000;
+const SOURCE_DIR: string = __dirname + '/routes';
 
 const app: express.Express = express();
 
