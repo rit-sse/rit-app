@@ -91,15 +91,22 @@ export async function GET(req: Request, res: Response) {
 
     // Get hours of operation for each restaurant
     for (let i = 0; i < restaurants.length; i++) {
+        // Get restaurant
         const r = restaurants[i];
-        console.log(`Fetching hours for ${r.name}...`);
+
+        // Only fetch hours if restaurant has a valid code
         if (r.code) {
+            // Fetch restaurant detail page
             const detailScrape = await fetch(`${r.link}`);
+            // Load detail page HTML into Cheerio
             const $storeScrape = cheerio.load(await detailScrape.text());
+
+            // Parse hours of operation by getting the week display div, taking all the day columns, and then iterating through them
             $storeScrape('div[class="week-display"]').map((j, el) => {
                $(el).find('div[class="day-column"]').map((k, dayEl) => {
                 let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
                 let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
+                // Initialize hoursOfOperations object if it doesn't exist for whatever reason (shouldn't happen)
                 if (!r.hoursOfOperations) {
                     r.hoursOfOperations = {};
                 }
