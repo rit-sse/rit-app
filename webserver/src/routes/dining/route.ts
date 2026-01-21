@@ -13,7 +13,7 @@ interface RestaurantType {
     link: string,
     image: string,
     busyLevel: number | null,
-    hoursOfOperations?: {[day: string]: string} | null
+    hoursOfOperations?: string[] | null
 }
 // Define the dining types to scrape
 const types = ["restaurant", "market", "coffee", "grocery"];
@@ -26,7 +26,6 @@ const prisma = new PrismaClient({
     adapter
 });
 
-
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
 
@@ -37,21 +36,21 @@ export async function GET(req: Request, res: Response) {
         }
     });
 
-    // // If cache exists and is recent (within 1 hour), return cached data
-    // if (databaseCache) {
-    //     const cacheTime = databaseCache.cacheTime;
-    //     const currentTime = Date.now();
-    //     const cacheDuration = 1000 * 60 * 60; // 1 hour
-    //     if (currentTime - cacheTime < cacheDuration) {
-    //         // Return cached data
-    //         const cachedData: RestaurantType[] = JSON.parse(databaseCache.data);
-    //         res.send({
-    //             cacheTime: cacheTime,
-    //             data: cachedData
-    //         });
-    //         return;
-    //     }
-    // }
+    // If cache exists and is recent (within 1 hour), return cached data
+    if (databaseCache) {
+        const cacheTime = databaseCache.cacheTime;
+        const currentTime = Date.now();
+        const cacheDuration = 1000 * 60 * 60; // 1 hour
+        if (currentTime - cacheTime < cacheDuration) {
+            // Return cached data
+            const cachedData: RestaurantType[] = JSON.parse(databaseCache.data);
+            res.send({
+                cacheTime: cacheTime,
+                data: cachedData
+            });
+            return;
+        }
+    }
 
     // Otherwise, scrape new data and update cache
     // Scrape dining locations from RIT website
@@ -91,26 +90,6 @@ export async function GET(req: Request, res: Response) {
                 link: "https://rit.edu" + link || ""
             });
         })
-    }
-
-    // Get hours of operation for each restaurant
-    for (let i = 0; i < restaurants.length; i++) {
-        const r = restaurants[i];
-        console.log(`Fetching hours for ${r.name}...`);
-        if (r.code) {
-            const detailScrape = await fetch(`${r.link}`);
-            const $storeScrape = cheerio.load(await detailScrape.text());
-            $storeScrape('div[class="week-display"]').map((j, el) => {
-               $(el).find('div[class="day-column"]').map((k, dayEl) => {
-                let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
-                let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
-                if (!r.hoursOfOperations) {
-                    r.hoursOfOperations = {};
-                }
-                r.hoursOfOperations[dayName] = hours;
-               })
-            });
-        }
     }
 
     // Update database cache
