@@ -39,14 +39,41 @@ Returns all dining locations. Caches into PostgreSQL, with each request initatin
 Returns a JSON Array with a structure
 ```ts
 {
-    id: number,
-    name: string,
-    type: string,
-    open: boolean,
-    code: string,
-    link: string,
-    image: string,
-    busyLevel: number | null,
-    hoursOfOperations?: {[day: string]: string} | null
+    cacheTime: number,
+    data: {
+        id: number,
+        name: string,
+        type: string,
+        open: boolean,
+        code: string,
+        link: string,
+        image: string,
+        busyLevel: number | null,
+        hoursOfOperations?: {[day: string]: string} | null
+    }
+}
+```
+`GET /dining/menu`
+
+Returns the menu for a specific dining location.
+
+**Parameters:**
+- `store`: string (required) - The code of the dining location
+- `mealPeriod`: string (optional) - The meal period to get the menu for (e.g., breakfast, lunch, dinner). If not provided, returns the default menu. **NOTE**: Take a look in `webserver/src/routes/dining/menu.ts` for all valid meal periods.
+
+Returns a JSON Object with a structure
+```ts
+{
+    cacheTime: number,
+    data: {
+        menu: {
+            name: string,
+            calories: number,
+            category: string,
+            allergens: string[]
+        }[],
+        store: string,
+        mealPeriod: string
+    }
 }
 ```
