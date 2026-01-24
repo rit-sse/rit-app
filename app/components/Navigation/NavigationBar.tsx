@@ -29,7 +29,7 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
     // const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(19 + ( (props.onScreen ? pageWeights[props.onScreen] * ( ( (77.5) ) ) : 0)));
     
     const STARTINGSLIDE = 15
-    const SLIDE_COEFFICIENT = 77
+    const SLIDE_COEFFICIENT = 76.7
     const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(STARTINGSLIDE);
 
     const initiateSlidingSelectBar = (toScreen: string) => {
