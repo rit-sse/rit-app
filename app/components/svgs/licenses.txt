@@ -1,0 +1,11 @@
+HOME Icon
+https://www.svgrepo.com/svg/512349/home-1392
+
+MAP
+https://www.svgrepo.com/svg/532550/map-location-pin
+
+GRID:
+https://www.svgrepo.com/svg/512328/grid-1525
+
+CALENDAR:
+https://www.svgrepo.com/svg/521530/calendar
