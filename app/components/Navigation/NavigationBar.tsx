@@ -7,10 +7,17 @@ import DefaultProfileIcon from "../svgs/DefaultProfile"
 import NavigationButton from "./NavigationButton"
 import { useRouter } from "expo-router"
 import { useState } from "react"
+import * as GLOBAL from "../../app/globals"
 
 export default function NavigationBar(props: { onScreen: string, setOnScreen: Function, navigateFunc: Function }) {
     const router = useRouter();
 
+    const [navBarVisibility, setNavBarVisibility] = useState<boolean>(true);
+    GLOBAL.navbar = {
+        setState: (state: { navBarVisibility: boolean }) => {
+            setNavBarVisibility(state.navBarVisibility);
+        }
+    }
     // const onScreen = {
     //     Home: true,
     //     Map: false,
@@ -65,7 +72,8 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
             paddingBottom: 15,
             flexDirection: "row",
             justifyContent: "space-around",
-            alignItems: "center"
+            alignItems: "center",
+            display: (navBarVisibility ? "flex" : "none")
         }}>
             <HomeIcon onPress={() => {navigateTo("")}} style={{height: 40, width: 40}} fill={(props.onScreen === "home" ? "#FFFFFF" : "#888")}/>
             <MapIcon onPress={() => {navigateTo("map")}} style={{height: 40, width: 40}} fill={(props.onScreen === "map" ? "#FFFFFF" : "#888")}/>

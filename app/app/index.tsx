@@ -1,6 +1,7 @@
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
+import * as GLOBAL from "./globals";
 
 import PagerView from "react-native-pager-view";
 
@@ -37,14 +38,20 @@ export default function Index() {
           page
         ))}
       </PagerView>
-      <View style={{ height: 20, width: "85%", flex:1, flexDirection: "row", justifyContent: "center", marginTop: 10}}>
+      <View style={{ height: 0, width: "85%", display: "flex", flexDirection: "row", justifyContent: "center", marginTop: 10}}>
         {draggableExample.map((_, index) => (
           // 
           <View key={index} style={{ height: 10, width: (scrollOffset - .95 < index && index < scrollOffset + .95) ? Math.max((30 + 20*(Math.sin(Math.PI*(scrollOffset - index) + (Math.PI/2)))), 10) : 10, borderRadius: 5, backgroundColor: (scrollOffset - 1 < index && index < scrollOffset + 1) ? ("rgba(247, 105, 2, " + 
             ((3/5) + (2/5)*Math.cos((scrollOffset * Math.PI) + (Math.PI * index)))
             + ")") : "rgba(247, 105, 2, 0.2)", marginHorizontal: 3 }}></View>
         ))}
+        
       </View>
+
+        <View style={{ marginTop: 15, width: "85%" }}>
+          <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>debug</Text>
+          <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.navbar.setState({state: {navBarVisibility: false}})}} />
+        </View>
     </View>
   );
 }
