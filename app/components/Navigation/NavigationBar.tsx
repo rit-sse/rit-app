@@ -6,9 +6,32 @@ import CalendarIcon from "../svgs/CalendarIcon"
 import DefaultProfileIcon from "../svgs/DefaultProfile"
 import NavigationButton from "./NavigationButton"
 import { useRouter } from "expo-router"
+import { useState } from "react"
 
-export default function NavigationBar(props: { onScreen: string }) {
+export default function NavigationBar(props: { onScreen: string, setOnScreen: Function, navigateFunc: Function }) {
     const router = useRouter();
+
+    // const onScreen = {
+    //     Home: true,
+    //     Map: false,
+    //     Grid:false,
+    //     Calendar: false,
+    //     Profile: false
+    // }
+    const pageWeights = {
+        home: 0,
+        map: 1,
+        grid: 2,
+        calendar: 3,
+        profile: 4
+    }
+
+    const navigateTo = (screen: string) => {
+        props.navigateFunc("/" + screen);
+        props.setOnScreen(screen === "" ? "home" : screen);
+    }
+    
+
     return (
         <View style={{
             position: "absolute", width: "90%", height: 80, bottom: 35, left: "50%", transform: [{ translateX: "-50%" }], backgroundColor: "#000", borderRadius: 14
@@ -22,11 +45,11 @@ export default function NavigationBar(props: { onScreen: string }) {
             justifyContent: "space-around",
             alignItems: "center"
         }}>
-            <HomeIcon onPress={() => {console.log("Home pressed")}} style={{height: 40, width: 40}}/>
-            <MapIcon onPress={() => {router.navigate("/map"); console.log("Map pressed")}} style={{height: 40, width: 40}} fill="#888"/>
-            <GridIcon onPress={() => {console.log("Grid pressed")}} style={{height: 40, width: 40}} fill="#888"/>
-            <CalendarIcon onPress={() => {console.log("Calendar pressed")}} style={{height: 40, width: 40}} fill="#888"/>
-            <DefaultProfileIcon onPress={() => {console.log("Profile pressed")}} style={{height: 40, width: 40}}/>
+            <HomeIcon onPress={() => {navigateTo("")}} style={{height: 40, width: 40}} fill={(props.onScreen === "home" ? "#FFFFFF" : "#888")}/>
+            <MapIcon onPress={() => {navigateTo("map")}} style={{height: 40, width: 40}} fill={(props.onScreen === "map" ? "#FFFFFF" : "#888")}/>
+            <GridIcon onPress={() => {navigateTo("grid")}} style={{height: 40, width: 40}} fill={(props.onScreen === "grid" ? "#FFFFFF" : "#888")}/>
+            <CalendarIcon onPress={() => {navigateTo("calendar")}} style={{height: 40, width: 40}} fill={(props.onScreen === "calendar" ? "#FFFFFF" : "#888")}/>
+            <DefaultProfileIcon onPress={() => {navigateTo("profile")}} style={{height: 40, width: 40}}/>
         </View>
     )
 }
