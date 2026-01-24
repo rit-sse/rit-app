@@ -27,7 +27,7 @@ export default function RootLayout() {
     } else {
         setAnimationType("slide_from_right");
     }
-    routeNavigator.navigate(screenSwitch as RelativePathString);
+    routeNavigator.replace(screenSwitch as RelativePathString);
   }
 
   return (

@@ -18,17 +18,39 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
     //     Calendar: false,
     //     Profile: false
     // }
-    const pageWeights = {
-        home: 0,
-        map: 1,
-        grid: 2,
-        calendar: 3,
-        profile: 4
+    const pageWeights: { [key: string]: number } = {
+        "home": 0,
+        "map": 1,
+        "grid": 2,
+        "calendar": 3,
+        "profile": 4
+    }
+
+    // const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(19 + ( (props.onScreen ? pageWeights[props.onScreen] * ( ( (77.5) ) ) : 0)));
+    
+    const STARTINGSLIDE = 15
+    const SLIDE_COEFFICIENT = 77
+    const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(STARTINGSLIDE);
+
+    const initiateSlidingSelectBar = (toScreen: string) => {
+        const targetPosition = STARTINGSLIDE + (pageWeights[toScreen] * (SLIDE_COEFFICIENT));
+        let snapshotPosition = currentSelectedPosition;
+        let step = 0;
+        const interval = setInterval(() => {
+            step += 0.01;
+            // -(.5)cos(pi(x))+.5
+            setCurrentSelectedPosition(snapshotPosition + -(currentSelectedPosition - targetPosition)*(-0.5 * Math.cos(5*Math.PI * step) + 0.5));
+            if (step > .2) {
+                clearInterval(interval);
+                setCurrentSelectedPosition(targetPosition);
+            }
+        }, 10);
     }
 
     const navigateTo = (screen: string) => {
         props.navigateFunc("/" + screen);
         props.setOnScreen(screen === "" ? "home" : screen);
+        initiateSlidingSelectBar(screen === "" ? "home" : screen);
     }
     
 
@@ -50,6 +72,9 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
             <GridIcon onPress={() => {navigateTo("grid")}} style={{height: 40, width: 40}} fill={(props.onScreen === "grid" ? "#FFFFFF" : "#888")}/>
             <CalendarIcon onPress={() => {navigateTo("calendar")}} style={{height: 40, width: 40}} fill={(props.onScreen === "calendar" ? "#FFFFFF" : "#888")}/>
             <DefaultProfileIcon onPress={() => {navigateTo("profile")}} style={{height: 40, width: 40}}/>
+            <View style={{position: "absolute", height: 6, width: 50, backgroundColor: "#F76902", borderRadius: 5, bottom: 7, left: currentSelectedPosition, shadowOffset: {width:0, height:0}, shadowOpacity: 0.9, shadowRadius: 4, shadowColor: "#F76902"}}>
+
+            </View>
         </View>
     )
 }
