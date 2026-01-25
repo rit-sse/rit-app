@@ -13,6 +13,7 @@ const draggableExample = [
 
 export default function Index() {
   const [scrollOffset, setscrollOffset] = useState(0);
+  const [hiding, setHiding] = useState(false);
 
   const onPageScrolled = (e: any) => {
     let offset = e.nativeEvent.offset + e.nativeEvent.position;
@@ -50,7 +51,8 @@ export default function Index() {
 
         <View style={{ marginTop: 15, width: "85%" }}>
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>debug</Text>
-          <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.navbar.setState({state: {navBarVisibility: false}})}} />
+          <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.default.navbar?.setState({ navBarVisibility: false })}} />
+          <Button title={ "Nav Bar Hiding Animation"} onPress={() => {GLOBAL.default.showNavbar?.(!hiding); setHiding(!hiding);}} />
         </View>
     </View>
   );
