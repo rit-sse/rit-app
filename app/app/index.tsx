@@ -1,6 +1,7 @@
-import { Button, Text, View } from "react-native";
+import { Button, Text, View, ScrollView } from "react-native";
 import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
+import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
 import * as GLOBAL from "./globals";
 
 import PagerView from "react-native-pager-view";
@@ -49,11 +50,25 @@ export default function Index() {
         
       </View>
 
-        <View style={{ marginTop: 15, width: "85%" }}>
+      <View style={{ marginTop: 25, width: "100%" }}>
+        <Text style={{fontSize: 23, fontWeight: "bold", paddingLeft: "7.5%"}}>Recently Viewed</Text>
+        <ScrollView style={{ marginTop: 5, width: "100%", flexDirection: "row", paddingLeft: "7.5%", paddingRight: "7.5%"}} horizontal={true} showsHorizontalScrollIndicator={false}>
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+          <RecentlyViewedButton />
+        </ScrollView>
+      </View>
+
+        {/* <View style={{ marginTop: 15, width: "85%" }}>
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>debug</Text>
           <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.default.navbar?.setState({ navBarVisibility: false })}} />
           <Button title={ "Nav Bar Hiding Animation"} onPress={() => {GLOBAL.default.showNavbar?.(!hiding); setHiding(!hiding);}} />
-        </View>
+        </View> */}
     </View>
   );
 }
