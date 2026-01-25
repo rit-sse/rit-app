@@ -13,18 +13,17 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
     const router = useRouter();
 
     const [navBarVisibility, setNavBarVisibility] = useState<boolean>(true);
-    GLOBAL.navbar = {
+    const [navbarAnimationPlaying, setNavbarAnimationPlaying] = useState<boolean>(false);
+    const [navbarPosition, setNavbarPosition] = useState<number>(35);
+    const [navbarIntervalId, setNavbarIntervalId] = useState<number | null>(null);
+    const [navbarDirection, setNavbarDirection] = useState<"hiding" | "showing" |  "notplaying">("notplaying");
+    const navbarHidePosition = -100;
+    const navbarShowPosition = 35;
+    GLOBAL.default.navbar = {
         setState: (state: { navBarVisibility: boolean }) => {
             setNavBarVisibility(state.navBarVisibility);
         }
     }
-    // const onScreen = {
-    //     Home: true,
-    //     Map: false,
-    //     Grid:false,
-    //     Calendar: false,
-    //     Profile: false
-    // }
     const pageWeights: { [key: string]: number } = {
         "home": 0,
         "map": 1,
@@ -33,7 +32,42 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
         "profile": 4
     }
 
-    // const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(19 + ( (props.onScreen ? pageWeights[props.onScreen] * ( ( (77.5) ) ) : 0)));
+    const toggleNavbar = (show: boolean) => {
+        if(show && navbarDirection == "showing") return;
+        if(!show && navbarDirection == "hiding") return;
+        if(navbarAnimationPlaying) {
+            clearInterval(navbarIntervalId!);
+        };
+        setNavbarAnimationPlaying(true);
+        setNavbarDirection(show ? "showing" : "hiding");
+        var step = 0;
+        const interval = setInterval(() => {
+            setNavbarPosition((prevPosition) => {
+                
+                let newPosition;
+                if(show) {
+                    newPosition = prevPosition + navbarShowPosition * (1-Math.cos((step * Math.PI)/2));
+                } else {
+                    newPosition = prevPosition - navbarShowPosition * (Math.sin((step * Math.PI)/2));
+                }
+                step += .04;
+                if(show && newPosition >= navbarShowPosition) {
+                    newPosition = navbarShowPosition;
+                    clearInterval(interval);
+                    setNavbarAnimationPlaying(false);
+                    setNavbarDirection("notplaying");
+                } else if(!show && newPosition <= navbarHidePosition) {
+                    newPosition = navbarHidePosition;
+                    clearInterval(interval);
+                    setNavbarAnimationPlaying(false);
+                    setNavbarDirection("notplaying");
+                }
+                return newPosition;
+            });
+        }, 10);
+        setNavbarIntervalId(interval as unknown as number);
+    }
+    GLOBAL.default.showNavbar = toggleNavbar;
     
     const STARTINGSLIDE = 15
     const SLIDE_COEFFICIENT = 76.7
@@ -63,7 +97,7 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
 
     return (
         <View style={{
-            position: "absolute", width: "90%", height: 80, bottom: 35, left: "50%", transform: [{ translateX: "-50%" }], backgroundColor: "#000", borderRadius: 14
+            position: "absolute", width: "90%", height: 80, bottom: navbarPosition, left: "50%", transform: [{ translateX: "-50%" }], backgroundColor: "#000", borderRadius: 14
             , shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.35,
             shadowRadius: 4.65,
