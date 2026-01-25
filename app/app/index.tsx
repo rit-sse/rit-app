@@ -2,9 +2,24 @@ import { Button, Text, View, ScrollView } from "react-native";
 import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
+import NewsContainer from "@/components/Home/NewsContainer";
 import * as GLOBAL from "./globals";
 
 import PagerView from "react-native-pager-view";
+const newsExample: {uri: string, title: string, description: string, date: string}[] = [
+  {
+    uri: "https://www.rit.edu/sites/rit.edu/files/styles/news_thumbnail/https/cdn.rit.edu/images/news/2026-01/WEB_Cirr-CWED.jpg?itok=8CbKYU9u",
+    title: "Catholics grade Pope Leo XIV",
+    description: "Andrew Cirillo, University Chaplain and associate director for the Center for Campus Life, discusses Pope Leo XVI's papacy and his response to more recent political and military actions on WXXI's Connections with Evan Dawson.",
+    date: "Janurary 23, 2026"
+  },
+  {
+    uri: "https://www.rit.edu/sites/rit.edu/files/styles/news_thumbnail/https/cdn.rit.edu/images/news/2026-01/WEB_FallCareerFair-1.jpg?itok=_aPWvLr2",
+    title: "Forbes names RIT a top college for launching careers",
+    description: "Rochester Business Journal speaks to Maria Richart, director of Career Services and Cooperative Education, about the designation.",
+    date: "Janurary 23, 2026"
+  }
+]
 
 const draggableExample = [
   <EventsContainer image={require("../assets/images/careerfair.png")} title={[{content: "Prepare for", color: "#fff"}, {content: "Career Fair", color: "#F76902"}]} key={0} />,
@@ -22,12 +37,12 @@ export default function Index() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
+    <ScrollView
+      contentContainerStyle={{
         backgroundColor: "#fff",
         paddingTop: 50,
         alignItems: "center",
+        paddingBottom: 150
       }}
 
     >
@@ -51,8 +66,8 @@ export default function Index() {
       </View>
 
       <View style={{ marginTop: 25, width: "100%" }}>
-        <Text style={{fontSize: 23, fontWeight: "bold", paddingLeft: "7.5%"}}>Recently Viewed</Text>
-        <ScrollView style={{ marginTop: 5, width: "100%", flexDirection: "row", paddingLeft: "7.5%", paddingRight: "7.5%"}} horizontal={true} showsHorizontalScrollIndicator={false}>
+        <Text style={{fontSize: 24, fontWeight: "bold", paddingLeft: "7.5%"}}>Recently Viewed</Text>
+        <ScrollView style={{ marginTop: 10, width: "100%", flexDirection: "row", paddingLeft: "7.5%"}} horizontal={true} showsHorizontalScrollIndicator={false}>
           <RecentlyViewedButton />
           <RecentlyViewedButton />
           <RecentlyViewedButton />
@@ -64,11 +79,18 @@ export default function Index() {
         </ScrollView>
       </View>
 
+      <View style={{ marginTop: 15, width: "85%" }}>
+          <Text style={{fontSize: 24, fontWeight: "bold"}}>Latest News</Text>
+          {newsExample.map((news, index) => (
+            <NewsContainer key={index} uri={news.uri} title={news.title} description={news.description} date={news.date} />
+          ))}
+      </View>
+
         {/* <View style={{ marginTop: 15, width: "85%" }}>
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>debug</Text>
           <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.default.navbar?.setState({ navBarVisibility: false })}} />
           <Button title={ "Nav Bar Hiding Animation"} onPress={() => {GLOBAL.default.showNavbar?.(!hiding); setHiding(!hiding);}} />
         </View> */}
-    </View>
+    </ScrollView>
   );
 }
