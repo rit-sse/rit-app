@@ -1,4 +1,4 @@
-import { View } from "react-native"
+import { View, Dimensions } from "react-native"
 import HomeIcon from "../svgs/HomeIcon"
 import MapIcon from "../svgs/MapIcon"
 import GridIcon from "../svgs/GridIcon"
@@ -69,8 +69,8 @@ export default function NavigationBar(props: { onScreen: string, setOnScreen: Fu
     }
     GLOBAL.default.showNavbar = toggleNavbar;
     
-    const STARTINGSLIDE = 15
-    const SLIDE_COEFFICIENT = 76.7
+    const STARTINGSLIDE = (Dimensions.get("window").width)/28.6666666666666666667
+    const SLIDE_COEFFICIENT = (Dimensions.get("window").width) / 5.60625814863; // Calculated constant to make the sliding bar align with icons. I used a percentage of my screen width to make it more adaptable to different screen sizes.
     const [currentSelectedPosition, setCurrentSelectedPosition] = useState<number>(STARTINGSLIDE);
 
     const initiateSlidingSelectBar = (toScreen: string) => {
