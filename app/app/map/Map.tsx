@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert } from 'react-native';
 import { Asset } from "expo-asset";
-import { File, Directory, Paths } from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { LatLng, LeafletView, WebviewLeafletMessage } from 'react-native-leaflet-view';
 
 //MAJOR NOTES:
@@ -13,30 +13,31 @@ import { LatLng, LeafletView, WebviewLeafletMessage } from 'react-native-leaflet
 // the line with `const htmlContent = await...` to use expo-file-system's
 // new file usage, as described in the second link
 
-
 const DEFAULT_LOCATION = {
   latitude: 43.083,
   longitude: -77.676
-}
-function Map({onMapMessage=(message:WebviewLeafletMessage)=>{}}) {
+};
+
+export default function Map({onMapMessage=(message:WebviewLeafletMessage)=>{}}) {
   const [webViewContent, setWebViewContent] = useState<string | null>(null);
   useEffect(() => {
     let isMounted = true;
 
     const loadHtml = async () => {
-      try {
-        const path = require("../../assets/leaflet.html");
-        const asset = Asset.fromModule(path);
-        await asset.downloadAsync();
-        const htmlContent = await (new File(asset.localUri!)).text();//await File.readAsStringAsync(asset.localUri!);
-
         if (isMounted) {
-          setWebViewContent(htmlContent);
+            try {
+                const path = require("../../assets/leaflet.html");
+                const asset = Asset.fromModule(path);
+                await asset.downloadAsync();
+                const htmlContent = await (new File(asset.localUri!)).text();
+
+                setWebViewContent(htmlContent);
+            } catch (error) {
+                Alert.alert('Error loading HTML', JSON.stringify(error));
+                console.error('Error loading HTML:', error);
+            }
         }
-      } catch (error) {
-        Alert.alert('Error loading HTML', JSON.stringify(error));
-        console.error('Error loading HTML:', error);
-      }
+      
     };
 
     loadHtml();
@@ -60,6 +61,4 @@ function Map({onMapMessage=(message:WebviewLeafletMessage)=>{}}) {
       doDebug={false}
     />
   );
-}
-
-export default Map;
+};

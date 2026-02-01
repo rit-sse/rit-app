@@ -1,18 +1,18 @@
 import { View, Text, StyleProp, ViewStyle } from "react-native";
-import Map from "./map/Map";
 import { WebviewLeafletMessage } from 'react-native-leaflet-view';
+import Map from "./map/Map";
 
 import GearIcon from "../components/svgs/map/GearIcon";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 
 function onMapMessage(message: WebviewLeafletMessage) {
-    return;
+  return;
 }
 
 const buttonWidth = 70;
 const buttonSpacing = 15;
-const buttonSizeStyle = {height: 0.65*buttonWidth, width: 0.65*buttonWidth};
+const iconStyle = {height: 0.65*buttonWidth, width: 0.65*buttonWidth};
 
 const allButtonStyling:StyleProp<ViewStyle> = {
   position: "absolute", width: buttonWidth, height: buttonWidth,
@@ -24,20 +24,18 @@ export default function map() {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Map onMapMessage={onMapMessage}/>
 
-      <View style={{
-          position: "absolute", bottom: 35+80+buttonSpacing, right: "5%",
-          width: buttonWidth, height: 3.0*buttonWidth+2.0*buttonSpacing
-        }}>
+      <View style={{position: "absolute", bottom: 35+80+buttonSpacing, right: "5%",
+      width: buttonWidth, height: 3.0*buttonWidth+2.0*buttonSpacing}}>
           <View style={Object.assign({bottom: 2.0*(buttonWidth+buttonSpacing)}, allButtonStyling)}>
-            <GearIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
+            <GearIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
           </View>
 
           <View style={Object.assign({bottom: buttonWidth+buttonSpacing}, allButtonStyling)}>
-            <BusIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
+            <BusIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
           </View>
 
           <View style={Object.assign({bottom: 0}, allButtonStyling)}>
-            <BuildingIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
+            <BuildingIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
           </View>
           
         </View>
