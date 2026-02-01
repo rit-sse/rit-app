@@ -61,7 +61,8 @@ export class ScrapeCache {
                 },
                 data: {
                     data: data,
-                    expiry: expiry
+                    expiry: expiry,
+                    cacheTime: Date.now()
                 }
             });
         } else {
