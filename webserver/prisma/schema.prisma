@@ -16,5 +16,6 @@ model WebscrapeCache {
   id            Int @id @default(autoincrement())
   cacheName     String
   cacheTime     BigInt
+  expiry        BigInt @default(0)
   data          Json
 }

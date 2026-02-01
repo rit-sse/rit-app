@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../../generated/client";
+import { getPrisma } from "../../db/client";
+import { ScrapeCache } from "../../db/cache";
 
 // Define the structure of a restaurant type
 interface RestaurantType {
@@ -13,45 +13,24 @@ interface RestaurantType {
     link: string,
     image: string,
     busyLevel: number | null,
-    hoursOfOperations?: {[day: string]: string} | null
+    hoursOfOperations?: { [day: string]: string } | null
 }
 // Define the dining types to scrape
 const types = ["restaurant", "market", "coffee", "grocery"];
 
 // Prisma Client Setup
-const adapter = new PrismaPg({
-    connectionString: process.env.DIRECT_DATABASE_URL || ""
-});
-const prisma = new PrismaClient({
-    adapter
-});
+const prisma = getPrisma();
 
+const scrapeCache = new ScrapeCache();
 
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
 
-    // Check database cache for dining locations
-    let databaseCache = await prisma.webscrapeCache.findFirst({
-        where: {
-            cacheName: "dining_locations"
-        }
-    });
-
     // // If cache exists and is recent (within 1 hour), return cached data
-    // if (databaseCache) {
-    //     const cacheTime = databaseCache.cacheTime;
-    //     const currentTime = Date.now();
-    //     const cacheDuration = 1000 * 60 * 60; // 1 hour
-    //     if (currentTime - cacheTime < cacheDuration) {
-    //         // Return cached data
-    //         const cachedData: RestaurantType[] = JSON.parse(databaseCache.data);
-    //         res.send({
-    //             cacheTime: cacheTime,
-    //             data: cachedData
-    //         });
-    //         return;
-    //     }
-    // }
+    if (await scrapeCache.inCache("dining_locations") && !(await scrapeCache.isExpired("dining_locations"))) {
+        res.send(await scrapeCache.getCache("dining_locations"));
+        return;
+    }
 
     // Otherwise, scrape new data and update cache
     // Scrape dining locations from RIT website
@@ -78,7 +57,7 @@ export async function GET(req: Request, res: Response) {
             const imageURL = $(el).find('.location-image').find("img").attr("src") || "";
             // Extract busy level from image's file name. This looks like an interesting way to do it, but it works.
             const busyLevel = $(el).find('img[alt="Density"]').attr("src")?.split("people-")[1][0] || null;
-            
+
             // Push restaurant data to array
             restaurants.push({
                 id: onId++,
@@ -95,54 +74,40 @@ export async function GET(req: Request, res: Response) {
 
     // Get hours of operation for each restaurant
     for (let i = 0; i < restaurants.length; i++) {
+        // Get restaurant
         const r = restaurants[i];
-        console.log(`Fetching hours for ${r.name}...`);
+
+        // Only fetch hours if restaurant has a valid code
         if (r.code) {
+            // Fetch restaurant detail page
             const detailScrape = await fetch(`${r.link}`);
+            // Load detail page HTML into Cheerio
             const $storeScrape = cheerio.load(await detailScrape.text());
+
+            // Parse hours of operation by getting the week display div, taking all the day columns, and then iterating through them
             $storeScrape('div[class="week-display"]').map((j, el) => {
-               $(el).find('div[class="day-column"]').map((k, dayEl) => {
-                let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
-                let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
-                if (!r.hoursOfOperations) {
-                    r.hoursOfOperations = {};
-                }
-                r.hoursOfOperations[dayName] = hours;
-               })
+                $(el).find('div[class="day-column"]').map((k, dayEl) => {
+                    let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
+                    let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
+                    // Initialize hoursOfOperations object if it doesn't exist for whatever reason (shouldn't happen)
+                    if (!r.hoursOfOperations) {
+                        r.hoursOfOperations = {};
+                    }
+                    r.hoursOfOperations[dayName] = hours;
+                })
             });
         }
     }
 
     // Update database cache
-    const newCacheData = JSON.stringify(restaurants);
     const currentTime = Date.now();
 
-    // If cache exists, update it; otherwise, create a new cache entry
-    if (databaseCache) {
-        // Update existing cache
-        await prisma.webscrapeCache.update({
-            where: {
-                id: databaseCache.id
-            },
-            data: {
-                data: newCacheData,
-                cacheTime: currentTime
-            }
-        });
-    } else {
-        // Create new cache entry
-        await prisma.webscrapeCache.create({
-            data: {
-                cacheName: "dining_locations",
-                data: newCacheData,
-                cacheTime: currentTime
-            }
-        });
-    }
+    await scrapeCache.setCache("dining_locations", {
+        data: restaurants
+    });
 
     // Return newly scraped data
     res.send({
-        cacheTime: currentTime,
         data: restaurants
     });
 }

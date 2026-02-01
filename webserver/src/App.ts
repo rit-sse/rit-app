@@ -13,6 +13,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
 });
 
+// This replicates Next.js's file-based routing system. Chosen since the website uses Next.js
+// Oh god why
 const recursiveLoadRoutes = (dir: string) => {
     fs.readdirSync(dir).forEach((file) => {
         if(file.toString() == "route.js") {

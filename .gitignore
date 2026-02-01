@@ -58,3 +58,4 @@ node_modules
 
 webserver/src/generated
 webserver/package-lock.json
+*/package-lock.json
