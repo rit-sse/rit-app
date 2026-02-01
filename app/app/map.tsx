@@ -16,21 +16,36 @@ export default function map() {
       <Map onMapMessage={onMapMessage}/>
 
       <View style={{
-            position: "absolute", width: 80, height: "30%", bottom: "50%", right: "5%", transform: [{ translateY: "50%" }], backgroundColor: "#FFF", borderRadius: 14
-            , shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.35,
-            shadowRadius: 4.65,
+            position: "absolute", width: 80, height: 270, bottom: 35+100, right: "5%", borderRadius: 14,
             flex: 1,
-            paddingTop: 15,
-            paddingBottom: 15,
             flexDirection: "column",
             justifyContent: "space-around",
             alignItems: "center",
             display: "flex"
         }}>
-            <GearIcon onPress={() => {}} style={{height: 40, width: 40}} fill={"#000000"}/>
-            <BusIcon onPress={() => {}} style={{height: 40, width: 40}} fill={"#000000"}/>
-            <BuildingIcon onPress={() => {}} style={{height: 40, width: 40}} fill={"#000000"}/>
+          <View style={{
+            position: "absolute", width: 80, height: 80, bottom: 190, backgroundColor: "#FFF", borderRadius: 14,
+            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
+          }}>
+            <GearIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          </View>
+
+          <View style={{
+            position: "absolute", width: 80, height: 80, bottom: 95, backgroundColor: "#FFF", borderRadius: 14,
+            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
+          }}>
+            <BusIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          </View>
+
+          <View style={{
+            position: "absolute", width: 80, height: 80, bottom: 0, backgroundColor: "#FFF", borderRadius: 14,
+            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
+          }}>
+            <BuildingIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          </View>
+          
+          
+          
         </View>
     </View>
   );
