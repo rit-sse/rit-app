@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleProp, ViewStyle } from "react-native";
 import Map from "./map/Map";
 import { WebviewLeafletMessage } from 'react-native-leaflet-view';
 
@@ -10,41 +10,35 @@ function onMapMessage(message: WebviewLeafletMessage) {
     return;
 }
 
+const buttonWidth = 70;
+const buttonSpacing = 15;
+const buttonSizeStyle = {height: 0.65*buttonWidth, width: 0.65*buttonWidth};
+
+const allButtonStyling:StyleProp<ViewStyle> = {
+  position: "absolute", width: buttonWidth, height: buttonWidth,
+  backgroundColor: "#FFF", borderRadius: 14, justifyContent: "center", alignItems: "center"
+};
+
 export default function map() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Map onMapMessage={onMapMessage}/>
 
       <View style={{
-            position: "absolute", width: 80, height: 270, bottom: 35+100, right: "5%", borderRadius: 14,
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "space-around",
-            alignItems: "center",
-            display: "flex"
+          position: "absolute", bottom: 35+80+buttonSpacing, right: "5%",
+          width: buttonWidth, height: 3.0*buttonWidth+2.0*buttonSpacing
         }}>
-          <View style={{
-            position: "absolute", width: 80, height: 80, bottom: 190, backgroundColor: "#FFF", borderRadius: 14,
-            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
-          }}>
-            <GearIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          <View style={Object.assign({bottom: 2.0*(buttonWidth+buttonSpacing)}, allButtonStyling)}>
+            <GearIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
           </View>
 
-          <View style={{
-            position: "absolute", width: 80, height: 80, bottom: 95, backgroundColor: "#FFF", borderRadius: 14,
-            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
-          }}>
-            <BusIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          <View style={Object.assign({bottom: buttonWidth+buttonSpacing}, allButtonStyling)}>
+            <BusIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
           </View>
 
-          <View style={{
-            position: "absolute", width: 80, height: 80, bottom: 0, backgroundColor: "#FFF", borderRadius: 14,
-            flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", display: "flex"
-          }}>
-            <BuildingIcon onPress={() => {}} style={{height: 50, width: 50}} fill={"#000000"}/>
+          <View style={Object.assign({bottom: 0}, allButtonStyling)}>
+            <BuildingIcon onPress={() => {}} style={buttonSizeStyle} fill={"#000000"}/>
           </View>
-          
-          
           
         </View>
     </View>
