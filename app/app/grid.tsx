@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, FlatList, SectionList, StyleSheet, Image } from "react-native";
+import { View, Text, FlatList, SectionList, StyleSheet, Image, Button, Pressable } from "react-native";
 
 
-// <a target="_blank" href="https://icons8.com/icon/XkPsmwSq30hf/hamburger">Hamburger</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 const DATA = [
     'Pizza', 'Burger', 'Risotto',
     'French Fries', 'Onion Rings', 'Fried Shrimps',
@@ -10,31 +9,59 @@ const DATA = [
     'Cheese Cake', 'Ice Cream'
 ];
 
+// <a target="_blank" href="https://icons8.com/icon/XkPsmwSq30hf/hamburger">Hamburger</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 const IMAGE_DATA = [
-  { id: '1', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '2', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '3', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '4', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '5', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '6', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '7', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '8', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '9', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
-  { id: '10', source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food" },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#82acff" },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#82ffb2"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a"  },
 
 ]
 
 
 const styles = StyleSheet.create({
   container: {
-    width: 75,
+    width: 70,
     margin: 5,
     marginBottom: 25,
-    aspectRatio: 1, // Optional: makes items perfect squares
+    height: 70
   },
   header: {
-    height: '15%',
+    height: '5%',
     fontSize: 32,
+  },
+  footer: {
+    height: '18%',
   },
   itemContainer: {
     backgroundColor: '#82acff',
@@ -46,8 +73,6 @@ const styles = StyleSheet.create({
     margin: 'auto',
     textAlign: 'center',
     justifyContent: 'center',
-    height: '80%',
-    width: '80%',
   },
   itemText: {
     margin: 'auto',
@@ -59,6 +84,10 @@ const styles = StyleSheet.create({
 
 });
 
+function onPressFunction(){
+  return null;
+}
+
 export default function grid() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -66,13 +95,30 @@ export default function grid() {
       <FlatList
         data={IMAGE_DATA}
         numColumns={4}
-        keyExtractor={(item) => item.id}
+        style={{width: '100%', paddingLeft: 20, paddingRight: 20}}
 
         renderItem={({item}) => ( // renders each quick grid item with its (48x48) icon and text
-          <View style={styles.container}>
-            <View style={styles.itemContainer}> 
+          <View 
+            style={styles.container}
+            // onPress={onPressFunction}
+            // style={({pressed}) => [
+            // {
+            //   backgroundColor: pressed ? 'rgba(0, 0, 0, 0.1)' : 'white',
+            // },]
+            >
+            <Pressable 
+              onPress={onPressFunction}
+              style={({pressed}) => [
+              {
+                opacity: pressed ? 0.4 : 1,
+              },
+              styles.itemContainer, 
+              {backgroundColor: item.bgColorHex}
+            ]}
+             /* style={[styles.itemContainer, {backgroundColor: item.bgColorHex}]} */
+             > 
               <Image source={item.source} style={styles.itemImage}></Image>
-            </View>
+            </Pressable>
             <Text style={styles.itemText}>
               {item.name}
             </Text>
@@ -82,6 +128,7 @@ export default function grid() {
         //   <Text style={styles.header}>{title}</Text>
         // )}
       />
+      <View style={styles.footer}></View>
     </View>
   );
 }
