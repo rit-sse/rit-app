@@ -18,7 +18,11 @@ const iconStyle = {height: 0.65*buttonWidth, width: 0.65*buttonWidth};
 
 const allButtonStyling:StyleProp<ViewStyle> = {
   position: "absolute", width: buttonWidth, height: buttonWidth,
-  backgroundColor: "#FFF", borderRadius: 14, justifyContent: "center", alignItems: "center"
+  backgroundColor: "#FFF", borderRadius: 14, justifyContent: "center", alignItems: "center",
+  shadowColor:"#000",
+  shadowRadius:3.84,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 5,
 };
 
 export default function map() {
