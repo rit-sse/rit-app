@@ -1,6 +1,8 @@
-import { View, Text, StyleProp, ViewStyle } from "react-native";
+import React, {useState} from 'react';
+import { View, Text, StyleProp, ViewStyle} from "react-native";
 import { WebviewLeafletMessage } from 'react-native-leaflet-view';
 import Map from "./map/Map";
+import DragUp from "./DragUp";
 
 import GearIcon from "../components/svgs/map/GearIcon";
 import BusIcon from "../components/svgs/map/BusIcon";
@@ -20,25 +22,34 @@ const allButtonStyling:StyleProp<ViewStyle> = {
 };
 
 export default function map() {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Map onMapMessage={onMapMessage}/>
 
       <View style={{position: "absolute", bottom: 35+80+buttonSpacing, right: "5%",
       width: buttonWidth, height: 3.0*buttonWidth+2.0*buttonSpacing}}>
-          <View style={Object.assign({bottom: 2.0*(buttonWidth+buttonSpacing)}, allButtonStyling)}>
+          <View style={[{bottom: 2.0*(buttonWidth+buttonSpacing)}, allButtonStyling]}>
             <GearIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
           </View>
 
-          <View style={Object.assign({bottom: buttonWidth+buttonSpacing}, allButtonStyling)}>
+          <View style={[{bottom: buttonWidth+buttonSpacing}, allButtonStyling]}>
             <BusIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
           </View>
 
-          <View style={Object.assign({bottom: 0}, allButtonStyling)}>
-            <BuildingIcon onPress={() => {}} style={iconStyle} fill={"#000"}/>
+          <View style={[{bottom: 0}, allButtonStyling]}>
+            <BuildingIcon onPress={() => {setModalVisible(true)}} style={iconStyle} fill={"#000"}/>
           </View>
           
         </View>
+
+        <DragUp getVisible={()=>{return modalVisible}} setVisible={setModalVisible}>
+          <Text style={{fontSize: 20, fontWeight: 'bold',textAlign:'left'}}>
+            Buildings
+          </Text>
+        </DragUp>
+
     </View>
   );
 }
