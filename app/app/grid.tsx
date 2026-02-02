@@ -98,14 +98,7 @@ export default function grid() {
         style={{width: '100%', paddingLeft: 20, paddingRight: 20}}
 
         renderItem={({item}) => ( // renders each quick grid item with its (48x48) icon and text
-          <View 
-            style={styles.container}
-            // onPress={onPressFunction}
-            // style={({pressed}) => [
-            // {
-            //   backgroundColor: pressed ? 'rgba(0, 0, 0, 0.1)' : 'white',
-            // },]
-            >
+          <View style={styles.container}>
             <Pressable 
               onPress={onPressFunction}
               style={({pressed}) => [
@@ -114,19 +107,27 @@ export default function grid() {
               },
               styles.itemContainer, 
               {backgroundColor: item.bgColorHex}
-            ]}
-             /* style={[styles.itemContainer, {backgroundColor: item.bgColorHex}]} */
+              ]}
+              hitSlop={{
+                top: 5,
+                left: 5,
+                right: 5,
+                bottom: 25,
+              }}
+              pressRetentionOffset={{
+                top: 5,
+                left: 5,
+                right: 5,
+                bottom: 25,
+              }}
              > 
               <Image source={item.source} style={styles.itemImage}></Image>
             </Pressable>
-            <Text style={styles.itemText}>
+            <Text style={[styles.itemText, {zIndex: -1}]}>
               {item.name}
             </Text>
           </View>
         )}
-        // renderSectionHeader={({section: {title}}) => (
-        //   <Text style={styles.header}>{title}</Text>
-        // )}
       />
       <View style={styles.footer}></View>
     </View>
