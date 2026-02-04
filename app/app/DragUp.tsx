@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     height:"50%"
   },
   button: {
+    position:'absolute',
     borderRadius: 20,
     padding: 10,
     elevation: 2,
