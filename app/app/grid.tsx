@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, FlatList, SectionList, StyleSheet, Image, Button, Pressable } from "react-native";
+import { View, Text, FlatList, SectionList, StyleSheet, Image, Button, Pressable, Linking } from "react-native";
 
+import { RelativePathString, useRouter } from "expo-router";
 
 const DATA = [
     'Pizza', 'Burger', 'Risotto',
@@ -11,8 +12,8 @@ const DATA = [
 
 // <a target="_blank" href="https://icons8.com/icon/XkPsmwSq30hf/hamburger">Hamburger</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 const IMAGE_DATA = [
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#82acff", link: "PLACEHOLDER" },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#82ffb2", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "YouTube", bgColorHex: "#82acff", link: "https://www.youtube.com/"  },
+  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Map Page", bgColorHex: "#82ffb2", link: "map"  },
   {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
   {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
   {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
@@ -90,8 +91,29 @@ const styles = StyleSheet.create({
  * @param link 
  * @returns null
  */
-function openLink(link: string){
-  return null;
+async function openLink(link: string){
+  if(link.includes("http")){ // open a website through a URL
+    // Check if the device can open the URL
+    const supported = await Linking.canOpenURL(link);
+
+    if (supported) {
+      // Open the URL in the default browser
+      await Linking.openURL(link);
+    } else {
+      console.log("This device does not know how to open the URI: " + link);
+    }
+  }
+  else{ // switch screens to another screen on this app
+    const routeNavigator = useRouter();
+    // let setType = link === "/" ? "/home" : link;
+    // if(pageWeights[setType.substring(1)] < pageWeights[onScreen]) {
+    //     setAnimationType("slide_from_left");
+    // } else {
+    //     setAnimationType("slide_from_right");
+    // }
+    routeNavigator.replace(link as RelativePathString);
+  }
+  
 }
 
 export default function grid() {
@@ -106,7 +128,7 @@ export default function grid() {
         renderItem={({item}) => ( // renders each quick grid item with its (48x48) icon and text
           <View style={styles.container}>
             <Pressable 
-              onPress={openLink(item.link)}
+              onPress={() => openLink(item.link)}
               style={({pressed}) => [
               {
                 opacity: pressed ? 0.4 : 1,
