@@ -3,6 +3,16 @@ import { View, Text, FlatList, SectionList, StyleSheet, Image, Button, Pressable
 
 import { RelativePathString, useRouter } from "expo-router";
 
+/**
+ * Quick Grid section of the app
+ * 
+ * Last Updated: 2/4/2026
+ * 
+ * Edited by:
+ * 
+ * 
+ */
+
 const DATA = [
     'Pizza', 'Burger', 'Risotto',
     'French Fries', 'Onion Rings', 'Fried Shrimps',
@@ -104,6 +114,7 @@ async function openLink(link: string){
     }
   }
   else{ // switch screens to another screen on this app
+    //TODO: make linking to other pages in the app to work
     const routeNavigator = useRouter();
     // let setType = link === "/" ? "/home" : link;
     // if(pageWeights[setType.substring(1)] < pageWeights[onScreen]) {
