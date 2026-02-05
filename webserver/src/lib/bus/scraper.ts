@@ -2,6 +2,21 @@ import * as cheerio from 'cheerio';
 import {CheerioAPI} from 'cheerio';
 import type {ResidenceSchedule} from '../../types/bus';
 
+/**
+ * Scrapes bus schedule data from RIT's campus shuttles webpage.
+ *
+ * Extracts residence locations and their associated bus routes from the HTML table
+ * on https://www.rit.edu/parking/campus-shuttles. Each residence may have multiple
+ * routes with different schedules.
+ *
+ * @returns Promise resolving to an array of residence schedules, where each contains:
+ *   - name: The residence location (e.g., "Global Village", "Park Point")
+ *   - routes: Array of route objects containing:
+ *     - rId: Route ID number extracted from route text
+ *     - routeName: Name of the shuttle route
+ *     - timeRange: Operating hours (raw format from website)
+ *     - days: Days of operation (raw format from website)
+ */
 export async function scrapeSchedules(): Promise<ResidenceSchedule[]> {
     const scraper: Response = await fetch("https://www.rit.edu/parking/campus-shuttles", {
         headers: {

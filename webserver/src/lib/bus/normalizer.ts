@@ -1,14 +1,35 @@
 import type { ResidenceSchedule, Route } from '../../types/bus';
 
+/**
+ * Normalized version of a Route with standardized formatting
+ */
 export interface NormalizedRoute extends Route {
     timeRange: string;
     days: string;
 }
 
+/**
+ * Normalized version of ResidenceSchedule with standardized route formatting
+ */
 export interface NormalizedResidenceSchedule extends ResidenceSchedule {
     routes: NormalizedRoute[];
 }
 
+/**
+ * Normalizes raw scraped schedule data to ensure consistent formatting.
+ *
+ * Takes the raw output from scrapeSchedules() and standardizes:
+ * - Time formatting (ensures consistent spacing, AM/PM notation, and padding)
+ * - Whitespace normalization across all text fields
+ *
+ * @param schedules - Raw residence schedules from the scraper
+ * @returns Normalized schedules with consistent formatting
+ *
+ * @example
+ * const raw = await scrapeSchedules();
+ * const normalized = normalizeSchedules(raw);
+ * // "7 a.m.- 11:46 p.m." becomes "7:00 a.m. - 11:46 p.m."
+ */
 export function normalizeSchedules(schedules: ResidenceSchedule[]): NormalizedResidenceSchedule[] {
     return schedules.map(schedule => ({
         ...schedule,
@@ -16,6 +37,9 @@ export function normalizeSchedules(schedules: ResidenceSchedule[]): NormalizedRe
     }));
 }
 
+/**
+ * Normalizes a single route's time range and days fields
+ */
 function normalizeRoute(route: Route): NormalizedRoute {
     return {
         ...route,
@@ -24,6 +48,13 @@ function normalizeRoute(route: Route): NormalizedRoute {
     };
 }
 
+/**
+ * Normalizes time range strings to a consistent format with consistent spacing and HH:MM accross all times.
+ *
+ *
+ * @param timeRange - Raw time range string from scraper
+ * @returns Normalized time range string
+ */
 function normalizeTimeRange(timeRange: string): string {
     return timeRange
         .replace(/\s*-\s*/g, ' - ')
@@ -36,6 +67,12 @@ function normalizeTimeRange(timeRange: string): string {
         .trim();
 }
 
+/**
+ * Normalizes day strings by collapsing multiple spaces.
+ *
+ * @param days - Raw days string from scraper
+ * @returns Normalized days string
+ */
 function normalizeDays(days: string): string {
     return days
         .replace(/\s+/g, ' ')

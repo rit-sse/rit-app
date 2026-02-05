@@ -77,3 +77,27 @@ Returns a JSON Object with a structure
     }
 }
 ```
+## Bus
+`GET /bus`
+
+Returns RIT campus shuttle schedules organized by residence location. Caches into PostgreSQL, with each request initiating a check on the cacheTime. If `cacheTime` > 1 hour, then the cache is refreshed.
+
+**No parameters**
+
+Returns a JSON Object with a structure
+```ts
+{
+    cachetime: number,
+    data: {
+        data: {
+            name: string,
+            routes: {
+                rId: string,
+                routeName: string,
+                timeRange: string,
+                days: string
+            }[]
+        }[]
+    }
+}
+```
