@@ -13,49 +13,43 @@ import { RelativePathString, useRouter } from "expo-router";
  * 
  */
 
-const DATA = [
-    'Pizza', 'Burger', 'Risotto',
-    'French Fries', 'Onion Rings', 'Fried Shrimps',
-    'Water', 'Coke', 'Beer',
-    'Cheese Cake', 'Ice Cream'
-];
 
-// <a target="_blank" href="https://icons8.com/icon/XkPsmwSq30hf/hamburger">Hamburger</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+// Icons sourced from https://lucide.dev/icons
 const IMAGE_DATA = [
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "YouTube", bgColorHex: "#82acff", link: "https://www.youtube.com/"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Map Page", bgColorHex: "#82ffb2", link: "map"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
-  {source: require('..\\assets\\icons\\icons8-hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\square-play-48.png'), name: "YouTube", bgColorHex: "#cd0000", link: "https://www.youtube.com/"  },
+  {source: require('..\\assets\\icons\\map-48.png'), name: "Map", bgColorHex: "#82ffb2", link: "map"  },
+  {source: require('..\\assets\\icons\\calendar-48.png'), name: "Calendar", bgColorHex: "#fff382", link: "calendar"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#82acff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#ff0000", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
+  {source: require('..\\assets\\icons\\hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
 
 ]
 
@@ -95,39 +89,38 @@ const styles = StyleSheet.create({
 
 });
 
-/**
- * opens a given link
- * 
- * @param link 
- * @returns null
- */
-async function openLink(link: string){
-  if(link.includes("http")){ // open a website through a URL
-    // Check if the device can open the URL
-    const supported = await Linking.canOpenURL(link);
 
-    if (supported) {
-      // Open the URL in the default browser
-      await Linking.openURL(link);
-    } else {
-      console.log("This device does not know how to open the URI: " + link);
-    }
-  }
-  else{ // switch screens to another screen on this app
-    //TODO: make linking to other pages in the app to work
-    const routeNavigator = useRouter();
-    // let setType = link === "/" ? "/home" : link;
-    // if(pageWeights[setType.substring(1)] < pageWeights[onScreen]) {
-    //     setAnimationType("slide_from_left");
-    // } else {
-    //     setAnimationType("slide_from_right");
-    // }
-    routeNavigator.replace(link as RelativePathString);
-  }
-  
-}
 
 export default function grid() {
+  const routeNavigator = useRouter();
+
+  /**
+   * opens a given link
+   * 
+   * @param link 
+   * @returns null
+   */
+  async function openLink(link: string){
+    if(link === "PLACEHOLDER"){ // account for placeholders
+      return null;
+    }
+
+    if(link.includes("http")){ // open a website through a URL
+      // Check if the device can open the URL
+      const supported = await Linking.canOpenURL(link);
+
+      if (supported) {
+        // Open the URL in the default browser
+        await Linking.openURL(link);
+      } else {
+        console.log("This device does not know how to open the URI: " + link);
+      }
+    }
+    else{ // switch screens to another screen on this app
+      routeNavigator.replace(link as RelativePathString);
+    }
+  }
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <View style={styles.header}></View>
