@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { scrapeSchedules } from '../../lib/bus/scraper';
-import { NormalizedResidenceSchedule, normalizeSchedules } from "../../lib/bus/normalizer";
-import { ResidenceSchedule } from "../../types/bus";
+import { normalizeSchedules } from "../../lib/bus/normalizer";
+import { NormalizedResidenceSchedule, ResidenceSchedule } from "../../types/bus";
 import { ScrapeCache } from "../../db/cache";
 
 const scrapeCache = new ScrapeCache();

@@ -1,19 +1,5 @@
-import type { ResidenceSchedule, Route } from '../../types/bus';
+import type {NormalizedResidenceSchedule, NormalizedRoute, ResidenceSchedule, Route } from '../../types/bus';
 
-/**
- * Normalized version of a Route with standardized formatting
- */
-export interface NormalizedRoute extends Route {
-    timeRange: string;
-    days: string;
-}
-
-/**
- * Normalized version of ResidenceSchedule with standardized route formatting
- */
-export interface NormalizedResidenceSchedule extends ResidenceSchedule {
-    routes: NormalizedRoute[];
-}
 
 /**
  * Normalizes raw scraped schedule data to ensure consistent formatting.
