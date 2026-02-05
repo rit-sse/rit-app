@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
-import { scrapeSchedules } from '../../lib/bus/scraper';
-import { normalizeSchedules } from "../../lib/bus/normalizer";
-import { NormalizedResidenceSchedule, ResidenceSchedule } from "../../types/bus";
-import { ScrapeCache } from "../../db/cache";
+import {Request, Response} from "express";
+import {scrapeRouteDetails, scrapeRouteMetadata} from '../../lib/bus/scraper';
+import {RouteSchedule} from "../../types/bus";
+import {ScrapeCache} from "../../db/cache";
 
 const scrapeCache = new ScrapeCache();
 
@@ -38,24 +37,45 @@ const scrapeCache = new ScrapeCache();
  *
  * @returns 200 with schedule data, or 500 on error
  */
+// export async function GET(req: Request, res: Response) {
+//     try {
+//         // Check if cache exists and is recent (within 1 hour)
+//         if (await scrapeCache.inCache("bus_schedules") && !(await scrapeCache.isExpired("bus_schedules"))) {
+//             res.send(await scrapeCache.getCache("bus_schedules"));
+//             return;
+//         }
+//
+//         // Otherwise, scrape new data and update cache
+//         const data: ResidenceSchedule[] = await scrapeSchedules();
+//         const normalized: NormalizedResidenceSchedule[] = normalizeSchedules(data);
+//
+//         await scrapeCache.setCache("bus_schedules", {
+//             data: normalized
+//         });
+//
+//         res.send({
+//             data: normalized,
+//         });
+//     } catch (err) {
+//         res.status(500).send({
+//             error: "Failed to fetch bus schedules",
+//             message: err instanceof Error ? err.message : String(err)
+//         });
+//     }
+// }
+
 export async function GET(req: Request, res: Response) {
     try {
-        // Check if cache exists and is recent (within 1 hour)
-        if (await scrapeCache.inCache("bus_schedules") && !(await scrapeCache.isExpired("bus_schedules"))) {
-            res.send(await scrapeCache.getCache("bus_schedules"));
-            return;
+        const routeMetadata = await scrapeRouteMetadata();
+        const routes: RouteSchedule[] = [];
+
+        for (const metadata of routeMetadata) {
+            const route = await scrapeRouteDetails(metadata);
+            routes.push(route);
         }
 
-        // Otherwise, scrape new data and update cache
-        const data: ResidenceSchedule[] = await scrapeSchedules();
-        const normalized: NormalizedResidenceSchedule[] = normalizeSchedules(data);
-
-        await scrapeCache.setCache("bus_schedules", {
-            data: normalized
-        });
-
         res.send({
-            data: normalized,
+            data: routes
         });
     } catch (err) {
         res.status(500).send({
