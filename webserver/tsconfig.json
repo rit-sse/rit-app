@@ -115,6 +115,6 @@
   "exclude": [
     "dist",
     "prisma",
-    "src/prisma.config.ts"
+    "prisma.config.ts"
   ]
 }
