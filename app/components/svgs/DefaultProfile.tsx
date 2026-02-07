@@ -1,12 +1,13 @@
 import * as React from "react";
 import Svg, { Mask, Rect, G, Path } from "react-native-svg";
-const SVGComponent = (props: {onPress?: () => void, style?: any}) => (
+const SVGComponent = (props: {onPress?: () => void, style?: any, setRef?: React.Ref<Svg> }) => (
   <Svg
     viewBox="0 0 36 36"
     fill="none"
     role="img"
     onPress={props.onPress}
     style={props.style}
+    ref={props.setRef}
   >
     <Mask
       id="_r_44_"

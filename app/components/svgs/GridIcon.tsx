@@ -1,10 +1,11 @@
 import * as React from "react";
 import Svg, { G, Defs, Path } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: title, desc */
-const SVGComponent = (props: {fill?: string, onPress?: () => void, style?: any}) => (
+const SVGComponent = (props: {fill?: string, onPress?: () => void, style?: any, setRef?: React.Ref<Svg> }) => (
   <Svg
     viewBox="0 -0.5 21 21"
     {...props}
+    ref={props.setRef}
   >
     <G id="SVGRepo_bgCarrier" strokeWidth={0} />
     <G
