@@ -1,4 +1,5 @@
 import { Button, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import * as GLOBAL from "./globals";
@@ -12,6 +13,7 @@ const draggableExample = [
 ]
 
 export default function Index() {
+    const routeNavigator = useRouter();
   const [scrollOffset, setscrollOffset] = useState(0);
   const [hiding, setHiding] = useState(false);
 
@@ -53,6 +55,7 @@ export default function Index() {
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>debug</Text>
           <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.default.navbar?.setState({ navBarVisibility: false })}} />
           <Button title={ "Nav Bar Hiding Animation"} onPress={() => {GLOBAL.default.showNavbar?.(!hiding); setHiding(!hiding);}} />
+          <Button title={ "Goto Dining Search"} onPress={() => {routeNavigator.push("/dining/search")}} />
         </View>
     </View>
   );
