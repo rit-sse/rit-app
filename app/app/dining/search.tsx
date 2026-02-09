@@ -10,25 +10,29 @@ export default function DiningSearch() {
     const navigator = useRouter();
 
     const [restaurants, setRestaurantsData] = useState([]);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         fetch("http://localhost:3000/dining")
             .then(response => response.json())
-            .then(data => setRestaurantsData(data["data"]["data"]))
+            .then(data => {
+                setRestaurantsData(data["data"]["data"]);
+                setLoaded(true);
+            })
             .catch(error => console.error("Error fetching restaurant data:", error));
     }, []);
 
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingTop: 60, backgroundColor: "white"}}>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingTop: 60, backgroundColor: "white" }}>
             <View style={{ width: "90%", height: 70, alignItems: "center", flexDirection: "row" }} >
-                <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => {navigator.back()}}>
-                    <BackChevron fill="#000000" style={{ width: 40, height: 40}} />
+                <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { navigator.back() }}>
+                    <BackChevron fill="#000000" style={{ width: 40, height: 40 }} />
                     <Text style={{ paddingLeft: 10, fontSize: 25, fontWeight: "bold" }}>Dining</Text>
                 </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ width: Dimensions.get("screen").width, alignItems: "center", paddingBottom: 150 }}>
                 {
-                    restaurants ? restaurants.map((restaurant: any) => (
+                    loaded ? restaurants.map((restaurant: any) => (
                         <RestaurantContainer key={restaurant.id} restaurantData={restaurant} />
                     )) : (
                         <>
