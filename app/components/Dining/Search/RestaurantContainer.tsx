@@ -1,15 +1,19 @@
-import { View, Image, Text } from "react-native"
-
+import { View, Image, Text, TouchableOpacity } from "react-native"
+import { useRouter } from "expo-router";
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function RestaurantContainer(props: {restaurantData: any}) {
-    
+    const router = useRouter();
     const restaurantHours = props.restaurantData["hoursOfOperations"][daysOfWeek[new Date().getDay() - 1]];
     const isOpenToday = restaurantHours !== "Closed";
     const openUntil = restaurantHours.split("-")[1]?.trim();
 
+    const gotoRestaurantPage = () => {
+        router.navigate(`/dining/restaurant?restaurantID=${props.restaurantData.id}&restaurantName=${encodeURIComponent(props.restaurantData.name)}`);
+    }
+
     return (
-        <View style={{width: "90%", height: 120, marginBottom: 20, alignItems: "center", flexDirection: "row"}}>
+        <TouchableOpacity style={{width: "90%", height: 120, marginBottom: 20, alignItems: "center", flexDirection: "row"}} onPress={gotoRestaurantPage}>
             <Image source={{uri: props.restaurantData.image}} style={{height:120, width:120, borderRadius: 5}} />
             <View style={{height: "80%", width:"100%", flex:1, flexWrap: 'wrap', paddingLeft: 15}}>
                 <Text style={{fontSize: 18, fontWeight: "bold", width:200}} numberOfLines={2} ellipsizeMode="tail">{props.restaurantData.name}</Text>
@@ -23,6 +27,6 @@ export default function RestaurantContainer(props: {restaurantData: any}) {
                     }
                 </Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
