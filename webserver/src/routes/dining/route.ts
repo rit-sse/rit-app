@@ -22,12 +22,13 @@ const types = ["restaurant", "market", "coffee", "grocery"];
 const prisma = getPrisma();
 
 const scrapeCache = new ScrapeCache();
+const DINING_DEBUG = true
 
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
 
     // // If cache exists and is recent (within 1 hour), return cached data
-    if (await scrapeCache.inCache("dining_locations") && !(await scrapeCache.isExpired("dining_locations"))) {
+    if (await scrapeCache.inCache("dining_locations") && !(await scrapeCache.isExpired("dining_locations")) || DINING_DEBUG) {
         res.send(await scrapeCache.getCache("dining_locations"));
         return;
     }

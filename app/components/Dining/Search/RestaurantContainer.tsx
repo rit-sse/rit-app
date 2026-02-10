@@ -2,7 +2,20 @@ import { View, Image, Text, TouchableOpacity } from "react-native"
 import { useRouter } from "expo-router";
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export default function RestaurantContainer(props: {restaurantData: any}) {
+const typeRedef: {[key: string]: string} = {
+    "restaurant": "Restaurant",
+    "coffee": "Cafe",
+    "grocery": "Market",
+}
+
+export default function RestaurantContainer(props: {restaurantData: {
+    id: string,
+    name: string,
+    image: string,
+    type: string,
+    open: boolean,
+    hoursOfOperations: { [day: string]: string }
+}}) {
     const router = useRouter();
     const restaurantHours = props.restaurantData["hoursOfOperations"][daysOfWeek[new Date().getDay() - 1]];
     const isOpenToday = restaurantHours !== "Closed";
@@ -26,6 +39,7 @@ export default function RestaurantContainer(props: {restaurantData: any}) {
                         : null
                     }
                 </Text>
+                <Text style={{fontSize: 17}}>{typeRedef[props.restaurantData.type]}</Text>
             </View>
         </TouchableOpacity>
     )

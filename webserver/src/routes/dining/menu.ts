@@ -120,11 +120,13 @@ function createMenuAPIURL(store: string, mealPeriodId: number): string {
     return url;
 }
 
+const MENU_DEBUG = true;
+
 export async function GET(req: Request, res: Response) {
     if (req.query["store"] && VALIDSTORES.includes(req.query["store"].toString())) {
         let inCache = await scrapeCache.inCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
         let isExpired = await scrapeCache.isExpired(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
-        if (inCache && !isExpired) {
+        if ((inCache && !isExpired) || MENU_DEBUG) {
             res.send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
             return;
         }
