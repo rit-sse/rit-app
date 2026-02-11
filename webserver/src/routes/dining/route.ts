@@ -12,6 +12,7 @@ interface RestaurantType {
     code: string,
     link: string,
     image: string,
+    bannerImage: string,
     busyLevel: number | null,
     hoursOfOperations?: { [day: string]: string[] } | null
 }
@@ -68,7 +69,8 @@ export async function GET(req: Request, res: Response) {
                 code: link?.split("location/")[1] || "",
                 image: "https://rit.edu" + imageURL,
                 busyLevel: busyLevel ? parseInt(busyLevel) : null,
-                link: "https://rit.edu" + link || ""
+                link: "https://rit.edu" + link || "",
+                bannerImage: ""
             });
         })
     }
@@ -101,6 +103,13 @@ export async function GET(req: Request, res: Response) {
                     }
                 })
             });
+            // restaurants[i].bannerImage = $storeScrape("banner-item-2").find("img").map((x, el) => $storeScrape(el).attr("src")).get()[0] || "";
+            $storeScrape("#banner-item-2").map((x, el) => {
+                const src = $storeScrape(el).find("img").attr("src");
+                if(src) {
+                    restaurants[i].bannerImage = "https://rit.edu" + src;
+                }
+            })
         }
     }
 

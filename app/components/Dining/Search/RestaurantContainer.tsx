@@ -13,6 +13,7 @@ export default function RestaurantContainer(props: {
         id: string,
         name: string,
         image: string,
+        bannerImage: string,
         type: string,
         open: boolean,
         hoursOfOperations: { [day: string]: string[] }
@@ -59,7 +60,7 @@ export default function RestaurantContainer(props: {
     }
 
     const gotoRestaurantPage = () => {
-        router.navigate(`/dining/restaurant?restaurantID=${props.restaurantData.id}&restaurantName=${encodeURIComponent(props.restaurantData.name)}`);
+        router.navigate(`/dining/restaurant?restaurantID=${props.restaurantData.id}&restaurantName=${encodeURIComponent(props.restaurantData.name)}&restaurantIcon=${encodeURIComponent(props.restaurantData.image)}&bannerImage=${encodeURIComponent(props.restaurantData.bannerImage)}`);
     }
 
     return (
