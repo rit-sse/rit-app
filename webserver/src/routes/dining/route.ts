@@ -64,7 +64,7 @@ export async function GET(req: Request, res: Response) {
                 id: onId++,
                 name: name.trim(),
                 type: t,
-                open: status.startsWith("Open"),
+                open: status.startsWith("Open") || status.startsWith("Closing Soon"),
                 code: link?.split("location/")[1] || "",
                 image: "https://rit.edu" + imageURL,
                 busyLevel: busyLevel ? parseInt(busyLevel) : null,
