@@ -57,16 +57,16 @@ const IMAGE_DATA = [
 const styles = StyleSheet.create({
   container: {
     width: 70,
+    height: 70,
     margin: 5,
     marginBottom: 25,
-    height: 70
   },
   header: {
-    height: '5%',
+    height: 40,
     fontSize: 32,
   },
   footer: {
-    height: '18%',
+    height: 140,
   },
   itemContainer: {
     backgroundColor: '#82acff',
