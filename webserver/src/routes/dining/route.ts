@@ -13,7 +13,7 @@ interface RestaurantType {
     link: string,
     image: string,
     busyLevel: number | null,
-    hoursOfOperations?: { [day: string]: string } | null
+    hoursOfOperations?: { [day: string]: string[] } | null
 }
 // Define the dining types to scrape
 const types = ["restaurant", "market", "coffee", "grocery"];
@@ -22,7 +22,7 @@ const types = ["restaurant", "market", "coffee", "grocery"];
 const prisma = getPrisma();
 
 const scrapeCache = new ScrapeCache();
-const DINING_DEBUG = true
+const DINING_DEBUG = false
 
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
@@ -89,12 +89,16 @@ export async function GET(req: Request, res: Response) {
             $storeScrape('div[class="week-display"]').map((j, el) => {
                 $(el).find('div[class="day-column"]').map((k, dayEl) => {
                     let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
-                    let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
+                    let hours = $storeScrape(dayEl).find('div[class="day-hours"]').html()?.split("<br>");
+                    console.log(dayName, hours?.map((e) => e.trim()));
                     // Initialize hoursOfOperations object if it doesn't exist for whatever reason (shouldn't happen)
                     if (!r.hoursOfOperations) {
                         r.hoursOfOperations = {};
                     }
-                    r.hoursOfOperations[dayName] = hours;
+                    // r.hoursOfOperations[dayName] = hours;
+                    if(!Object.keys(r.hoursOfOperations).includes(dayName)) {
+                        r.hoursOfOperations[dayName] = hours?.map((e) => e.trim()) || [];
+                    }
                 })
             });
         }
@@ -108,7 +112,5 @@ export async function GET(req: Request, res: Response) {
     });
 
     // Return newly scraped data
-    res.send({
-        data: restaurants
-    });
+    res.send(await scrapeCache.getCache("dining_locations"));
 }
