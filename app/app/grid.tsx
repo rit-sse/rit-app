@@ -6,7 +6,7 @@ import { RelativePathString, useRouter } from "expo-router";
 /**
  * Quick Grid section of the app
  * 
- * Last Updated: 2/4/2026
+ * Last Updated: 2/14/2026
  * 
  * Edited by:
  * 
@@ -19,12 +19,12 @@ const IMAGE_DATA = [
   {source: require('../assets/icons/square-play-48.png'), name: "YouTube", bgColorHex: "#cd0000", link: "https://www.youtube.com/"  },
   {source: require('../assets/icons/map-48.png'), name: "Map", bgColorHex: "#82ffb2", link: "map"  },
   {source: require('../assets/icons/calendar-48.png'), name: "Calendar", bgColorHex: "#fff382", link: "calendar"  },
-  {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
-  {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#ff8282", link: "PLACEHOLDER"  },
+  {source: require('../assets/icons/hamburger-48.png'), name: "SSE", bgColorHex: "#8bb1ff", link: "https://sse.rit.edu/"  },
+  {source: require('../assets/icons/square-play-48.png'), name: "Rick", bgColorHex: "#ff8282", link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#ff00ff", link: "PLACEHOLDER"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#45fff6", link: "PLACEHOLDER"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#82acff", link: "PLACEHOLDER"  },
-  {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#8bb1ff", link: "PLACEHOLDER"  },
+  {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#00c42a", link: "PLACEHOLDER"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#fff382", link: "PLACEHOLDER"  },
   {source: require('../assets/icons/hamburger-48.png'), name: "Food", bgColorHex: "#ffac27", link: "PLACEHOLDER"  },
@@ -56,13 +56,13 @@ const IMAGE_DATA = [
 
 const styles = StyleSheet.create({
   container: {
-    width: 70,
-    height: 70,
+    width: '22%',
+    height: 80,
     margin: 5,
     marginBottom: 25,
   },
   header: {
-    height: 40,
+    height: 50,
     fontSize: 32,
   },
   footer: {
