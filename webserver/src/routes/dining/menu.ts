@@ -120,19 +120,23 @@ function createMenuAPIURL(store: string, mealPeriodId: number): string {
     return url;
 }
 
-const MENU_DEBUG = true;
+const MENU_DEBUG = false;
 
 export async function GET(req: Request, res: Response) {
+    console.log("Received menu request with query:", req.query);
     if (req.query["store"] && VALIDSTORES.includes(req.query["store"].toString())) {
+        console.log("Processing menu request for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
         let inCache = await scrapeCache.inCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
         let isExpired = await scrapeCache.isExpired(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
         if ((inCache && !isExpired) || MENU_DEBUG) {
+            console.log("Serving menu data from cache for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
             res.send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
             return;
         }
 
         let data = await fetch(createMenuAPIURL(req.query["store"].toString(), MENU_CODES[req.query["store"].toString()].mealPeriodIds[req.query["mealPeriod"]?.toString() || "default"]))
         let menuData = (await data.json())["result"][0]["allMenuRecipes"];
+        console.log(data)
 
         let formattedMenu: any[] = [];
 

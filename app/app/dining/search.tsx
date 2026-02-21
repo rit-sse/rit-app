@@ -26,8 +26,8 @@ export default function DiningSearch() {
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingTop: 60, backgroundColor: "white" }}>
             <View style={{ width: "90%", height: 70, alignItems: "center", flexDirection: "row" }} >
                 <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { navigator.back() }}>
-                    <BackChevron fill="#000000" style={{ width: 40, height: 40 }} />
-                    <Text style={{ paddingLeft: 10, fontSize: 25, fontWeight: "bold" }}>Dining</Text>
+                    <BackChevron style={{ width: 40, height: 40 }} color="#000" />
+                    <Text style={{ paddingLeft: 5, fontSize: 25, fontWeight: "bold" }}>Dining</Text>
                 </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={{ width: Dimensions.get("screen").width, alignItems: "center", paddingBottom: 150 }}>
@@ -36,11 +36,9 @@ export default function DiningSearch() {
                         <RestaurantContainer key={restaurant.id} restaurantData={restaurant} />
                     )) : (
                         <>
-                            <RestaurantContainerSkeleton />
-                            <RestaurantContainerSkeleton />
-                            <RestaurantContainerSkeleton />
-                            <RestaurantContainerSkeleton />
-                            <RestaurantContainerSkeleton />
+                            {Array.from({ length: 6 }).map((_, index) => (
+                                <RestaurantContainerSkeleton key={index} style={{ opacity: 1/((index+1)*.6) }}/>
+                            ))}
                         </>
                     )
                 }
