@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
-import { Asset } from "expo-asset";
-import { File } from 'expo-file-system';
-import { LatLng, LeafletView, WebviewLeafletMessage } from 'react-native-leaflet-view';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Alert} from 'react-native';
+import {Asset} from "expo-asset";
+import {File} from 'expo-file-system';
+import {LeafletView, WebviewLeafletMessage} from 'react-native-leaflet-view';
 
 //MAJOR NOTES:
 //this was setup using:

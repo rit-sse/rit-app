@@ -43,14 +43,11 @@ export async function scrapeRouteMetadata(): Promise<RouteMetadata[]> {
         }
     });
 
-    console.log("Found links:", routeLinks.size);
-
     // Now get route metadata from table
     const routesMap = new Map<string, RouteMetadata>(); // Use map to deduplicate by rId
     const table = $("table").first();
 
     if (!table.length) {
-        console.log("No table found on page");
         return [];
     }
 
@@ -93,9 +90,7 @@ export async function scrapeRouteMetadata(): Promise<RouteMetadata[]> {
         }
     });
 
-    const routes = Array.from(routesMap.values());
-    console.log("Found unique routes:", routes.length);
-    return routes;
+    return Array.from(routesMap.values());
 }
 
 /**

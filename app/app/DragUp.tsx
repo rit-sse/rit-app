@@ -1,4 +1,4 @@
-import {Modal, StyleSheet, Text, Pressable, View} from 'react-native';
+import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 
 export default function DragUp({getVisible=()=>{return false},setVisible=(visible:boolean)=>{},children=<></>}) {
   return (
