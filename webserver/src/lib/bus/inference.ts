@@ -1,7 +1,7 @@
 /**
  *
  */
-import {InferredSchedule, InferredStop, RouteSchedule, Stop} from "@/types/bus";
+import {InferredSchedule, InferredStop, RouteSchedule, Stop} from "../../types/bus";
 
 /**
  * Parses a time string in the format "hh:mm am/pm" and returns a `Date` object set to today's date with the specified time.

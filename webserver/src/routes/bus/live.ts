@@ -1,8 +1,6 @@
 import {Request, Response} from "express";
-import {scrapeRouteDetails, scrapeRouteMetadata} from '@/lib/bus/scraper';
-import {InferredSchedule, RouteSchedule} from "@/types/bus";
-import {ScrapeCache} from "@/db/cache";
-import {inferSchedule} from "@/lib/bus/inference";
+import {ScrapeCache} from "../../db/cache";
+import {buildCommonStopSet, getActiveRoutes, getRoutesFromCacheOrScrape} from "../../lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 
@@ -30,34 +28,14 @@ const scrapeCache = new ScrapeCache();
  */
 export async function GET(req: Request, res: Response) {
     try {
-        // Check cache for schedule data
-        let routes: RouteSchedule[];
-
-        if (await scrapeCache.inCache("bus_schedules") && !(await scrapeCache.isExpired("bus_schedules"))) {
-            const cached = await scrapeCache.getCache("bus_schedules");
-            routes = cached.data.data; // Cache structure is { cachetime, data: { data: routes } }
-        } else {
-            // Scrape fresh data
-            const routeMetadata = await scrapeRouteMetadata();
-            routes = [];
-
-            for (const metadata of routeMetadata) {
-                const route = await scrapeRouteDetails(metadata);
-                routes.push(route);
-            }
-
-            // Cache the scraped data
-            await scrapeCache.setCache("bus_schedules", {
-                data: routes
-            });
-        }
-
-        // Run inference on all routes and filter out inactive ones
-        const activeRoutes: InferredSchedule[] = routes.map(route => inferSchedule(route))
-            .filter((inferred): inferred is InferredSchedule => inferred !== null);
+        const routes = await getRoutesFromCacheOrScrape(scrapeCache);
+        const activeRoutes = getActiveRoutes(routes);
+        const activeRouteSchedules = activeRoutes.map((route) => route.route);
+        const commonStops = buildCommonStopSet(activeRouteSchedules);
 
         res.send({
-            data: activeRoutes
+            data: activeRoutes,
+            commonStops,
         });
     } catch (err) {
         res.status(500).send({

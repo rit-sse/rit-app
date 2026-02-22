@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import {CheerioAPI} from 'cheerio';
-import type {Route, RouteSchedule, Stop} from '@/types/bus';
+import type {Route, RouteSchedule, Stop} from '../../types/bus';
 
 
 interface RouteMetadata extends Route {
