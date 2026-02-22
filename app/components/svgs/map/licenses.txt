@@ -1,0 +1,8 @@
+GearIcon
+https://www.svgrepo.com/svg/532244/gear
+
+BusIcon
+https://www.svgrepo.com/svg/533552/bus
+
+BuildingIcon
+https://www.svgrepo.com/svg/533473/buildings

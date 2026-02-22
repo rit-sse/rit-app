@@ -1,16 +1,38 @@
 import {useCallback, useState} from "react";
-import {Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
-import MapView, {Marker} from "react-native-maps";
+import {Pressable, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
+import {WebviewLeafletMessage} from "react-native-leaflet-view";
 import {useFocusEffect} from "@react-navigation/native";
+
+import Map from "./map/Map";
+import DragUp from "./DragUp";
+import GearIcon from "../components/svgs/map/GearIcon";
+import BusIcon from "../components/svgs/map/BusIcon";
+import BuildingIcon from "../components/svgs/map/BuildingIcon";
+
 import {buildApiUrl} from "@/lib/api";
 import {ActiveRoute, RouteLiveSummary} from "@/types/bus";
 
-const RIT_REGION = {
-  latitude: 43.0848,
-  longitude: -77.6742,
-  latitudeDelta: 0.012,
-  longitudeDelta: 0.012,
+const buttonWidth = 70;
+const buttonSpacing = 15;
+const iconStyle = {height: 0.65 * buttonWidth, width: 0.65 * buttonWidth};
+
+const allButtonStyling: StyleProp<ViewStyle> = {
+  position: "absolute",
+  width: buttonWidth,
+  height: buttonWidth,
+  backgroundColor: "#FFF",
+  borderRadius: 14,
+  justifyContent: "center",
+  alignItems: "center",
+  shadowColor: "#000",
+  shadowRadius: 3.84,
+  shadowOffset: {width: 0, height: 2},
+  elevation: 5,
 };
+
+function onMapMessage(message: WebviewLeafletMessage) {
+  return message;
+}
 
 async function fetchActiveRoutes(): Promise<ActiveRoute[]> {
   const response = await fetch(buildApiUrl("/bus/live"));
@@ -39,6 +61,9 @@ export default function MapScreen() {
   const [summary, setSummary] = useState<RouteLiveSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [trackerVisible, setTrackerVisible] = useState(true);
+  const [buildingModalVisible, setBuildingModalVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -108,51 +133,67 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-      <MapView style={styles.map} initialRegion={RIT_REGION}>
-        {summary && (
-          <Marker
-            coordinate={{latitude: summary.marker.lat, longitude: summary.marker.lon}}
-            title={summary.routeName}
-            description={`Coming from ${summary.fromStop}`}
-          />
-        )}
-      </MapView>
+      <Map onMapMessage={onMapMessage} />
 
-      <View style={styles.panel}>
-        <Text style={styles.title}>Shuttle Tracker</Text>
+      <View style={styles.buttonsColumn}>
+        <View style={[{bottom: 2 * (buttonWidth + buttonSpacing)}, allButtonStyling]}>
+          <GearIcon onPress={() => {}} style={iconStyle} fill="#000" />
+        </View>
 
-        {isLoading && <Text style={styles.infoText}>Loading shuttle data...</Text>}
-        {!isLoading && routes.length === 0 && <Text style={styles.infoText}>No active shuttles right now.</Text>}
-        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+        <View style={[{bottom: buttonWidth + buttonSpacing}, allButtonStyling]}>
+          <BusIcon onPress={() => setTrackerVisible((prev) => !prev)} style={iconStyle} fill="#000" />
+        </View>
 
-        {routes.length > 0 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.routeList}>
-            {routes.map((route) => {
-              const isSelected = route.route.rId === selectedRouteId;
-              return (
-                <Pressable
-                  key={route.route.rId}
-                  onPress={() => {
-                    void onRouteSelect(route.route.rId);
-                  }}
-                  style={[styles.routeButton, isSelected && styles.routeButtonSelected]}
-                >
-                  <Text style={[styles.routeButtonText, isSelected && styles.routeButtonTextSelected]}>{route.route.routeName}</Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        )}
-
-        {summary && (
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>{summary.routeName}</Text>
-            <Text style={styles.summaryLine}>Coming from: {summary.fromStop}</Text>
-            <Text style={styles.summaryLine}>Going to: {summary.toStop}</Text>
-            <Text style={styles.summaryLine}>Expected: {summary.etaMinutes} min</Text>
-          </View>
-        )}
+        <View style={[{bottom: 0}, allButtonStyling]}>
+          <BuildingIcon onPress={() => setBuildingModalVisible(true)} style={iconStyle} fill="#000" />
+        </View>
       </View>
+
+      {trackerVisible && (
+        <View style={styles.panel}>
+          <Text style={styles.title}>Shuttle Tracker</Text>
+
+          {isLoading && <Text style={styles.infoText}>Loading shuttle data...</Text>}
+          {!isLoading && routes.length === 0 && <Text style={styles.infoText}>No active shuttles right now.</Text>}
+          {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+
+          {routes.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.routeList}>
+              {routes.map((route) => {
+                const isSelected = route.route.rId === selectedRouteId;
+                return (
+                  <Pressable
+                    key={route.route.rId}
+                    onPress={() => {
+                      void onRouteSelect(route.route.rId);
+                    }}
+                    style={[styles.routeButton, isSelected && styles.routeButtonSelected]}
+                  >
+                    <Text style={[styles.routeButtonText, isSelected && styles.routeButtonTextSelected]}>{route.route.routeName}</Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          )}
+
+          {summary && (
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryTitle}>{summary.routeName}</Text>
+              <Text style={styles.summaryLine}>Coming from: {summary.fromStop}</Text>
+              <Text style={styles.summaryLine}>Going to: {summary.toStop}</Text>
+              <Text style={styles.summaryLine}>Expected: {summary.etaMinutes} min</Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      <DragUp getVisible={() => buildingModalVisible} setVisible={setBuildingModalVisible}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHandle} />
+          <Text style={styles.modalTitle}>Buildings</Text>
+          <Text style={styles.modalSubtitle}>Building explorer from map branch is wired; data hookup can be added next.</Text>
+        </View>
+      </DragUp>
     </View>
   );
 }
@@ -162,10 +203,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f6f8",
   },
-  map: {
-    flex: 1,
+  buttonsColumn: {
+    position: "absolute",
+    bottom: 35 + 80 + buttonSpacing,
+    right: "5%",
+    width: buttonWidth,
+    height: 3 * buttonWidth + 2 * buttonSpacing,
   },
   panel: {
+    position: "absolute",
+    bottom: 78,
+    left: 0,
+    right: 0,
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 12,
@@ -229,5 +278,27 @@ const styles = StyleSheet.create({
   summaryLine: {
     fontSize: 14,
     color: "#333333",
+  },
+  modalContent: {
+    width: "100%",
+    height: "100%",
+  },
+  modalHandle: {
+    height: 6,
+    width: 50,
+    backgroundColor: "#bababa",
+    borderRadius: 5,
+    marginBottom: 14,
+    alignSelf: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#171717",
+    marginBottom: 6,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: "#555",
   },
 });
