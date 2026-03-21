@@ -19,3 +19,13 @@ model WebscrapeCache {
   expiry        BigInt @default(0)
   data          Json
 }
+
+model news{
+  id Int @id @default(autoincrement())
+  uri String
+  title String
+  description String
+  date String
+}
+
+
