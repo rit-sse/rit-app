@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Button, Text, View } from "react-native";
-import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import * as GLOBAL from "./globals";
 

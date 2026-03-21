@@ -1,7 +1,10 @@
 /**
  *
  */
-import {InferredSchedule, InferredStop, RouteSchedule, Stop} from "../../types/bus";
+import {InferredSchedule, InferredStop, RouteSchedule, ServiceDay, Stop} from "../../types/bus";
+
+const MINUTES_PER_DAY = 24 * 60;
+const RUN_COMPLETION_GRACE_MINUTES = 5;
 
 /**
  * Parses a time string in the format "hh:mm am/pm" and returns a `Date` object set to today's date with the specified time.
@@ -12,22 +15,153 @@ import {InferredSchedule, InferredStop, RouteSchedule, Stop} from "../../types/b
  */
 function parseTimeToday(timeStr: string): Date {
     const now = new Date();
-    const match = new RegExp(/(\d{1,2}):(\d{2})\s*(am|pm)/i).exec(timeStr);
+    const match = new RegExp(/(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m?\.?/i).exec(timeStr);
 
     if (!match) {
         throw new Error(`Invalid time format: ${timeStr}`);
     }
 
-    let [, hourStr, minuteStr, period] = match;
+    let [, hourStr, minuteStr = "00", period] = match;
     let hour = Number.parseInt(hourStr);
     const minute = Number.parseInt(minuteStr);
-    if (period.toLowerCase() === 'pm' && hour !== 12) {
+    if (period.toLowerCase() === 'p' && hour !== 12) {
         hour += 12;
-    } else if (period.toLowerCase() === 'am' && hour ===12) {
+    } else if (period.toLowerCase() === 'a' && hour ===12) {
         hour = 0;
     }
 
     return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
+}
+
+function parseTimeToMinutes(rawTime: string): number | null {
+    const match = /(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m?\.?/i.exec(rawTime.trim());
+    if (!match) {
+        return null;
+    }
+
+    const hour = Number.parseInt(match[1] ?? "0", 10);
+    const minute = Number.parseInt(match[2] ?? "0", 10);
+    const meridiem = (match[3] ?? "").toLowerCase();
+
+    let normalizedHour = hour;
+    if (meridiem === "p" && normalizedHour !== 12) {
+        normalizedHour += 12;
+    } else if (meridiem === "a" && normalizedHour === 12) {
+        normalizedHour = 0;
+    }
+
+    return normalizedHour * 60 + minute;
+}
+
+function getMinutesNow(currentTime: Date): number {
+    return currentTime.getHours() * 60 + currentTime.getMinutes();
+}
+
+function getToday(currentTime: Date): ServiceDay {
+    return currentTime.getDay() as ServiceDay;
+}
+
+function getYesterday(currentTime: Date): ServiceDay {
+    return ((currentTime.getDay() + 6) % 7) as ServiceDay;
+}
+
+function runsToday(route: RouteSchedule, currentTime: Date): boolean {
+    const {serviceDays, serviceWindow} = route;
+    const today = getToday(currentTime);
+
+    if (!serviceWindow) {
+        return false;
+    }
+
+    if (!serviceWindow.crossesMidnight) {
+        return serviceDays.includes(today);
+    }
+
+    const minutesNow = getMinutesNow(currentTime);
+    if (minutesNow >= serviceWindow.startMinutes) {
+        return serviceDays.includes(today);
+    }
+
+    return serviceDays.includes(getYesterday(currentTime));
+}
+
+function runsInWindow(route: RouteSchedule, currentTime: Date): boolean {
+    const {serviceWindow} = route;
+    if (!serviceWindow) {
+        return false;
+    }
+
+    const minutesNow = getMinutesNow(currentTime);
+    if (!serviceWindow.crossesMidnight) {
+        return (
+            minutesNow >= serviceWindow.startMinutes &&
+            minutesNow <= serviceWindow.endMinutes
+        );
+    }
+
+    return (
+        minutesNow >= serviceWindow.startMinutes ||
+        minutesNow <= serviceWindow.endMinutes
+    );
+}
+
+function resolveRunTimeMinutes(rawTime: string, serviceWindowCrossesMidnight: boolean): number | null {
+    const minutes = parseTimeToMinutes(rawTime);
+    if (minutes == null) {
+        return null;
+    }
+
+    if (!serviceWindowCrossesMidnight) {
+        return minutes;
+    }
+
+    return minutes < 12 * 60 ? minutes + MINUTES_PER_DAY : minutes;
+}
+
+function resolveCurrentTimeMinutes(route: RouteSchedule, currentTime: Date): number {
+    const minutesNow = getMinutesNow(currentTime);
+    if (route.serviceWindow?.crossesMidnight && minutesNow < 12 * 60) {
+        return minutesNow + MINUTES_PER_DAY;
+    }
+    return minutesNow;
+}
+
+function findActiveRunIndex(route: RouteSchedule, currentTime: Date): number | null {
+    const firstStop = route.stops[0];
+    if (!firstStop) {
+        return null;
+    }
+
+    const normalizedNow = resolveCurrentTimeMinutes(route, currentTime);
+    let bestIndex: number | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (let runIndex = 0; runIndex < firstStop.times.length; runIndex++) {
+        const runMinutes = route.stops
+            .map((stop) => stop.times[runIndex])
+            .filter((time): time is string => !!time)
+            .map((time) => resolveRunTimeMinutes(time, route.serviceWindow?.crossesMidnight ?? false))
+            .filter((time): time is number => time != null);
+
+        if (runMinutes.length === 0) {
+            continue;
+        }
+
+        const firstRunMinute = Math.min(...runMinutes);
+        const lastRunMinute = Math.max(...runMinutes) + RUN_COMPLETION_GRACE_MINUTES;
+
+        if (normalizedNow < firstRunMinute || normalizedNow > lastRunMinute) {
+            continue;
+        }
+
+        const distance = Math.abs(normalizedNow - firstRunMinute);
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = runIndex;
+        }
+    }
+
+    return bestIndex;
 }
 
 /**
@@ -80,22 +214,13 @@ function calculateETA(currentTime: Date, targetTime: Date): number {
 export function inferSchedule(route: RouteSchedule): InferredSchedule | null {
     const currentTime = new Date();
 
-    // First, find which scheduled run is currently active
-    let activeTimeIndex = -1;
-    const firstStop = route.stops[0];
-    for (let i = 0; i < firstStop.times.length; i++) {
-        const startTime = parseTimeToday(firstStop.times[i]);
-        const timeDiff = startTime.getTime() - currentTime.getTime();
-
-        // Find the next upcoming stop or recently started run
-        if (timeDiff > -10 * 60 * 1000 && timeDiff <= 30 * 60 * 1000) {
-            activeTimeIndex = i;
-            break;
-        }
+    if (!runsToday(route, currentTime) || !runsInWindow(route, currentTime)) {
+        return null;
     }
 
-    // No active bus run found
-    if (activeTimeIndex === -1) {
+    const activeTimeIndex = findActiveRunIndex(route, currentTime);
+
+    if (activeTimeIndex == null) {
         return null;
     }
 

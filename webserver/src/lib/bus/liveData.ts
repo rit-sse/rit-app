@@ -1,10 +1,17 @@
 import {ScrapeCache} from "../../db/cache";
-import {getCanonicalStopKey, getStopCoordinate} from "./coordinates";
 import {inferSchedule} from "./inference";
-import {scrapeRouteDetails, scrapeRouteMetadata} from "./scraper";
-import {CommonStop, InferredSchedule, RouteLiveSummary, RouteSchedule} from "../../types/bus";
+import {enrichRouteServiceFields, scrapeRouteDetails, scrapeRouteMetadata} from "./scraper";
+import {InferredSchedule, RouteLiveSummary, RouteSchedule} from "../../types/bus";
 
 const BUS_CACHE_KEY = "bus_schedules";
+
+function sortRoutesById<T extends {rId: string}>(routes: T[]): T[] {
+    return [...routes].sort((a, b) => Number(a.rId) - Number(b.rId));
+}
+
+function normalizeRoutes(routes: RouteSchedule[]): RouteSchedule[] {
+    return sortRoutesById(routes.map((route) => enrichRouteServiceFields(route)));
+}
 
 export async function getRoutesFromCacheOrScrape(scrapeCache: ScrapeCache): Promise<RouteSchedule[]> {
     if (await scrapeCache.inCache(BUS_CACHE_KEY) && !(await scrapeCache.isExpired(BUS_CACHE_KEY))) {
@@ -12,7 +19,7 @@ export async function getRoutesFromCacheOrScrape(scrapeCache: ScrapeCache): Prom
         const cachedRoutes = cached?.data?.data;
 
         if (Array.isArray(cachedRoutes)) {
-            return cachedRoutes as RouteSchedule[];
+            return normalizeRoutes(cachedRoutes as RouteSchedule[]);
         }
     }
 
@@ -23,12 +30,13 @@ export async function getRoutesFromCacheOrScrape(scrapeCache: ScrapeCache): Prom
         routes.push(await scrapeRouteDetails(metadata));
     }
 
-    await scrapeCache.setCache(BUS_CACHE_KEY, {data: routes});
-    return routes;
+    const normalizedRoutes = normalizeRoutes(routes);
+    await scrapeCache.setCache(BUS_CACHE_KEY, {data: normalizedRoutes});
+    return normalizedRoutes;
 }
 
 export function getActiveRoutes(routes: RouteSchedule[]): InferredSchedule[] {
-    return routes
+    return normalizeRoutes(routes)
         .map((route) => inferSchedule(route))
         .filter((route): route is InferredSchedule => route !== null);
 }
@@ -41,11 +49,6 @@ export function buildRouteSummary(inferred: InferredSchedule): RouteLiveSummary 
 
     const {fromStop, toStop} = summaryStops;
 
-    const marker = getStopCoordinate(fromStop.name) ?? getStopCoordinate(toStop.name);
-    if (!marker) {
-        return null;
-    }
-
     return {
         routeId: inferred.route.rId,
         routeName: inferred.route.routeName,
@@ -53,7 +56,6 @@ export function buildRouteSummary(inferred: InferredSchedule): RouteLiveSummary 
         toStop: toStop.name,
         etaMinutes: toStop.etaMinutes ?? 0,
         status: fromStop.status,
-        marker,
         lastUpdated: Date.now(),
     };
 }
@@ -70,32 +72,4 @@ export function getSummaryStops(inferred: InferredSchedule): { fromStop: Inferre
         fromStop: inferred.inferredStops[fromIndex],
         toStop: inferred.inferredStops[toIndex],
     };
-}
-
-export function buildCommonStopSet(routes: RouteSchedule[]): CommonStop[] {
-    const stopsMap = new Map<string, CommonStop>();
-
-    for (const route of routes) {
-        for (const stop of route.stops) {
-            const key = getCanonicalStopKey(stop.name);
-            const existing = stopsMap.get(key);
-
-            if (!existing) {
-                const marker = getStopCoordinate(stop.name) ?? undefined;
-                stopsMap.set(key, {
-                    key,
-                    name: stop.name,
-                    routeIds: [route.rId],
-                    marker,
-                });
-                continue;
-            }
-
-            if (!existing.routeIds.includes(route.rId)) {
-                existing.routeIds.push(route.rId);
-            }
-        }
-    }
-
-    return Array.from(stopsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 }

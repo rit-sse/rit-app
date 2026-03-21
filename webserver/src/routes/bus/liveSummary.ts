@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {ScrapeCache} from "../../db/cache";
-import {buildRouteSummary, getActiveRoutes, getRoutesFromCacheOrScrape, getSummaryStops} from "../../lib/bus/liveData";
+import {buildRouteSummary, getActiveRoutes, getRoutesFromCacheOrScrape} from "../../lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 
@@ -35,13 +35,9 @@ export async function GET(req: Request, res: Response) {
 
         const summary = buildRouteSummary(selectedRoute);
         if (!summary) {
-            const summaryStops = getSummaryStops(selectedRoute);
             res.status(404).send({
-                error: "MARKER_UNAVAILABLE",
-                message: `No mapped coordinates found for route ${routeId}.`,
-                routeId,
-                fromStop: summaryStops?.fromStop.name,
-                toStop: summaryStops?.toStop.name,
+                error: "LIVE_SUMMARY_UNAVAILABLE",
+                message: `No live summary available for route ${routeId}.`,
             });
             return;
         }

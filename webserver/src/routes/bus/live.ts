@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {ScrapeCache} from "../../db/cache";
-import {buildCommonStopSet, getActiveRoutes, getRoutesFromCacheOrScrape} from "../../lib/bus/liveData";
+import {getActiveRoutes, getRoutesFromCacheOrScrape} from "../../lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 
@@ -30,12 +30,9 @@ export async function GET(req: Request, res: Response) {
     try {
         const routes = await getRoutesFromCacheOrScrape(scrapeCache);
         const activeRoutes = getActiveRoutes(routes);
-        const activeRouteSchedules = activeRoutes.map((route) => route.route);
-        const commonStops = buildCommonStopSet(activeRouteSchedules);
 
         res.send({
             data: activeRoutes,
-            commonStops,
         });
     } catch (err) {
         res.status(500).send({

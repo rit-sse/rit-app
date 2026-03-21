@@ -3,11 +3,21 @@ export interface Stop {
     times: string[];
 }
 
+export type ServiceDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export interface ServiceWindow {
+    startMinutes: number;
+    endMinutes: number;
+    crossesMidnight: boolean;
+}
+
 export interface Route {
     rId: string;
     routeName: string;
     timeRange: string;
     days: string;
+    serviceDays: ServiceDay[];
+    serviceWindow: ServiceWindow | null;
 }
 
 export interface ResidenceSchedule {
@@ -51,13 +61,6 @@ export interface StopCoordinate {
     source: "STOP_APPROX";
 }
 
-export interface CommonStop {
-    key: string;
-    name: string;
-    routeIds: string[];
-    marker?: StopCoordinate;
-}
-
 export interface RouteLiveSummary {
     routeId: string;
     routeName: string;
@@ -65,6 +68,5 @@ export interface RouteLiveSummary {
     toStop: string;
     etaMinutes: number;
     status: "PAST" | "ARRIVING" | "UPCOMING";
-    marker: StopCoordinate;
     lastUpdated: number;
 }
