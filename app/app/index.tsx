@@ -1,5 +1,5 @@
 import { Button, Text, View, ScrollView } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
 import NewsContainer from "@/components/Home/NewsContainer";
@@ -30,11 +30,34 @@ const draggableExample = [
 export default function Index() {
   const [scrollOffset, setscrollOffset] = useState(0);
   const [hiding, setHiding] = useState(false);
+  const [news, setNews] = useState(newsExample);
 
   const onPageScrolled = (e: any) => {
     let offset = e.nativeEvent.offset + e.nativeEvent.position;
     setscrollOffset(Math.round(offset * 1000) / 1000);
   }
+
+  
+  async function getNews(){
+    const requestOptions = {
+        method: 'GET',
+        headers: { "Content-Type": "application/json" }
+    };
+
+    console.log("Start");
+
+    useEffect(() => {
+      fetch(`http://localhost:3000/news?page=0&pageCount=2`) // might be broken
+          .then(response => response.json())
+          .then(data => {
+              setNews(data["data"]["news"]);
+              console.log(data["data"]["news"])
+          })
+          .catch(error => console.error("Error fetching news data:", error));
+    });
+  }
+
+  getNews();
 
   return (
     <ScrollView
@@ -81,7 +104,7 @@ export default function Index() {
 
       <View style={{ marginTop: 15, width: "85%" }}>
           <Text style={{fontSize: 24, fontWeight: "bold"}}>Latest News</Text>
-          {newsExample.map((news, index) => (
+          {news.map((news, index) => (
             <NewsContainer key={index} uri={news.uri} title={news.title} description={news.description} date={news.date} />
           ))}
       </View>
