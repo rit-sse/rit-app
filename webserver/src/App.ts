@@ -1,9 +1,10 @@
 import 'dotenv/config'
 import express, {Request, Response} from 'express';
 import fs from 'node:fs';
-import {resolve} from "node:path";
+// import {resolve} from "node:path";
+import {resolve, sep} from "node:path";
 
-const PORT: number = Number(process.env.PORT);
+const PORT: number = Number(process.env.PORT) || 3000; // I didn't make a .env file D:
 const SOURCE_DIR: string = resolve(__dirname + '/routes');
 
 
@@ -19,7 +20,8 @@ const recursiveLoadRoutes = (dir: string) => {
     fs.readdirSync(dir).forEach((file) => {
         if(file.toString() == "route.js") {
             const route = require(`${dir}/${file}`);
-            const routePath = `${dir.split("/webserver/dist/routes")[1]}/`;
+            // const routePath = `${dir.split("/webserver/dist/routes")[1]}/`;
+            const routePath = `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/')}/` || '/';
             if (route.GET) {
                 app.get(routePath, route.GET);
             }
@@ -38,8 +40,8 @@ const recursiveLoadRoutes = (dir: string) => {
         }
         if (file.endsWith('.js')) {
             const route = require(`${dir}/${file}`);
-            const routePath = `${dir.split("/webserver/dist/routes")[1]}/${file.replace('.js', '')}`;
-
+            // const routePath = `${dir.split("/webserver/dist/routes")[1]}/${file.replace('.js', '')}`;
+            const routePath = `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/') || ''}/${file.replace('.js', '')}`;
             if (route.GET) {
                 app.get(routePath, route.GET);
             }
