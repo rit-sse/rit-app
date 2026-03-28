@@ -133,8 +133,10 @@ function findActiveRunIndex(route: RouteSchedule, currentTime: Date): number | n
     }
 
     const normalizedNow = resolveCurrentTimeMinutes(route, currentTime);
-    let bestIndex: number | null = null;
-    let bestDistance = Number.POSITIVE_INFINITY;
+    let activeRunIndex: number | null = null;
+    let activeRunDistance = Number.POSITIVE_INFINITY;
+    let upcomingRunIndex: number | null = null;
+    let upcomingRunWait = Number.POSITIVE_INFINITY;
 
     for (let runIndex = 0; runIndex < firstStop.times.length; runIndex++) {
         const runMinutes = route.stops
@@ -150,18 +152,25 @@ function findActiveRunIndex(route: RouteSchedule, currentTime: Date): number | n
         const firstRunMinute = Math.min(...runMinutes);
         const lastRunMinute = Math.max(...runMinutes) + RUN_COMPLETION_GRACE_MINUTES;
 
-        if (normalizedNow < firstRunMinute || normalizedNow > lastRunMinute) {
+        if (normalizedNow >= firstRunMinute && normalizedNow <= lastRunMinute) {
+            const distance = Math.abs(normalizedNow - firstRunMinute);
+            if (distance < activeRunDistance) {
+                activeRunDistance = distance;
+                activeRunIndex = runIndex;
+            }
             continue;
         }
 
-        const distance = Math.abs(normalizedNow - firstRunMinute);
-        if (distance < bestDistance) {
-            bestDistance = distance;
-            bestIndex = runIndex;
+        if (normalizedNow < firstRunMinute) {
+            const wait = firstRunMinute - normalizedNow;
+            if (wait < upcomingRunWait) {
+                upcomingRunWait = wait;
+                upcomingRunIndex = runIndex;
+            }
         }
     }
 
-    return bestIndex;
+    return activeRunIndex ?? upcomingRunIndex;
 }
 
 /**

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -33,6 +33,7 @@ const DEFAULT_LOCATION = {
   latitude: 43.083,
   longitude: -77.676,
 };
+const BUS_REFRESH_INTERVAL_MS = 60_000;
 
 const allButtonStyling: StyleProp<ViewStyle> = {
   position: "absolute",
@@ -120,6 +121,7 @@ export default function MapScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [scheduleVisible, setScheduleVisible] = useState(false);
+  const isFetchingRef = useRef(false);
 
   const routeItems = useMemo<ActiveRouteListItem[]>(
     () => buildActiveRouteList(routes),
@@ -134,10 +136,22 @@ export default function MapScreen() {
     [routes, selectedRouteId, selectedStopName],
   );
 
-  const loadRoutes = async (refreshing = false) => {
+  const loadRoutes = async ({
+    refreshing = false,
+    silent = false,
+  }: {
+    refreshing?: boolean;
+    silent?: boolean;
+  } = {}) => {
+    if (isFetchingRef.current) {
+      return;
+    }
+
+    isFetchingRef.current = true;
+
     if (refreshing) {
       setIsRefreshing(true);
-    } else {
+    } else if (!silent) {
       setIsLoading(true);
     }
 
@@ -159,14 +173,37 @@ export default function MapScreen() {
         error instanceof Error ? error.message : "Unexpected error loading bus data.",
       );
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      isFetchingRef.current = false;
+
+      if (!silent) {
+        setIsLoading(false);
+      }
+
+      if (refreshing) {
+        setIsRefreshing(false);
+      }
     }
   };
 
   useEffect(() => {
     void loadRoutes();
   }, []);
+
+  useEffect(() => {
+    if (!scheduleVisible) {
+      return;
+    }
+
+    void loadRoutes({silent: true});
+
+    const intervalId = setInterval(() => {
+      void loadRoutes({silent: true});
+    }, BUS_REFRESH_INTERVAL_MS);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [scheduleVisible]);
 
   useEffect(() => {
     const shouldHideNavbar = scheduleVisible;
@@ -229,7 +266,7 @@ export default function MapScreen() {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={() => {
-                void loadRoutes(true);
+                void loadRoutes({refreshing: true});
               }}
               tintColor="#f76902"
             />
