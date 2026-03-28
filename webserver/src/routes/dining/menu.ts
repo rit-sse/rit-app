@@ -104,19 +104,21 @@ const scrapeCache = new ScrapeCache();
 
 function createMenuAPIURL(store: string, mealPeriodId: number): string {
     const baseUrl = "https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals";
+    let todaysDate = new Date();
     const params = new URLSearchParams({
         menuId: "0",
         accountId: MENU_CODES[store].accountId.toString(),
         locationId: MENU_CODES[store].locationId.toString(),
         mealPeriodId: mealPeriodId.toString(),
         tenantId: "20",
-        monthId: "01",
-        startDate: "01/01/2026",
-        endDate: "01/31/2026",
+        monthId: todaysDate.getMonth().toString(),
+        startDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth(), 1).toLocaleDateString("en-US"),
+        endDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth() + 1, 0).toLocaleDateString("en-US"),
         timeOffset: "300"
     });
 
     const url = `${baseUrl}?${params.toString()}`;
+    console.log(url)
     return url;
 }
 
@@ -139,6 +141,7 @@ export async function GET(req: Request, res: Response) {
         console.log(data)
 
         let formattedMenu: any[] = [];
+        let categories: string[] = [];
 
         for (let item of menuData) {
             formattedMenu.push({
@@ -147,21 +150,19 @@ export async function GET(req: Request, res: Response) {
                 calories: item["calories"],
                 allergens: item["allergenName"].split(","),
             });
+            if (!categories.includes(item["category"])) {
+                categories.push(item["category"]);
+                console.log("Found new category:", item["category"]);
+            }
         }
 
         await scrapeCache.setCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`, {
             store: req.query["store"].toString(),
             mealPeriod: req.query["mealPeriod"]?.toString() || "default",
-            menu: formattedMenu
+            menu: formattedMenu,
+            categories: categories
         });
-        res.status(200).json({
-            cacheTime: Date.now(),
-            data: {
-                store: req.query["store"].toString(),
-                mealPeriod: req.query["mealPeriod"]?.toString() || "default",
-                menu: formattedMenu
-            }
-        });
+        res.status(200).send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
         return;
     }
     res.status(400).send({ "error": "Invalid or missing 'store' query parameter." });

@@ -2,11 +2,13 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { use, useEffect, useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
+import CategoryContainer from "@/components/Dining/Search/CategoryContainer";
+import PagerView from "react-native-pager-view";
 
 export default function RestaurantPage({ route }: { route: any }) {
     const router = useRouter();
 
-    const HEIGHT_INITIAL = 320;
+    const HEIGHT_INITIAL = 250;
 
     const { restaurantID, restaurantName, restaurantCode, restaurantIcon, bannerImage } = useLocalSearchParams();
     const [bannerHeight, setBannerHeight] = useState(HEIGHT_INITIAL);
@@ -19,17 +21,28 @@ export default function RestaurantPage({ route }: { route: any }) {
         allergens: string[],
     }[]>([]);
     const [loadedMenu, setLoadedMenu] = useState(false);
+    const [categories, setCategories] = useState<string[]>([]);
 
-    useEffect(() => {
-        fetch(`http://localhost:3000/dining/menu?store=${restaurantCode}`)
-            .then(response => response.json())
-            .then(data => {
-                setMenu(data["data"]["menu"]);
-                setLoadedMenu(true);
-                console.log(data["data"]["menu"])
-            })
-            .catch(error => console.error("Error fetching menu data:", error));
-    }, [restaurantCode]);
+    const featuredCards = [
+        {
+            id: "halal-n-out",
+            title: "Halal n Out",
+            subtitle: "Middle Eastern Favorites",
+            time: "2-7p.m.",
+        },
+    ];
+
+    // useEffect(() => {
+    //     fetch(`http://localhost:3000/dining/menu?store=${restaurantCode}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             setMenu(data["data"]["menu"]);
+    //             setCategories(data["data"]["categories"]);
+    //             setLoadedMenu(true);
+    //             console.log(data["data"]["menu"])
+    //         })
+    //         .catch(error => console.error("Error fetching menu data:", error));
+    // }, [restaurantCode]);
 
     const styles = StyleSheet.create({
         bannerImage: {
@@ -42,7 +55,7 @@ export default function RestaurantPage({ route }: { route: any }) {
 
     const onScrollHandler = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (event.nativeEvent.contentOffset.y > 0) {
-            setOffset(Math.min(150, event.nativeEvent.contentOffset.y));
+            setOffset(Math.min(90, event.nativeEvent.contentOffset.y));
         } else {
             setOffset(0);
         }
@@ -67,46 +80,60 @@ export default function RestaurantPage({ route }: { route: any }) {
                 <Image source={{ uri: restaurantIcon as string }} style={{ width: 120, height: 120, borderRadius: 8, position: "absolute", bottom: -60, left: 20, backgroundColor: "#F76902", padding: 4 }} />
             </View>
             <View style={{ width: "100%", padding: 10, flex: 1, alignItems: "center", zIndex: 1 }}>
-                <View style={{ width: "100%", height: 50, marginBottom: 10 }}>
-                    <ScrollView horizontal contentContainerStyle={{ alignItems: "center", paddingLeft: 150 }}>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
-                            <Text style={{ fontSize: 20 }}>Vegan</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
-                            <Text style={{ fontSize: 20 }}>Vegetarian</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
-                            <Text style={{ fontSize: 20 }}>Gluten-Free</Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-
-                </View>
                 <ScrollView contentContainerStyle={{ alignItems: "center", width: Dimensions.get("screen").width * .9, paddingBottom: 150 }} onScroll={onScrollHandler}>
-
-                    {/* {
-                        Array.from({ length: 20 }).map((_, index) => (
-                            <View key={index} style={{ height: 80, width: "100%", backgroundColor: "rgba(0,0,0,.2)", borderRadius: 5, marginTop: 10 }}></View>
-
-                        ))
-                    } */}
-                    {
-                        loadedMenu ? menu.map((item, index) => (
-                            <View key={index} style={{ height: 80, width: "100%", backgroundColor: "rgba(0,0,0,.05)", borderRadius: 5, marginTop: 10, padding: 10 }}>
-                                <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.name}</Text>
-                                <Text style={{ fontSize: 14 }}>{item.calories} calories</Text>
-                                <Text style={{ fontSize: 14 }}>Category: {item.category}</Text>
-                                <Text style={{ fontSize: 14 }}>Allergens: {item.allergens.join(", ")}</Text>
+                    <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 60 }}>Visiting Chefs</Text>
+                    <ScrollView horizontal contentContainerStyle={{ minWidth: Dimensions.get("screen").width * .9, height: 120, marginTop: 5 }}>
+                        <View style={{ width: Dimensions.get("screen").width * 0.7, height: "100%", paddingHorizontal: 4 }}>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    borderWidth: 2,
+                                    borderColor: "#A5A5A5",
+                                    borderRadius: 12,
+                                    backgroundColor: "#F3F3F3",
+                                    paddingHorizontal: 18,
+                                    paddingVertical: 16,
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <View>
+                                    <Text style={{ fontSize: 20, fontWeight: "700", color: "#111" }}>Halal n' out</Text>
+                                    <Text style={{ fontSize: 20, color: "#111" }}>aaa</Text>
+                                </View>
+                                <Text style={{ fontSize: 20, color: "#111" }}>3:00</Text>
                             </View>
-                        )) : (
-                            <>
-                                {Array.from({ length: 6 }).map((_, index) => (
-                                    <View key={index} style={{ height: 80, width: "100%", backgroundColor: "rgba(0,0,0,.1)", borderRadius: 5, marginTop: 10, opacity: 1/((index+1)*.6) }}></View>
+                        </View>
+                        <View style={{ width: Dimensions.get("screen").width * 0.7, height: "100%", paddingHorizontal: 4 }}>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    borderWidth: 2,
+                                    borderColor: "#A5A5A5",
+                                    borderRadius: 12,
+                                    backgroundColor: "#F3F3F3",
+                                    paddingHorizontal: 18,
+                                    paddingVertical: 16,
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <View>
+                                    <Text style={{ fontSize: 20, fontWeight: "700", color: "#111" }}>Halal n' out</Text>
+                                    <Text style={{ fontSize: 20, color: "#111" }}>aaa</Text>
+                                </View>
+                                <Text style={{ fontSize: 20, color: "#111" }}>3:00</Text>
+                            </View>
+                        </View>
 
-                                ))}
-                            </>
-                        )
-                    }
+                    </ScrollView>
+                    <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
+                        <TouchableOpacity style={{ paddingHorizontal: 20, paddingVertical: 15, backgroundColor: "#F76902" }}>
+                            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 10 }}>Hours of Operation</Text>
+
                 </ScrollView>
+
             </View>
 
         </View >
