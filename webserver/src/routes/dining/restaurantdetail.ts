@@ -8,23 +8,71 @@ const scrapeCache = new ScrapeCache();
 export async function GET(req: Request, res: Response) {
     const restaurantCode = req.query.restaurantCode as string;
 
-    if (await scrapeCache.inCache(`restaurant_${restaurantCode}`) && !await scrapeCache.isExpired(`restaurant_${restaurantCode}`)) {
-        res.send(await scrapeCache.getCache(`restaurant_${restaurantCode}`));
+    if (await scrapeCache.inCache(`restaurantdetail_${restaurantCode}`) && !await scrapeCache.isExpired(`restaurantdetail_${restaurantCode}`)) {
+        res.send(await scrapeCache.getCache(`restaurantdetail_${restaurantCode}`));
         return;
     }
 
     let restaurantData: {
         name: string,
-        visitingchefs?: string[],
+        visitingchefs?: any[],
         hoursOfOperations: { [day: string]: string[] }
     } = {
         name: "",
         visitingchefs: [],
         hoursOfOperations: {}
     };
-    const scrape = await fetch(`https://www.rit.edu/dining/location/${restaurantCode}`);
-    writeFileSync("restaurant.txt", await scrape.text());
+    console.log(`https://www.rit.edu/dining/location/${restaurantCode}`)
+    const scrape = await fetch(`https://www.rit.edu/dining/location/${restaurantCode}`,
+        {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+
+            }
+        }
+    );
     const html = await scrape.text();
+    const hasChefData = html.includes("var chefData = JSON.parse");
+    if (hasChefData) {
+        let findChefDataLine = html.split("\n").find(line => line.includes("var chefData = JSON.parse"));
+
+        let chefPriorParse = JSON.parse(findChefDataLine?.split("`")[1] || "{}");
+        let chefData: {
+            "event_id": number,
+            "event_name": string,
+            "event_type": string | null,
+            "date": string,
+            "menus": {
+                "category": string,
+                "name": string,
+                "name_note": string,
+                "description": string
+            }[]
+        }[] = chefPriorParse[Object.keys(chefPriorParse)[0]];
+
+        const today = new Date();
+        const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+        chefData = chefData.map((chef: {
+            "event_id": number,
+            "event_name": string,
+            "event_type": string | null,
+            "date": string,
+            "menus": {
+                "category": string,
+                "name": string,
+                "name_note": string,
+                "description": string
+            }[]
+        }) => {
+            let chefDate = new Date(chef.date);
+            if (yesterday <= chefDate) {
+                return chef;
+            }
+        }).filter(chef => chef !== undefined);
+        restaurantData.visitingchefs = chefData;
+    }
+
     const $ = cheerio.load(html);
 
     // Restaurant Name
@@ -47,15 +95,7 @@ export async function GET(req: Request, res: Response) {
         })
     });
 
-    // Visiting Chefs (if they exist)
-    $('.visiting-chefs-container').map((i, el) => {
-        console.log(el)
-        $(el).find('li').map((j, chefEl) => {
-            restaurantData.visitingchefs?.push($(chefEl).text().trim());
-        })
-    });
-
     console.log(restaurantData)
-
-    await res.send(restaurantData);
+    await scrapeCache.setCache(`restaurantdetail_${restaurantCode}`, restaurantData);
+    await res.send(await scrapeCache.getCache(`restaurantdetail_${restaurantCode}`));
 }
