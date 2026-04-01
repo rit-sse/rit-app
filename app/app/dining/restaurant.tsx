@@ -13,12 +13,11 @@ export default function RestaurantPage({ route }: { route: any }) {
     const [bannerHeight, setBannerHeight] = useState(HEIGHT_INITIAL);
     const [offset, setOffset] = useState(0);
     const [pastOffset, setPastOffset] = useState(0);
-    const [menu, setMenu] = useState<{
+    const [restaurantData, setRestaurantData] = useState<{
         name: string,
-        calories: string,
-        category: string,
-        allergens: string[],
-    }[]>([]);
+        visitingchefs: [],
+        hoursOfOperations: { [day: string]: string }
+    }>();
     const [chefs, setChefs] = useState<{
         name: string,
         category: string,
@@ -51,12 +50,13 @@ export default function RestaurantPage({ route }: { route: any }) {
         fetch(`http://localhost:3000/dining/restaurantdetail?restaurantCode=${restaurantCode}`)
             .then(response => response.json())
             .then(data => {
+                setRestaurantData(data["data"]);
                 if (data["data"]["visitingchefs"]) {
                     setChefs(data["data"]["visitingchefs"][0]["menus"])
                 }
             })
             .catch(error => console.error("Error fetching restaurant details:", error));
-    }, [restaurantCode, chefs]);
+    }, [restaurantCode, chefs, restaurantData]);
 
     const styles = StyleSheet.create({
         bannerImage: {
@@ -106,12 +106,18 @@ export default function RestaurantPage({ route }: { route: any }) {
                         }
                     </ScrollView>
                     <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
-                        <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }}>
+                        <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }} onPress={() => router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}`)}>
                             <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 10 }}>Hours of Operation</Text>
-
+                    <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 20 }}>Hours of Operation</Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Sunday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Sunday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Monday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Monday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Tuesday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Tuesday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Wednesday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Wednesday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Thursday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Thursday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Friday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Friday"] ?? ""}</Text></Text>
+                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Saturday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Saturday"] ?? ""}</Text></Text>
                 </ScrollView>
 
             </View>
