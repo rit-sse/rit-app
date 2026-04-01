@@ -2,8 +2,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { use, useEffect, useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
-import CategoryContainer from "@/components/Dining/Search/CategoryContainer";
-import PagerView from "react-native-pager-view";
+import VisitingChef from "@/components/Dining/RestaurantDetailComponents/VisitingChef";
 
 export default function RestaurantPage({ route }: { route: any }) {
     const router = useRouter();
@@ -20,8 +19,12 @@ export default function RestaurantPage({ route }: { route: any }) {
         category: string,
         allergens: string[],
     }[]>([]);
-    const [loadedMenu, setLoadedMenu] = useState(false);
-    const [categories, setCategories] = useState<string[]>([]);
+    const [chefs, setChefs] = useState<{
+        name: string,
+        category: string,
+        name_note: string,
+        description: string
+    }[]>([]);
 
     const featuredCards = [
         {
@@ -43,6 +46,17 @@ export default function RestaurantPage({ route }: { route: any }) {
     //         })
     //         .catch(error => console.error("Error fetching menu data:", error));
     // }, [restaurantCode]);
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/dining/restaurantdetail?restaurantCode=${restaurantCode}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data["data"]["visitingchefs"]) {
+                    setChefs(data["data"]["visitingchefs"][0]["menus"])
+                }
+            })
+            .catch(error => console.error("Error fetching restaurant details:", error));
+    }, [restaurantCode, chefs]);
 
     const styles = StyleSheet.create({
         bannerImage: {
@@ -82,52 +96,18 @@ export default function RestaurantPage({ route }: { route: any }) {
             <View style={{ width: "100%", padding: 10, flex: 1, alignItems: "center", zIndex: 1 }}>
                 <ScrollView contentContainerStyle={{ alignItems: "center", width: Dimensions.get("screen").width * .9, paddingBottom: 150 }} onScroll={onScrollHandler}>
                     <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 60 }}>Visiting Chefs</Text>
-                    <ScrollView horizontal contentContainerStyle={{ minWidth: Dimensions.get("screen").width * .9, height: 120, marginTop: 5 }}>
-                        <View style={{ width: Dimensions.get("screen").width * 0.7, height: "100%", paddingHorizontal: 4 }}>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    borderWidth: 2,
-                                    borderColor: "#A5A5A5",
-                                    borderRadius: 12,
-                                    backgroundColor: "#F3F3F3",
-                                    paddingHorizontal: 18,
-                                    paddingVertical: 16,
-                                    justifyContent: "space-between",
-                                }}
-                            >
-                                <View>
-                                    <Text style={{ fontSize: 20, fontWeight: "700", color: "#111" }}>Halal n' out</Text>
-                                    <Text style={{ fontSize: 20, color: "#111" }}>aaa</Text>
-                                </View>
-                                <Text style={{ fontSize: 20, color: "#111" }}>3:00</Text>
-                            </View>
-                        </View>
-                        <View style={{ width: Dimensions.get("screen").width * 0.7, height: "100%", paddingHorizontal: 4 }}>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    borderWidth: 2,
-                                    borderColor: "#A5A5A5",
-                                    borderRadius: 12,
-                                    backgroundColor: "#F3F3F3",
-                                    paddingHorizontal: 18,
-                                    paddingVertical: 16,
-                                    justifyContent: "space-between",
-                                }}
-                            >
-                                <View>
-                                    <Text style={{ fontSize: 20, fontWeight: "700", color: "#111" }}>Halal n' out</Text>
-                                    <Text style={{ fontSize: 20, color: "#111" }}>aaa</Text>
-                                </View>
-                                <Text style={{ fontSize: 20, color: "#111" }}>3:00</Text>
-                            </View>
-                        </View>
-
+                    <ScrollView horizontal contentContainerStyle={{ minWidth: Dimensions.get("screen").width * .9, height: 120, marginTop: 5 }} showsHorizontalScrollIndicator={false}>
+                        {
+                            chefs.length > 0 ? chefs.map((chef, index) => (
+                                <VisitingChef key={index} chef={chef} />
+                            )) : (
+                                <Text style={{ fontSize: 20, color: "#111" }}>No visiting chefs currently scheduled.</Text>
+                            )
+                        }
                     </ScrollView>
                     <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
-                        <TouchableOpacity style={{ paddingHorizontal: 20, paddingVertical: 15, backgroundColor: "#F76902" }}>
-                            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
+                        <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }}>
+                            <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
                         </TouchableOpacity>
                     </View>
                     <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 10 }}>Hours of Operation</Text>
