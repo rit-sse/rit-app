@@ -103,6 +103,8 @@ const VALIDSTORES = Object.keys(MENU_CODES);
 const scrapeCache = new ScrapeCache();
 
 function createMenuAPIURL(store: string, mealPeriodId: number): string {
+    // https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals?menuId=0&accountId=4&locationId=14&mealPeriodId=2&tenantId=20&monthId=3&startDate=4%2F1%2F2026&endDate=4%2F30%2F2026&timeOffset=300
+    // https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals?menuId=0&accountId=4&locationId=14&mealPeriodId=2&tenantId=20&monthId=04&startDate=2026%2F04%2F01&endDate=2026%2F04%2F30&timeOffset=300
     const baseUrl = "https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals";
     let todaysDate = new Date();
     const params = new URLSearchParams({
@@ -111,7 +113,7 @@ function createMenuAPIURL(store: string, mealPeriodId: number): string {
         locationId: MENU_CODES[store].locationId.toString(),
         mealPeriodId: mealPeriodId.toString(),
         tenantId: "20",
-        monthId: todaysDate.getMonth().toString(),
+        monthId: (todaysDate.getMonth() + 1).toString().padStart(2, "0"),
         startDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth(), 1).toLocaleDateString("en-US"),
         endDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth() + 1, 0).toLocaleDateString("en-US"),
         timeOffset: "300"
