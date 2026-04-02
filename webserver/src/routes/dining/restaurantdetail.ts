@@ -16,6 +16,8 @@ export async function GET(req: Request, res: Response) {
     let restaurantData: {
         name: string,
         visitingchefs?: any[],
+        isFDMealPlanner?: boolean,
+        moreInfoLink?: string,
         hoursOfOperations: { [day: string]: string[] }
     } = {
         name: "",
@@ -95,6 +97,16 @@ export async function GET(req: Request, res: Response) {
         })
     });
 
+    // Parse more menu button
+    $('a[id=more-info-button]').map((i, el) => {
+        let moreInfoLink = $(el).attr("href");
+        if (moreInfoLink) {
+            if(moreInfoLink.includes("fdmealplanner")) {
+                restaurantData.isFDMealPlanner = true;
+            }
+            restaurantData.moreInfoLink = moreInfoLink;
+        }
+    });
     console.log(restaurantData)
     await scrapeCache.setCache(`restaurantdetail_${restaurantCode}`, restaurantData);
     await res.send(await scrapeCache.getCache(`restaurantdetail_${restaurantCode}`));
