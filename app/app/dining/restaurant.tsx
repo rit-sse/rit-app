@@ -1,5 +1,5 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, Linking } from "react-native";
 import { use, useEffect, useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
 import VisitingChef from "@/components/Dining/RestaurantDetailComponents/VisitingChef";
@@ -16,8 +16,18 @@ export default function RestaurantPage({ route }: { route: any }) {
     const [restaurantData, setRestaurantData] = useState<{
         name: string,
         visitingchefs: [],
+        isFDMealPlanner?: boolean,
+        moreInfoLink?: string,
         hoursOfOperations: { [day: string]: string }
-    }>();
+    }>(
+        {
+            isFDMealPlanner: false,
+            moreInfoLink: "",
+            name: "",
+            visitingchefs: [],
+            hoursOfOperations: {}
+        }
+    );
     const [visitingChefsAreHere, setVisitingChefsAreHere] = useState(false);
     const [chefs, setChefs] = useState<{
         name: string,
@@ -59,6 +69,14 @@ export default function RestaurantPage({ route }: { route: any }) {
             })
             .catch(error => console.error("Error fetching restaurant details:", error));
     }, [restaurantCode, chefs, restaurantData, visitingChefsAreHere]);
+
+    function seeMenu() {
+        if (restaurantData.isFDMealPlanner) {
+            router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}`)
+        } else if (restaurantData.moreInfoLink) {
+            Linking.openURL(restaurantData.moreInfoLink);
+        }
+    }
 
     const styles = StyleSheet.create({
         bannerImage: {
@@ -109,7 +127,7 @@ export default function RestaurantPage({ route }: { route: any }) {
                             }
                         </ScrollView></> : null}
                     <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
-                        <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }} onPress={() => router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}`)}>
+                        <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }} onPress={() => seeMenu()}>
                             <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
                         </TouchableOpacity>
                     </View>
