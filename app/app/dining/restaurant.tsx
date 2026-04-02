@@ -72,7 +72,12 @@ export default function RestaurantPage({ route }: { route: any }) {
 
     function seeMenu() {
         if (restaurantData.isFDMealPlanner) {
-            router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}`)
+            // Fellas, if you are combing through this code and you see this monstrosity, I am so sorry for your eyes.
+            // The alternative was refetching from server, async storage, or passing through a gazillion params. I chose the latter.
+            // AsyncStorage would be a nightmare to manage cache and store, refetching from server could help but then we are just getting the same data twice
+            // So here, this is the solution.
+            // Sorry
+            router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}&restaurantID=${restaurantID}&restaurantIcon=${restaurantIcon}&bannerImage=${bannerImage}`);
         } else if (restaurantData.moreInfoLink) {
             Linking.openURL(restaurantData.moreInfoLink);
         }
