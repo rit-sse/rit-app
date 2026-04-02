@@ -18,6 +18,7 @@ export default function RestaurantPage({ route }: { route: any }) {
         visitingchefs: [],
         hoursOfOperations: { [day: string]: string }
     }>();
+    const [visitingChefsAreHere, setVisitingChefsAreHere] = useState(false);
     const [chefs, setChefs] = useState<{
         name: string,
         category: string,
@@ -51,12 +52,13 @@ export default function RestaurantPage({ route }: { route: any }) {
             .then(response => response.json())
             .then(data => {
                 setRestaurantData(data["data"]);
-                if (data["data"]["visitingchefs"]) {
+                if (data["data"]["visitingchefs"] && data["data"]["visitingchefs"].length > 0) {
+                    setVisitingChefsAreHere(true)
                     setChefs(data["data"]["visitingchefs"][0]["menus"])
                 }
             })
             .catch(error => console.error("Error fetching restaurant details:", error));
-    }, [restaurantCode, chefs, restaurantData]);
+    }, [restaurantCode, chefs, restaurantData, visitingChefsAreHere]);
 
     const styles = StyleSheet.create({
         bannerImage: {
@@ -95,29 +97,30 @@ export default function RestaurantPage({ route }: { route: any }) {
             </View>
             <View style={{ width: "100%", padding: 10, flex: 1, alignItems: "center", zIndex: 1 }}>
                 <ScrollView contentContainerStyle={{ alignItems: "center", width: Dimensions.get("screen").width * .9, paddingBottom: 150 }} onScroll={onScrollHandler}>
-                    <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 60 }}>Visiting Chefs</Text>
-                    <ScrollView horizontal contentContainerStyle={{ minWidth: Dimensions.get("screen").width * .9, height: 120, marginTop: 5 }} showsHorizontalScrollIndicator={false}>
-                        {
-                            chefs.length > 0 ? chefs.map((chef, index) => (
-                                <VisitingChef key={index} chef={chef} />
-                            )) : (
-                                <Text style={{ fontSize: 20, color: "#111" }}>No visiting chefs currently scheduled.</Text>
-                            )
-                        }
-                    </ScrollView>
+                    <View style={{ marginTop: 60 }}></View>
+                    {visitingChefsAreHere ? <><Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start" }}>Visiting Chefs</Text>
+                        <ScrollView horizontal contentContainerStyle={{ minWidth: Dimensions.get("screen").width * .9, height: 120, marginTop: 5 }} showsHorizontalScrollIndicator={false}>
+                            {
+                                chefs.length > 0 ? chefs.map((chef, index) => (
+                                    <VisitingChef key={index} chef={chef} />
+                                )) : (
+                                    <Text style={{ fontSize: 20, color: "#111" }}>No visiting chefs currently scheduled.</Text>
+                                )
+                            }
+                        </ScrollView></> : null}
                     <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
                         <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }} onPress={() => router.push(`/dining/menu?restaurantCode=${restaurantCode}&restaurantName=${restaurantName}`)}>
                             <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
                         </TouchableOpacity>
                     </View>
                     <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 20 }}>Hours of Operation</Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Sunday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Sunday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Monday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Monday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Tuesday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Tuesday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Wednesday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Wednesday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Thursday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Thursday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Friday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Friday"] ?? ""}</Text></Text>
-                    <Text style={{width: "100%", marginTop: 8}}><Text style={{fontWeight: "bold", color: "#F76902", fontSize: 16}}>Saturday:</Text> <Text style={{fontSize: 14}}>{restaurantData?.hoursOfOperations?.["Saturday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Sunday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Sunday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Monday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Monday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Tuesday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Tuesday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Wednesday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Wednesday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Thursday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Thursday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Friday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Friday"] ?? ""}</Text></Text>
+                    <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Saturday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Saturday"] ?? ""}</Text></Text>
                 </ScrollView>
 
             </View>
