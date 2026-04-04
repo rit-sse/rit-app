@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ScrapeCache } from "../../db/cache";
+import fs from "fs";
 
 // Preset Menu codes that correspond to MealPlanner IDs
 const MENU_CODES: Record<string, { accountId: number; locationId: number; mealPeriodIds: { [key: string]: number } }> = {
@@ -124,7 +125,7 @@ function createMenuAPIURL(store: string, mealPeriodId: number): string {
     return url;
 }
 
-const MENU_DEBUG = false;
+const MENU_DEBUG = false; // Misnomer, this just skips cache check
 
 export async function GET(req: Request, res: Response) {
     console.log("Received menu request with query:", req.query);
@@ -132,7 +133,7 @@ export async function GET(req: Request, res: Response) {
         console.log("Processing menu request for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
         let inCache = await scrapeCache.inCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
         let isExpired = await scrapeCache.isExpired(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
-        if ((inCache && !isExpired) || MENU_DEBUG) {
+        if ((inCache && !isExpired) && !MENU_DEBUG) {
             console.log("Serving menu data from cache for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
             res.send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
             return;
@@ -140,23 +141,27 @@ export async function GET(req: Request, res: Response) {
 
         let data = await fetch(createMenuAPIURL(req.query["store"].toString(), MENU_CODES[req.query["store"].toString()].mealPeriodIds[req.query["mealPeriod"]?.toString() || "default"]))
         let menuData = (await data.json())["result"][0]["allMenuRecipes"];
-        console.log(data)
+        fs.writeFileSync(`./menu_debug_${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}.json`, JSON.stringify(menuData, null, 2));
 
         let formattedMenu: any[] = [];
         let categories: string[] = [];
 
         for (let item of menuData) {
+            if(item["englishAlternateName"] === "") { 
+                continue; // Skip items without a name
+            }
             formattedMenu.push({
                 name: item["englishAlternateName"],
                 category: item["category"],
                 calories: item["calories"],
                 allergens: item["allergenName"].split(","),
+                conditionals: item["recipeProductDietaryName"].split(",").map((cond: string) => cond.trim()).filter((cond: string) => cond !== "")
             });
             if (!categories.includes(item["category"])) {
                 categories.push(item["category"]);
-                console.log("Found new category:", item["category"]);
             }
         }
+        console.log(formattedMenu)
 
         await scrapeCache.setCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`, {
             store: req.query["store"].toString(),

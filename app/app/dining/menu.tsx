@@ -18,16 +18,54 @@ export default function Menu({ route }: { route: any }) {
         calories: string,
         category: string,
         allergens: string[],
+        conditionals: string[]
     }[]>([]);
+    const [viewMenu, setViewMenu] = useState<{
+        name: string,
+        calories: string,
+        category: string,
+        allergens: string[],
+        conditionals: string[]
+    }[]>([]);
+    const [onCategory, setCategory] = useState<string>("");
+    const [onConditional, setConditional] = useState<string>("");
     const [loadedMenu, setLoadedMenu] = useState(false);
     const [categories, setCategories] = useState<string[]>([]);
 
+    // Sorts categories by importance. Highest is prioritized
+    const categoryWeights: { [key: string]: number } = {
+        "Entree": 10,
+        "Salads": 9,
+        "Wraps": 8,
+        "Soups": 7,
+        "Bowls": 6,
+        "Hot Sandwiches": 5,
+        "Sandwiches": 4,
+        "Pizza": 3,
+        "Side": 2,
+        "Sides": 2,
+        "Other": 0
+    }
+
     useEffect(() => {
+        setMenu([]);
+        setViewMenu([]);
+        setCategories([]);
+        setCategory("");
+        setLoadedMenu(false);
         fetch(`http://localhost:3000/dining/menu?store=${restaurantCode}`)
             .then(response => response.json())
             .then(data => {
                 setMenu(data["data"]["menu"]);
-                setCategories(data["data"]["categories"]);
+                setViewMenu(data["data"]["menu"]);
+
+                let categories = data["data"]["categories"];
+                categories.sort((a: string, b: string) => {
+                    let weightA = categoryWeights[a] || 0;
+                    let weightB = categoryWeights[b] || 0;
+                    return weightB - weightA;
+                });
+                setCategories(categories);
                 setLoadedMenu(true);
                 console.log(data["data"]["menu"])
             })
@@ -59,6 +97,32 @@ export default function Menu({ route }: { route: any }) {
         router.dismissTo("/dining/search")
     }
 
+    const filterChanged = (category: string, conditional: string) => {
+        let filteredMenu = menu;
+        console.log(conditional)
+        if (category !== "") {
+            filteredMenu = filteredMenu.filter(item => item.category === category);
+        }
+        switch (conditional) {
+            case "Vegan":
+                filteredMenu = filteredMenu.filter(item => item.conditionals.includes("Vegan"));
+                break;
+            case "Vegetarian":
+                filteredMenu = filteredMenu.filter(item => item.conditionals.includes("Vegetarian"));
+                break;
+            case "No Pork":
+                filteredMenu = filteredMenu.filter(item => !item.conditionals.includes("Pork"));
+                break;
+        }
+        setCategory(category);
+        setConditional(conditional);
+        setViewMenu(filteredMenu);
+    }
+    const resetConditional = () => {
+        setConditional("");
+        filterChanged(onCategory, "");
+    }
+
     return (
         <View style={{ flex: 1, alignItems: "center" }}>
             <TouchableOpacity onPress={goBack} style={{ position: "absolute", top: 50, left: 20, zIndex: 10 }} onPressOut={goBack}>
@@ -71,24 +135,33 @@ export default function Menu({ route }: { route: any }) {
             </View>
             <View style={{ width: "100%", padding: 10, flex: 1, alignItems: "center", zIndex: 1 }}>
                 <View style={{ width: "100%", height: 50, marginBottom: 10 }}>
-                    <ScrollView horizontal contentContainerStyle={{ alignItems: "center", paddingLeft: 150 }}>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center", paddingLeft: 150} }>
+                        {/* <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }} onPress={() => filterChanged(onCategory, "Vegan")}>
                             <Text style={{ fontSize: 20 }}>Vegan</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
+                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }} onPress={() => filterChanged(onCategory, "Vegetarian")}>
                             <Text style={{ fontSize: 20 }}>Vegetarian</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }}>
-                            <Text style={{ fontSize: 20 }}>Gluten-Free</Text>
-                        </TouchableOpacity>
+                        <TouchableOpacity style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)" }} onPress={() => filterChanged(onCategory, "No Pork")}>
+                            <Text style={{ fontSize: 20 }}>No Pork</Text>
+                        </TouchableOpacity> */}
+                        {
+                            ["Vegan", "Vegetarian", "Pork"].map((cond, index) => (
+                                // <ConditionalContainer key={index} conditionalName={cond} filterChange={filterChanged} isInConditional={onConditional === cond} />
+                                // Above was an attempt to make a separate component, but it ended up bringing more trouble. (Speciically, categories variable access)
+                                <TouchableOpacity key={index} style={{ paddingHorizontal: 15, paddingVertical: 10, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: "rgba(0,0,0,.2)", backgroundColor: cond == onConditional ? "#F76902" : "" }} onPress={() => {cond === onConditional ? resetConditional() : filterChanged(onCategory, cond)}}>
+                                    <Text style={{ fontSize: 20, ...(cond == onConditional ? { color: "#fff", fontWeight: "bold" } : { color: "#000", fontWeight: "normal" }) }}>{cond}</Text>
+                                </TouchableOpacity>
+                            ))
+                        }
                     </ScrollView>
 
                 </View>
                 <View style={{ width: "95%"}}>
-                    <ScrollView horizontal contentContainerStyle={{ alignItems: "center" }}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: "center" }}>
                         {
                             loadedMenu ? categories.map((category, index) => (
-                                <CategoryContainer key={index} categoryName={category} />
+                                <CategoryContainer key={index} categoryName={category} onClick={() => filterChanged(category, onConditional)} isInCategory={onCategory === category} />
                             )) : <></>
                         }
                     </ScrollView>
@@ -102,7 +175,8 @@ export default function Menu({ route }: { route: any }) {
                         ))
                     } */}
                     {
-                        loadedMenu ? menu.map((item, index) => (
+                        loadedMenu ? viewMenu.map((item, index) => (
+                            item.name === "" ? <></> : 
                             <View key={index} style={{ height: 80, width: "100%", backgroundColor: "rgba(0,0,0,.05)", borderRadius: 5, marginTop: 10, padding: 10 }}>
                                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.name}</Text>
                                 <Text style={{ fontSize: 14 }}>{item.calories} calories</Text>
