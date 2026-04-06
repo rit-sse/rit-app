@@ -10,13 +10,13 @@ const PREF = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
     title: 'Appearance',
-    filename: '/appearance',
+    filename: '/profile/appearance',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
   {
     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
     title: 'Notifications',
-    filename: '/notifications',
+    filename: '/profile/otifications',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
 ];
@@ -25,25 +25,25 @@ const SUPPORT = [
   {
     id: '1',
     title: 'Report an Issue',
-    filename: '/report',
+    filename: '/profile/report',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
   {
     id: '2',
     title: 'FAQ',
-    filename: '/faq',
+    filename: '/profile/faq',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
   {
     id: '3',
     title: 'Terms, Privacy, FERPA',
-    filename: '/terms',
+    filename: '/profile/terms',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
   {
     id: '4',
     title: 'App Information',
-    filename: '/info',
+    filename: '/profile/info',
     icon: '../assets/images/alert-svgrepo-com.png'
   },
 ];
