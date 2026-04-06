@@ -49,12 +49,12 @@ const SUPPORT = [
 ];
 
 function changePage(filename: any, navigator: Router) {
-  GLOBAL.default.navbar?.setState({ navBarVisibility: false });
+  GLOBAL.default.showNavbar ? GLOBAL.default.showNavbar(false) : null;
   navigator.push(filename);
 }
 
 export function backToProfile(navigator: Router) {
-  GLOBAL.default.navbar?.setState({ navBarVisibility: true });
+  GLOBAL.default.showNavbar ? GLOBAL.default.showNavbar(true) : null;
   navigator.push("/profile");
 }
 
