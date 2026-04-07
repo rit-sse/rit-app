@@ -77,11 +77,12 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 120,
     height: 120,
+    borderRadius: "100%"
   },
   page: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
-    paddingHorizontal: 20
+    paddingHorizontal: 30
   },
   user: {
     flex: 3,
@@ -128,7 +129,7 @@ export default function Profile() {
       <SafeAreaView style={styles.page}>
         <View style={styles.user}>
           <Image
-            source = {require("../assets/images/splash-icon.png")}
+            source = {require("../assets/images/placeholderpicture.jpg")}
             style = {styles.profileImage}
           />
           <Text style = {{fontSize: 24, padding: 10}}>Guest</Text>
