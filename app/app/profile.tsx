@@ -67,7 +67,7 @@ const Item = ({title, filename, navigator, icon}: ItemProps) => (
         <Image source = {icon} style = {{width: 30, height: 30, marginRight: 10}}/>
       </View>
       <Text style={styles.title}>{title}</Text>
-      <Text style={styles.trailingIcon}>icon</Text>
+      <Image source={require("../assets/images/profile/grayrightchevron.png")} style={{width: 30, height: 30}}/>
     </View>
   </TouchableOpacity>
 );
