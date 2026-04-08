@@ -1,4 +1,4 @@
-import "./global.css"
+import "../global.css"
 import { RelativePathString, Stack, useNavigation, useRouter } from "expo-router";
 import { View } from "react-native";
 import NavigationBar from "@/components/Navigation/NavigationBar";

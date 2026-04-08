@@ -16,6 +16,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "@rn-primitives/portal": "^1.4.0",
+    "@rn-primitives/slot": "^1.4.0",
     "babel-preset-expo": "^55.0.16",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
