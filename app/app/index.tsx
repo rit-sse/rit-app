@@ -1,9 +1,11 @@
-import { Button, Text, View } from "react-native";
+import React from "react";
+import { Button, Text, View, Alert } from "react-native";
 import { useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import * as GLOBAL from "./globals";
 
 import PagerView from "react-native-pager-view";
+import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 
 const draggableExample = [
   <EventsContainer image={require("../assets/images/careerfair.png")} title={[{content: "Prepare for", color: "#fff"}, {content: "Career Fair", color: "#F76902"}]} key={0} />,
@@ -54,6 +56,7 @@ export default function Index() {
           <Button title={ "Hide Nav Bar"} onPress={() => {GLOBAL.default.navbar?.setState({ navBarVisibility: false })}} />
           <Button title={ "Nav Bar Hiding Animation"} onPress={() => {GLOBAL.default.showNavbar?.(!hiding); setHiding(!hiding);}} />
         </View>
+        <ButtonCustomWrap />
     </View>
   );
 }
