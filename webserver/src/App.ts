@@ -22,7 +22,10 @@ const recursiveLoadRoutes = (dir: string) => {
         if(file.toString() == "route.js") {
             const route = require(`${dir}/${file}`);
             // const routePath = `${dir.split("/webserver/dist/routes")[1]}/`;
-            const routePath = `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/')}/` || '/';
+            let routePath = `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/')}/` || '/';
+            if(!routePath.startsWith("/")) {
+                routePath = "/" + routePath;
+            }
             if (route.GET) {
                 app.get(routePath, route.GET);
             }
