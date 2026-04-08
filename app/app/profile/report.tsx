@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { backToProfile } from "../profile";
 import { useRouter } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,6 +25,10 @@ export default function report() {
   const [reportType, setReportType] = useState("");
 
   const sendReport = () => {
+    if (reportType === "" || description === "") {
+      Alert.alert("Error", "Please fill out all fields before submitting.");
+      return;
+    }
     fetch("http://localhost:3000/report", {
       method: "POST",
       headers: {
@@ -35,19 +39,10 @@ export default function report() {
       }),
       // holy cursed
     })
-      .then((response) => response.text())
-      .then((data) => {
-        console.log(data)
-        // You can show a success message or navigate back to the profile screen here
-      })
-      .catch((error) => {
-        console.error("Error submitting report:", error);
-        // You can show an error message here
-      });
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
+    <SafeAreaView style={{ flex: 1, alignItems: "center", }} className="bg-white">
       <View style={{ width: "90%", height: 70, alignItems: "center", flexDirection: "row" }} >
         <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { backToProfile(navigator); }}>
           <BackChevron style={{ width: 40, height: 40 }} color="#000" />
