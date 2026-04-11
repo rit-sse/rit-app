@@ -12,12 +12,14 @@ export default function RouteCard({ detail }: Readonly<RouteCardProps>) {
       <Text style={styles.routeName}>{detail.routeName}</Text>
       <Text style={styles.routeMeta}>Route {detail.routeId}</Text>
       <View style={styles.divider} />
-      <Text style={styles.label}>Focused stop</Text>
+      <Text style={styles.label}>Current stop</Text>
       <Text style={styles.value}>{detail.stopName}</Text>
       <Text style={styles.label}>Next stop</Text>
       <Text style={styles.value}>{detail.nextStopName ?? "Final stop"}</Text>
       <Text style={styles.label}>ETA</Text>
-      <Text style={styles.value}>{detail.etaMinutes} min</Text>
+      <Text style={styles.value}>
+        {detail.etaMinutes > 0 ? `${detail.etaMinutes} min` : "Arriving"}
+      </Text>
     </View>
   );
 }

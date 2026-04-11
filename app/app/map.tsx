@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -10,25 +10,25 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import {Asset} from "expo-asset";
-import {File} from "expo-file-system";
-import {LeafletView, WebviewLeafletMessage} from "react-native-leaflet-view";
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+import { LeafletView, WebviewLeafletMessage } from "react-native-leaflet-view";
 
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
-import {buildApiUrl} from "@/lib/api";
+import { buildApiUrl } from "@/lib/api";
 import ActiveRouteList from "@/components/bus/ActiveRouteList";
 import RouteCard from "@/components/bus/RouteCard";
 import StopsGrid from "@/components/bus/StopsGrid";
-import {buildActiveRouteList, buildRouteDetail} from "@/components/bus/model";
-import {ActiveRoute, ActiveRouteListItem} from "@/types/bus";
+import { buildActiveRouteList, buildRouteDetail } from "@/components/bus/model";
+import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
 import GearIcon from "../components/svgs/map/GearIcon";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 
 const buttonWidth = 70;
 const buttonSpacing = 15;
-const iconStyle = {height: 0.65 * buttonWidth, width: 0.65 * buttonWidth};
+const iconStyle = { height: 0.65 * buttonWidth, width: 0.65 * buttonWidth };
 const DEFAULT_LOCATION = {
   latitude: 43.083,
   longitude: -77.676,
@@ -45,7 +45,7 @@ const allButtonStyling: StyleProp<ViewStyle> = {
   alignItems: "center",
   shadowColor: "#000",
   shadowRadius: 3.84,
-  shadowOffset: {width: 0, height: 2},
+  shadowOffset: { width: 0, height: 2 },
   elevation: 5,
 };
 
@@ -102,7 +102,7 @@ function LeafletMap({
 
   return (
     <LeafletView
-      source={{html: webViewContent}}
+      source={{ html: webViewContent }}
       mapCenterPosition={{
         lat: DEFAULT_LOCATION.latitude,
         lng: DEFAULT_LOCATION.longitude,
@@ -163,14 +163,19 @@ export default function MapScreen() {
       setErrorMessage(null);
 
       setSelectedRouteId((current) => {
-        if (current && nextRouteItems.some((item) => item.routeId === current)) {
+        if (
+          current &&
+          nextRouteItems.some((item) => item.routeId === current)
+        ) {
           return current;
         }
         return nextRouteItems[0]?.routeId ?? null;
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Unexpected error loading bus data.",
+        error instanceof Error
+          ? error.message
+          : "Unexpected error loading bus data.",
       );
     } finally {
       isFetchingRef.current = false;
@@ -194,10 +199,10 @@ export default function MapScreen() {
       return;
     }
 
-    void loadRoutes({silent: true});
+    void loadRoutes({ silent: true });
 
     const intervalId = setInterval(() => {
-      void loadRoutes({silent: true});
+      void loadRoutes({ silent: true });
     }, BUS_REFRESH_INTERVAL_MS);
 
     return () => {
@@ -208,11 +213,11 @@ export default function MapScreen() {
   useEffect(() => {
     const shouldHideNavbar = scheduleVisible;
     GLOBAL.showNavbar?.(!shouldHideNavbar);
-    GLOBAL.navbar?.setState({navBarVisibility: !shouldHideNavbar});
+    GLOBAL.navbar?.setState({ navBarVisibility: !shouldHideNavbar });
 
     return () => {
       GLOBAL.showNavbar?.(true);
-      GLOBAL.navbar?.setState({navBarVisibility: true});
+      GLOBAL.navbar?.setState({ navBarVisibility: true });
     };
   }, [scheduleVisible]);
 
@@ -223,7 +228,7 @@ export default function MapScreen() {
       <View style={styles.buttonsColumn}>
         <View
           style={[
-            {bottom: 2 * (buttonWidth + buttonSpacing)},
+            { bottom: 2 * (buttonWidth + buttonSpacing) },
             allButtonStyling,
           ]}
         >
@@ -231,7 +236,7 @@ export default function MapScreen() {
         </View>
 
         <View
-          style={[{bottom: buttonWidth + buttonSpacing}, allButtonStyling]}
+          style={[{ bottom: buttonWidth + buttonSpacing }, allButtonStyling]}
         >
           <BusIcon
             onPress={() => {
@@ -244,7 +249,7 @@ export default function MapScreen() {
           />
         </View>
 
-        <View style={[{bottom: 0}, allButtonStyling]}>
+        <View style={[{ bottom: 0 }, allButtonStyling]}>
           <BuildingIcon onPress={() => {}} style={iconStyle} fill="#000" />
         </View>
       </View>
@@ -266,19 +271,13 @@ export default function MapScreen() {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={() => {
-                void loadRoutes({refreshing: true});
+                void loadRoutes({ refreshing: true });
               }}
               tintColor="#f76902"
             />
           }
         >
-          <View style={styles.hero}>
-            <Text style={styles.kicker}>RIT Transit</Text>
-            <Text style={styles.title}>Bus Schedule</Text>
-            <Text style={styles.subtitle}>
-              Pick an active route, then choose one of its stops to inspect the next stop and full stop grid.
-            </Text>
-          </View>
+          <Text style={styles.kicker}>RIT Transit | Bus Schedule</Text>
 
           {isLoading ? (
             <View style={styles.centerState}>
