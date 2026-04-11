@@ -1,27 +1,23 @@
-import "../global.css"
-import { RelativePathString, Stack, useNavigation, useRouter } from "expo-router";
-import { View } from "react-native";
+import "../global.css";
+import React, { useState } from "react";
+import { RelativePathString, Stack, useRouter } from "expo-router";
 import NavigationBar from "@/components/Navigation/NavigationBar";
-import { NavigationContainer, NavigationIndependentTree } from "@react-navigation/native";
-import { useState } from "react";
 import { StackAnimationTypes } from "react-native-screens";
-import { PortalHost } from "@rn-primitives/portal"
-import React from "react";
-
+import { PortalHost } from "@rn-primitives/portal";
 
 export default function RootLayout() {
   const routeNavigator = useRouter();
   const [onScreen, setScreenName] = useState<string>("home");
-
-  const [animationType, setAnimationType] = useState<StackAnimationTypes>("slide_from_right");
+  const [animationType, setAnimationType] =
+    useState<StackAnimationTypes>("slide_from_right");
 
   const pageWeights: { [key: string]: number } = {
-    "home": 0,
-    "map": 1,
-    "grid": 2,
-    "calendar": 3,
-    "profile": 4
-  }
+    home: 0,
+    map: 1,
+    grid: 2,
+    calendar: 3,
+    profile: 4,
+  };
 
   const navigatorFunc = (screenSwitch: string) => {
     let setType = screenSwitch === "/" ? "/home" : screenSwitch;
@@ -35,28 +31,22 @@ export default function RootLayout() {
       setAnimationType("slide_from_right");
     }
     routeNavigator.replace(screenSwitch as RelativePathString);
-  }
+  };
 
   return (
     <>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" options={{
-          animation: animationType
-        }} />
-        <Stack.Screen name="map" options={{
-          animation: animationType
-        }} />
-        <Stack.Screen name="grid" options={{
-          animation: animationType
-        }} />
-        <Stack.Screen name="calendar" options={{
-          animation: animationType
-        }} />
-        <Stack.Screen name="profile" options={{
-          animation: animationType
-        }} />
+        <Stack.Screen name="index" options={{ animation: animationType }} />
+        <Stack.Screen name="map" options={{ animation: animationType }} />
+        <Stack.Screen name="grid" options={{ animation: animationType }} />
+        <Stack.Screen name="calendar" options={{ animation: animationType }} />
+        <Stack.Screen name="profile" options={{ animation: animationType }} />
       </Stack>
-      <NavigationBar onScreen={onScreen} setOnScreen={setScreenName} navigateFunc={navigatorFunc} />
+      <NavigationBar
+        onScreen={onScreen}
+        setOnScreen={setScreenName}
+        navigateFunc={navigatorFunc}
+      />
       <PortalHost />
     </>
   );

@@ -14,9 +14,7 @@ let prisma: PrismaClient | null = null
 
 // Function used to query DB anywhere that is needed (routes, services, etc.)
 export function getPrisma() {
-    if (!prisma) {
-        // Lazy load so app can start without DB
-        prisma = new PrismaClient({ adapter })
-    }
+    // Lazy load so app can start without DB
+    prisma ??= new PrismaClient({adapter});
     return prisma
 }

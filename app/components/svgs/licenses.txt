@@ -23,3 +23,6 @@ https://www.svgrepo.com/svg/533661/chevron-right
 
 Generic Tiny Interface Icons:
 https://www.svgrepo.com/svg/522567/info
+
+BACK CHEVRON:
+https://www.svgrepo.com/svg/522037/chevron-left
