@@ -9,3 +9,6 @@ https://www.svgrepo.com/svg/512328/grid-1525
 
 CALENDAR:
 https://www.svgrepo.com/svg/521530/calendar
+
+BACK CHEVRON:
+https://www.svgrepo.com/svg/522037/chevron-left

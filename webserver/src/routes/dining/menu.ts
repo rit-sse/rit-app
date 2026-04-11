@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ScrapeCache } from "../../db/cache";
+import fs from "fs";
 
 // Preset Menu codes that correspond to MealPlanner IDs
 const MENU_CODES: Record<string, { accountId: number; locationId: number; mealPeriodIds: { [key: string]: number } }> = {
@@ -103,59 +104,72 @@ const VALIDSTORES = Object.keys(MENU_CODES);
 const scrapeCache = new ScrapeCache();
 
 function createMenuAPIURL(store: string, mealPeriodId: number): string {
+    // https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals?menuId=0&accountId=4&locationId=14&mealPeriodId=2&tenantId=20&monthId=3&startDate=4%2F1%2F2026&endDate=4%2F30%2F2026&timeOffset=300
+    // https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals?menuId=0&accountId=4&locationId=14&mealPeriodId=2&tenantId=20&monthId=04&startDate=2026%2F04%2F01&endDate=2026%2F04%2F30&timeOffset=300
     const baseUrl = "https://apiservicelocatorstenantrit.fdmealplanner.com/api/v1/data-locator-webapi/20/meals";
+    let todaysDate = new Date();
     const params = new URLSearchParams({
         menuId: "0",
         accountId: MENU_CODES[store].accountId.toString(),
         locationId: MENU_CODES[store].locationId.toString(),
         mealPeriodId: mealPeriodId.toString(),
         tenantId: "20",
-        monthId: "01",
-        startDate: "01/01/2026",
-        endDate: "01/31/2026",
+        monthId: (todaysDate.getMonth() + 1).toString().padStart(2, "0"),
+        startDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth(), 1).toLocaleDateString("en-US"),
+        endDate: new Date(todaysDate.getFullYear(), todaysDate.getMonth() + 1, 0).toLocaleDateString("en-US"),
         timeOffset: "300"
     });
 
     const url = `${baseUrl}?${params.toString()}`;
+    console.log(url)
     return url;
 }
 
+const MENU_DEBUG = false; // Misnomer, this just skips cache check
+
 export async function GET(req: Request, res: Response) {
+    console.log("Received menu request with query:", req.query);
     if (req.query["store"] && VALIDSTORES.includes(req.query["store"].toString())) {
+        console.log("Processing menu request for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
         let inCache = await scrapeCache.inCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
         let isExpired = await scrapeCache.isExpired(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`);
-        if (inCache && !isExpired) {
+        if ((inCache && !isExpired) && !MENU_DEBUG) {
+            console.log("Serving menu data from cache for store:", req.query["store"].toString(), "and meal period:", req.query["mealPeriod"]?.toString() || "default");
             res.send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
             return;
         }
 
         let data = await fetch(createMenuAPIURL(req.query["store"].toString(), MENU_CODES[req.query["store"].toString()].mealPeriodIds[req.query["mealPeriod"]?.toString() || "default"]))
         let menuData = (await data.json())["result"][0]["allMenuRecipes"];
+        fs.writeFileSync(`./menu_debug_${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}.json`, JSON.stringify(menuData, null, 2));
 
         let formattedMenu: any[] = [];
+        let categories: string[] = [];
 
         for (let item of menuData) {
+            if(item["englishAlternateName"] === "") { 
+                continue; // Skip items without a name
+            }
             formattedMenu.push({
                 name: item["englishAlternateName"],
                 category: item["category"],
                 calories: item["calories"],
                 allergens: item["allergenName"].split(","),
+                conditionals: item["recipeProductDietaryName"].split(",").map((cond: string) => cond.trim()).filter((cond: string) => cond !== "")
             });
+            if (!categories.includes(item["category"])) {
+                categories.push(item["category"]);
+            }
         }
+        console.log(formattedMenu)
 
         await scrapeCache.setCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`, {
             store: req.query["store"].toString(),
             mealPeriod: req.query["mealPeriod"]?.toString() || "default",
-            menu: formattedMenu
+            menu: formattedMenu,
+            categories: categories
         });
-        res.status(200).json({
-            cacheTime: Date.now(),
-            data: {
-                store: req.query["store"].toString(),
-                mealPeriod: req.query["mealPeriod"]?.toString() || "default",
-                menu: formattedMenu
-            }
-        });
+        res.status(200).send(await scrapeCache.getCache(`dining-menu-${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}`));
         return;
     }
     res.status(400).send({ "error": "Invalid or missing 'store' query parameter." });

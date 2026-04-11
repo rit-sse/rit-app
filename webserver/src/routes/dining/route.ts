@@ -12,8 +12,9 @@ interface RestaurantType {
     code: string,
     link: string,
     image: string,
+    bannerImage: string,
     busyLevel: number | null,
-    hoursOfOperations?: { [day: string]: string } | null
+    hoursOfOperations?: { [day: string]: string[] } | null
 }
 // Define the dining types to scrape
 const types = ["restaurant", "market", "coffee", "grocery"];
@@ -22,12 +23,13 @@ const types = ["restaurant", "market", "coffee", "grocery"];
 const prisma = getPrisma();
 
 const scrapeCache = new ScrapeCache();
+const DINING_DEBUG = false
 
 // GET /dining/locations
 export async function GET(req: Request, res: Response) {
 
     // // If cache exists and is recent (within 1 hour), return cached data
-    if (await scrapeCache.inCache("dining_locations") && !(await scrapeCache.isExpired("dining_locations"))) {
+    if (await scrapeCache.inCache("dining_locations") && !(await scrapeCache.isExpired("dining_locations")) || DINING_DEBUG) {
         res.send(await scrapeCache.getCache("dining_locations"));
         return;
     }
@@ -63,11 +65,12 @@ export async function GET(req: Request, res: Response) {
                 id: onId++,
                 name: name.trim(),
                 type: t,
-                open: status.startsWith("Open"),
+                open: status.startsWith("Open") || status.startsWith("Closing Soon"),
                 code: link?.split("location/")[1] || "",
                 image: "https://rit.edu" + imageURL,
                 busyLevel: busyLevel ? parseInt(busyLevel) : null,
-                link: "https://rit.edu" + link || ""
+                link: "https://rit.edu" + link || "",
+                bannerImage: ""
             });
         })
     }
@@ -88,14 +91,25 @@ export async function GET(req: Request, res: Response) {
             $storeScrape('div[class="week-display"]').map((j, el) => {
                 $(el).find('div[class="day-column"]').map((k, dayEl) => {
                     let dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
-                    let hours = $storeScrape(dayEl).find('div[class="day-hours"]').text().trim();
+                    let hours = $storeScrape(dayEl).find('div[class="day-hours"]').html()?.split("<br>");
+                    console.log(dayName, hours?.map((e) => e.trim()));
                     // Initialize hoursOfOperations object if it doesn't exist for whatever reason (shouldn't happen)
                     if (!r.hoursOfOperations) {
                         r.hoursOfOperations = {};
                     }
-                    r.hoursOfOperations[dayName] = hours;
+                    // r.hoursOfOperations[dayName] = hours;
+                    if(!Object.keys(r.hoursOfOperations).includes(dayName)) {
+                        r.hoursOfOperations[dayName] = hours?.map((e) => e.trim()) || [];
+                    }
                 })
             });
+            // restaurants[i].bannerImage = $storeScrape("banner-item-2").find("img").map((x, el) => $storeScrape(el).attr("src")).get()[0] || "";
+            $storeScrape("#banner-item-2").map((x, el) => {
+                const src = $storeScrape(el).find("img").attr("src");
+                if(src) {
+                    restaurants[i].bannerImage = "https://rit.edu" + src;
+                }
+            })
         }
     }
 
@@ -107,7 +121,5 @@ export async function GET(req: Request, res: Response) {
     });
 
     // Return newly scraped data
-    res.send({
-        data: restaurants
-    });
+    res.send(await scrapeCache.getCache("dining_locations"));
 }
