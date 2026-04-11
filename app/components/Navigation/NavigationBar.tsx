@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { View, Dimensions } from "react-native"
 import HomeIcon from "../svgs/HomeIcon"
 import MapIcon from "../svgs/MapIcon"
@@ -6,7 +7,6 @@ import CalendarIcon from "../svgs/CalendarIcon"
 import DefaultProfileIcon from "../svgs/DefaultProfile"
 import NavigationButton from "./NavigationButton"
 import { useRouter } from "expo-router"
-import { useState } from "react"
 import * as GLOBAL from "../../app/globals"
 
 export default function NavigationBar(props: { onScreen: string, setOnScreen: Function, navigateFunc: Function }) {
