@@ -10,5 +10,19 @@ https://www.svgrepo.com/svg/512328/grid-1525
 CALENDAR:
 https://www.svgrepo.com/svg/521530/calendar
 
+GITLAB:
+APPEARANCE: https://www.svgrepo.com/svg/376313/appearance
+BELL: https://www.svgrepo.com/svg/376150/notifications
+
+Micions:
+https://www.svgrepo.com/svg/513856/support
+
+Dazzle:
+https://www.svgrepo.com/svg/532906/book-open
+https://www.svgrepo.com/svg/533661/chevron-right
+
+Generic Tiny Interface Icons:
+https://www.svgrepo.com/svg/522567/info
+
 BACK CHEVRON:
 https://www.svgrepo.com/svg/522037/chevron-left

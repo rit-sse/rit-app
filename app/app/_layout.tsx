@@ -20,7 +20,11 @@ export default function RootLayout() {
   };
 
   const navigatorFunc = (screenSwitch: string) => {
-    const setType = screenSwitch === "/" ? "/home" : screenSwitch;
+    let setType = screenSwitch === "/" ? "/home" : screenSwitch;
+    if (setType === "/" + onScreen) {
+      return;
+    }
+
     if (pageWeights[setType.substring(1)] < pageWeights[onScreen]) {
       setAnimationType("slide_from_left");
     } else {

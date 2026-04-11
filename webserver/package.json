@@ -16,9 +16,9 @@
   "main": "App.js",
   "scripts": {
     "prisma:check": "prisma validate && prisma generate",
-    "start": "tsc && node ./dist/App.js",
-    "build": "npm run prisma:check && tsc",
-    "clean": "rm -rf ./dist"
+    "start": "source .env && tsc && node ./dist/App.js",
+    "clean": "rm -rf ./dist",
+    "build": "npm run prisma:check && tsc"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
