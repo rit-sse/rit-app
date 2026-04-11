@@ -1,12 +1,4 @@
-import React, { useEffect } from "react";
-import BackChevron from "@/components/svgs/BackChevron";
-import { View, Text, TouchableOpacity, ScrollView, Dimensions } from "react-native";
-import { backToProfile } from "../profile";
-import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-// I tried to put this into a separate file but ran into issues 
-const legalJibberJabber = `Terms and Conditions  
+Terms and Conditions  
 ====================
 
 Last updated: April 11, 2026
@@ -264,22 +256,3 @@ If you have any questions about these Terms and Conditions, You can contact
 us:
 
   * By visiting this page on our website: <https://sse.rit.edu/>
-`;
-
-export default function terms() {
-  const navigator = useRouter();
-
-  return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
-      <View style={{ width: "90%", height: 70, alignItems: "center", flexDirection: "row" }} >
-        <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { backToProfile(navigator); }}>
-          <BackChevron style={{ width: 40, height: 40 }} color="#000" />
-          <Text style={{ paddingLeft: 5, fontSize: 25, fontWeight: "bold" }}>Terms</Text>
-        </TouchableOpacity>
-      </View>
-      <ScrollView contentContainerStyle={{width: Dimensions.get("window").width*.85}}>
-        <Text className="text-[16px] w-[85%]">{legalJibberJabber}</Text>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}

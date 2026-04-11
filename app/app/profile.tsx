@@ -136,7 +136,7 @@ export default function Profile() {
           {/* <Text>No Email</Text> */}
         </View>
         <View style={styles.sections}>
-          <View>
+          {/* <View>
             <Text style={styles.sectionTitle}>Preferences</Text>
             <FlatList
               data={PREF}
@@ -144,7 +144,7 @@ export default function Profile() {
               keyExtractor={item => item.id}
               scrollEnabled = {false}
             />
-          </View>
+          </View> */}
           <View>
             <Text style={styles.sectionTitle}>Support</Text>
             <FlatList
