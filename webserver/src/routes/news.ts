@@ -8,6 +8,7 @@ interface NewsArticle {
   title: string;
   description: string;
   date: string;
+  image: string;
 }
 
 const scrapeCache = new ScrapeCache();
@@ -47,6 +48,9 @@ async function scrapeRITNews(page: number = 0): Promise<NewsArticle[]> {
 			
 			// Get the description from card-text
 			const description = $article.find('.card-text p').text().trim();
+
+			// Get image of the news card
+			const image = $article.find('img.card-img-top').attr('src');
 			
 			// Only add if we have valid data
 			if (href && title) {
@@ -54,7 +58,8 @@ async function scrapeRITNews(page: number = 0): Promise<NewsArticle[]> {
 					uri: href.startsWith('http') ? href : `https://www.rit.edu${href}`,
 					title: title.replace(/\s+/g, ' '), // Clean up extra whitespace
 					description: description || '',
-					date: date || 'Date not available'
+					date: date || 'Date not available',
+					image: "https://rit.edu" + image || ''
 				});
 			}
 		});
@@ -115,9 +120,7 @@ export async function GET(req: Request, res: Response) {
 		await scrapeCache.setCache(cacheKey, allArticles);
 
 		// Return newly scraped data
-		res.send({
-			data: allArticles
-		});
+		res.send(await scrapeCache.getCache(cacheKey));
 		
 	} catch (error) {
 		console.error('Error fetching news:', error);

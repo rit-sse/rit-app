@@ -226,19 +226,19 @@ export default function MapScreen() {
       <LeafletMap onMapMessage={onMapMessage} />
 
       <View style={styles.buttonsColumn}>
-        <View
+        {/* <View
           style={[
             { bottom: 2 * (buttonWidth + buttonSpacing) },
             allButtonStyling,
           ]}
         >
           <GearIcon onPress={() => {}} style={iconStyle} fill="#000" />
-        </View>
+        </View> */}
 
         <View
           style={[{ bottom: buttonWidth + buttonSpacing }, allButtonStyling]}
         >
-          <BusIcon
+          <BusIcon  
             onPress={() => {
               if (!isLoading && routeItems.length > 0) {
                 setScheduleVisible(true);
