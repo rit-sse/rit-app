@@ -131,11 +131,11 @@ export default function RestaurantPage({ route }: { route: any }) {
                                 )
                             }
                         </ScrollView></> : null}
-                    <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
+                    {restaurantData.moreInfoLink != undefined ? <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 15 }}>
                         <TouchableOpacity style={{ paddingHorizontal: 18, paddingVertical: 15, backgroundColor: "#F76902" }} onPress={() => seeMenu()}>
                             <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }}>See Full Menu</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> : null}
                     <Text style={{ fontSize: 25, color: "#F76902", alignSelf: "flex-start", marginTop: 20 }}>Hours of Operation</Text>
                     <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Sunday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Sunday"] ?? ""}</Text></Text>
                     <Text style={{ width: "100%", marginTop: 8 }}><Text style={{ fontWeight: "bold", color: "#F76902", fontSize: 16 }}>Monday:</Text> <Text style={{ fontSize: 14 }}>{restaurantData?.hoursOfOperations?.["Monday"] ?? ""}</Text></Text>

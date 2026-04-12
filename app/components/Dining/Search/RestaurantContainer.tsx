@@ -22,7 +22,7 @@ export default function RestaurantContainer(props: {
     }
 }) {
     const router = useRouter();
-    const restaurantHours = props.restaurantData["hoursOfOperations"][daysOfWeek[new Date().getDay() - 1]];
+    const restaurantHours = new Date().getDay() - 1 == -1 ? props.restaurantData["hoursOfOperations"]["Sunday"] : props.restaurantData["hoursOfOperations"][daysOfWeek[new Date().getDay() - 1]];
     const [closestRelevantHour, setClosestRelevantHour] = useState(""); // If restaurant is closed, this means when the next time it will open. If the restaurant is open, this will be when the restaurant closes
 
     const [open, setOpen] = useState(false);
