@@ -3,11 +3,13 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import * as GLOBAL from "./globals";
+import AsyncStorage, {useAsyncStorage} from "@react-native-async-storage/async-storage"
 
 import PagerView from "react-native-pager-view";
 import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
+import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
 
 interface NewsArticle {
   uri: string;
@@ -22,6 +24,18 @@ export default function Index() {
   const [scrollOffset, setscrollOffset] = useState(0);
   const [hiding, setHiding] = useState(false);
   const [news, setNews] = useState<NewsArticle[]>([]);
+
+  const [recentlyViewed, setRecentlyViewed] = useState<string>();
+
+  useEffect(() => {
+    void AsyncStorage.getItem("recently_viewed").then((value) => {
+      if (value) {
+        setRecentlyViewed(value);
+      }
+    });
+  }, []);
+
+
   const draggableExample = [
     <EventsContainer
       image={require("../assets/images/careerfair.png")}
@@ -127,6 +141,12 @@ export default function Index() {
         <View style={{ marginTop: 15, width: "85%" }}>
 
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>Recently Viewed</Text>
+          <ScrollView horizontal={true} style={{ width: "100%" }} showsHorizontalScrollIndicator={false}>
+            {
+              Array.from({ length: 10}).map((_, index) => <RecentlyViewedButton key={index} />)
+            }
+          </ScrollView>
+
         </View>
 
         <View style={{ marginTop: 15, width: "85%" }}>
@@ -136,7 +156,6 @@ export default function Index() {
             news.map((article, index) => (
               <NewsContainer article={article} key={index} index={index} />
             ))
-
           }
         </View>
       </ScrollView>

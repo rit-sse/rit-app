@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { RelativePathString, useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Quick Grid section of the app
@@ -273,6 +274,8 @@ export default function Grid() {
    * @returns null
    */
   async function openLink(link: string) {
+    await AsyncStorage.setItem("recently_viewed", link);
+
     if (link === "PLACEHOLDER") {
       // account for placeholders
       return null;
