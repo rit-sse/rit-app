@@ -40,7 +40,8 @@
           }
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "@rnmapbox/maps"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -13,7 +13,8 @@ import {
 import { Asset } from "expo-asset";
 import { File } from "expo-file-system";
 import { LeafletView, WebviewLeafletMessage } from "react-native-leaflet-view";
-
+import Mapbox, {MapView} from "@rnmapbox/maps"
+Mapbox.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN ?? "");
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -112,6 +113,12 @@ function LeafletMap({
     />
   );
 }
+
+
+function MapboxMap() {
+  return <MapView style={{ flex: 1 }} />;
+}
+
 
 export default function MapScreen() {
   const [routes, setRoutes] = useState<ActiveRoute[]>([]);
@@ -223,7 +230,8 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-      <LeafletMap onMapMessage={onMapMessage} />
+      {/* <LeafletMap onMapMessage={onMapMessage} /> */}
+      <MapboxMap />
 
       <View style={styles.buttonsColumn}>
         {/* <View
