@@ -10,6 +10,7 @@ import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
+import { clearRecentlyView, getRecentlyView, gridBox, storeRecentlyView } from "@/lib/utils";
 
 interface NewsArticle {
   uri: string;
@@ -25,14 +26,10 @@ export default function Index() {
   const [hiding, setHiding] = useState(false);
   const [news, setNews] = useState<NewsArticle[]>([]);
 
-  const [recentlyViewed, setRecentlyViewed] = useState<string>();
+  const [recentlyViewed, setRecentlyViewed] = useState<gridBox[]>();
 
   useEffect(() => {
-    void AsyncStorage.getItem("recently_viewed").then((value) => {
-      if (value) {
-        setRecentlyViewed(value);
-      }
-    });
+    getRecentlyView().then((data) => setRecentlyViewed(data.reverse()))
   }, []);
 
 
@@ -142,13 +139,16 @@ export default function Index() {
 
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>Recently Viewed</Text>
           <ScrollView horizontal={true} style={{ width: "100%" }} showsHorizontalScrollIndicator={false}>
-            {
+            {/* {
               Array.from({ length: 10}).map((_, index) => <RecentlyViewedButton key={index} />)
+            } */}
+            {
+              recentlyViewed ? recentlyViewed.map((item: gridBox, index: number) => <RecentlyViewedButton key={index} item={item} />) : null
             }
           </ScrollView>
 
         </View>
-
+            {/* <Button title="Clear recently viewed data" onPress={() => { clearRecentlyView(); setRecentlyViewed(null); }} /> */}
         <View style={{ marginTop: 15, width: "85%" }}>
 
           <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>News</Text>

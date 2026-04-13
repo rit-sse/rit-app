@@ -4,7 +4,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import * as GLOBAL from "./globals";
 import { useEffect, useState } from "react";
 import Svg, { Use, Image as SVGImage } from 'react-native-svg';
-
+import { Button } from "@/components/ui/button";
+import React from "react";
 
 const PREF = [
   {

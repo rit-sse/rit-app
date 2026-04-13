@@ -14,7 +14,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { RelativePathString, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { storeRecentlyView, gridBox } from "@/lib/utils";
+import { openLink } from "@/lib/utils";
 /**
  * Quick Grid section of the app
  *
@@ -27,32 +28,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
  */
 
 
-interface gridBox {
-  requireImage: any;
-  imageURL: string;
-  name: string;
-  link: string;
-}
-
 export default function Grid() {
   const routeNavigator = useRouter();
   // Icons sourced from https://lucide.dev/icons
   const GRID_DATA: gridBox[] = [
     {
       requireImage: require("../assets/icons/grid/sis.png"),
-      imageURL: "/assets/icons/grid/sis.png",
+      imageID: "sis_icon",
       name: "SIS",
       link: "https://campus.ps.rit.edu/"
     },
     {
       requireImage: require("../assets/icons/grid/course-browser.png"),
-      imageURL: "/assets/icons/grid/course-browser.png",
+      imageID: "course_browser_icon",
       name: "Schedule Maker",
       link: "https://schedulemaker.csh.rit.edu/"
     },
     {
       requireImage: require("../assets/icons/grid/academic-calendar.png"),
-      imageURL: "/assets/icons/grid/academic-calendar.png",
+      imageID: "academic_calendar_icon",
       name: "Academic Calendar",
       link: "https://www.rit.edu/calendar"
     }
@@ -60,49 +54,19 @@ export default function Grid() {
 
   const special_Dining: gridBox = {
     requireImage: require("../assets/icons/grid/dining.png"),
-    imageURL: "/assets/icons/grid/dining.png",
+    imageID: "dining_icon",
     name: "Dining & Menus",
     link: "/dining/search"
   }
 
 
-  /**
-   * opens a given link
-   *
-   * @param link
-   * @returns null
-   */
-  async function openLink(link: string) {
-    await AsyncStorage.setItem("recently_viewed", link);
-
-    if (link === "PLACEHOLDER") {
-      // account for placeholders
-      return null;
-    }
-
-    if (link.includes("http")) {
-      // open a website through a URL
-      // Check if the device can open the URL
-      const supported = await Linking.canOpenURL(link);
-
-      if (supported) {
-        // Open the URL in the default browser
-        await Linking.openURL(link);
-      } else {
-        console.log("This device does not know how to open the URI: " + link);
-      }
-    } else {
-      // switch screens to another screen on this app
-      console.log("Navigating to internal link: " + link);
-      routeNavigator.push(link as RelativePathString);
-    }
-  }
+  
 
   function processQuickLink(gridItem: gridBox) {
     console.log("Processing quick link for: " + gridItem.name);
     console.log("Link: " + gridItem.link);
-    openLink(gridItem.link);
-
+    openLink(gridItem.link, routeNavigator);
+    storeRecentlyView(gridItem);
   }
 
   return (
