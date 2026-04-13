@@ -141,7 +141,7 @@ export async function GET(req: Request, res: Response) {
 
         let data = await fetch(createMenuAPIURL(req.query["store"].toString(), MENU_CODES[req.query["store"].toString()].mealPeriodIds[req.query["mealPeriod"]?.toString() || "default"]))
         let menuData = (await data.json())["result"][0]["allMenuRecipes"];
-        fs.writeFileSync(`./menu_debug_${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}.json`, JSON.stringify(menuData, null, 2));
+        // fs.writeFileSync(`./menu_debug_${req.query["store"].toString()}_${req.query["mealPeriod"]?.toString() || "default"}.json`, JSON.stringify(menuData, null, 2));
 
         let formattedMenu: any[] = [];
         let categories: string[] = [];

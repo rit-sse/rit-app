@@ -1,340 +1,98 @@
 import React from "react";
 import {
   View,
-  Text,
   FlatList,
   StyleSheet,
   Image,
   Pressable,
   Linking,
+  TouchableOpacity,
 } from "react-native";
+import { Text } from "@/components/ui/text";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { RelativePathString, useRouter } from "expo-router";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { storeRecentlyView, gridBox } from "@/lib/utils";
+import { openLink } from "@/lib/utils";
 /**
  * Quick Grid section of the app
  *
  * Last Updated: 2/14/2026
  *
- * Edited by:
+ * Made by: Addison A
+ * Edited by: Jetmon Deng
  *
  *
  */
 
-// Icons sourced from https://lucide.dev/icons
-const IMAGE_DATA = [
-  {
-    source: require("../assets/icons/square-play-48.png"),
-    name: "YouTube",
-    bgColorHex: "#cd0000",
-    link: "https://www.youtube.com/",
-  },
-  {
-    source: require("../assets/icons/map-48.png"),
-    name: "Map",
-    bgColorHex: "#82ffb2",
-    link: "map",
-  },
-  {
-    source: require("../assets/icons/calendar-48.png"),
-    name: "Calendar",
-    bgColorHex: "#fff382",
-    link: "calendar",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "SSE",
-    bgColorHex: "#8bb1ff",
-    link: "https://sse.rit.edu/",
-  },
-  {
-    source: require("../assets/icons/square-play-48.png"),
-    name: "Rick",
-    bgColorHex: "#ff8282",
-    link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff00ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#45fff6",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#82acff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ffac27",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#00c42a",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#fff382",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ffac27",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff8282",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff00ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#45fff6",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff0000",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#8bb1ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#00c42a",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#fff382",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ffac27",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff8282",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff00ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#45fff6",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff0000",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#8bb1ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#00c42a",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#fff382",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ffac27",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff8282",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff00ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#45fff6",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#ff0000",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#8bb1ff",
-    link: "PLACEHOLDER",
-  },
-  {
-    source: require("../assets/icons/hamburger-48.png"),
-    name: "Food",
-    bgColorHex: "#00c42a",
-    link: "PLACEHOLDER",
-  },
-];
-
-const styles = StyleSheet.create({
-  container: {
-    width: "22%",
-    height: 80,
-    margin: 5,
-    marginBottom: 25,
-  },
-  header: {
-    height: 50,
-    fontSize: 32,
-  },
-  footer: {
-    height: 140,
-  },
-  itemContainer: {
-    backgroundColor: "#82acff",
-    aspectRatio: 1, // Optional: makes items perfect squares
-    borderRadius: 15,
-    boxShadow: "2px 2px 2px",
-  },
-  itemImage: {
-    margin: "auto",
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  itemText: {
-    margin: "auto",
-    paddingTop: 5,
-    textAlign: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-});
 
 export default function Grid() {
   const routeNavigator = useRouter();
-
-  /**
-   * opens a given link
-   *
-   * @param link
-   * @returns null
-   */
-  async function openLink(link: string) {
-    if (link === "PLACEHOLDER") {
-      // account for placeholders
-      return null;
+  // Icons sourced from https://lucide.dev/icons
+  const GRID_DATA: gridBox[] = [
+    {
+      requireImage: require("../assets/icons/grid/sis.png"),
+      imageID: "sis_icon",
+      name: "SIS",
+      link: "https://campus.ps.rit.edu/"
+    },
+    {
+      requireImage: require("../assets/icons/grid/course-browser.png"),
+      imageID: "course_browser_icon",
+      name: "Schedule Maker",
+      link: "https://schedulemaker.csh.rit.edu/"
+    },
+    {
+      requireImage: require("../assets/icons/grid/academic-calendar.png"),
+      imageID: "academic_calendar_icon",
+      name: "Academic Calendar",
+      link: "https://www.rit.edu/calendar"
     }
+  ]
 
-    if (link.includes("http")) {
-      // open a website through a URL
-      // Check if the device can open the URL
-      const supported = await Linking.canOpenURL(link);
+  const special_Dining: gridBox = {
+    requireImage: require("../assets/icons/grid/dining.png"),
+    imageID: "dining_icon",
+    name: "Dining & Menus",
+    link: "/dining/search"
+  }
 
-      if (supported) {
-        // Open the URL in the default browser
-        await Linking.openURL(link);
-      } else {
-        console.log("This device does not know how to open the URI: " + link);
-      }
-    } else {
-      // switch screens to another screen on this app
-      routeNavigator.replace(link as RelativePathString);
-    }
+
+  
+
+  function processQuickLink(gridItem: gridBox) {
+    console.log("Processing quick link for: " + gridItem.name);
+    console.log("Link: " + gridItem.link);
+    openLink(gridItem.link, routeNavigator);
+    storeRecentlyView(gridItem);
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <View style={styles.header}></View>
-      <FlatList
-        data={IMAGE_DATA}
-        numColumns={4}
-        style={{ width: "100%", paddingLeft: 20, paddingRight: 20 }}
-        renderItem={(
-          { item }, // renders each quick grid item with its (48x48) icon and text
-        ) => (
-          <View style={styles.container}>
-            <Pressable
-              onPress={() => openLink(item.link)}
-              style={({ pressed }) => [
-                {
-                  opacity: pressed ? 0.4 : 1,
-                },
-                styles.itemContainer,
-                { backgroundColor: item.bgColorHex },
-              ]}
-              hitSlop={{
-                top: 5,
-                left: 5,
-                right: 5,
-                bottom: 25,
-              }}
-              pressRetentionOffset={{
-                top: 5,
-                left: 5,
-                right: 5,
-                bottom: 25,
-              }}
-            >
-              <Image source={item.source} style={styles.itemImage}></Image>
-            </Pressable>
-            <Text style={[styles.itemText, { zIndex: -1 }]}>{item.name}</Text>
-          </View>
-        )}
-      />
-      <View style={styles.footer}></View>
-    </View>
+    <SafeAreaView className="flex-1 justify-center items-center">
+      <View className="w-full  items-center h-[80%]">
+        <TouchableOpacity activeOpacity={0.8} className="w-[85%] h-24 rounded-lg overflow-hidden" onPress={() => processQuickLink(special_Dining)}>
+          <LinearGradient colors={["#F76902", "#f7680271"]} start={{ x: 0.0, y: 0.5 }} end={{ x: 1.0, y: .5 }} style={{ position: "absolute", width: "100%", height: "100%", borderRadius: 8, zIndex: 1 }} />
+          <Image source={require("../assets/images/special/dining.jpg")} className="w-full h-full rounded-lg absolute z-0" />
+          <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">Dining & Menus</Text>
+        </TouchableOpacity>
+        <FlatList
+          data={GRID_DATA}
+          numColumns={3}
+          keyExtractor={(item) => item.name}
+          style={{ width: "85%", flex: 1 }}
+          columnWrapperStyle={{ justifyContent: "space-between" }}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity activeOpacity={0.5} key={item.name} onPress={() => processQuickLink(item)} className="w-[100px] h-[120px] flex items-center justify-center bg-gray-200 rounded-lg my-3 border-[1px] border-gray-400">
+              <Image source={item.requireImage} className="w-12 h-12" />
+              <Text className="text-center ">{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
+    </SafeAreaView>
   );
 }
