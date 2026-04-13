@@ -13,8 +13,8 @@ import {
 import { Asset } from "expo-asset";
 import { File } from "expo-file-system";
 import { LeafletView, WebviewLeafletMessage } from "react-native-leaflet-view";
-import Mapbox, {MapView} from "@rnmapbox/maps"
-Mapbox.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN ?? "");
+import Mapbox, {Camera, MapView} from "@rnmapbox/maps"
+Mapbox.setAccessToken("<INSERT YOUR MAPBOX ACCESS TOKEN>");
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -34,6 +34,13 @@ const DEFAULT_LOCATION = {
   latitude: 43.083,
   longitude: -77.676,
 };
+
+// const RIT_CAMPUS_BOUNDS = {
+//   northEast: { latitude: 43.11894, longitude: -77.74673 },
+//   southWest: { latitude: 43.04571, longitude: -77.60746 },
+
+// }
+
 const BUS_REFRESH_INTERVAL_MS = 60_000;
 
 const allButtonStyling: StyleProp<ViewStyle> = {
@@ -116,7 +123,18 @@ function LeafletMap({
 
 
 function MapboxMap() {
-  return <MapView style={{ flex: 1 }} />;
+  return <MapView style={{ flex: 1 }}>
+    <Camera
+      centerCoordinate={[DEFAULT_LOCATION.longitude, DEFAULT_LOCATION.latitude]}
+      // maxBounds={{
+      //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
+      //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
+      // }}
+      zoomLevel={14}
+      animationMode="none"
+      animationDuration={0}
+    />
+  </MapView>;
 }
 
 
@@ -227,6 +245,8 @@ export default function MapScreen() {
       GLOBAL.navbar?.setState({ navBarVisibility: true });
     };
   }, [scheduleVisible]);
+
+
 
   return (
     <View style={styles.screen}>
