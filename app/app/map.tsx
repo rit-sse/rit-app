@@ -22,7 +22,6 @@ import RouteCard from "@/components/bus/RouteCard";
 import StopsGrid from "@/components/bus/StopsGrid";
 import { buildActiveRouteList, buildRouteDetail } from "@/components/bus/model";
 import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
-import GearIcon from "../components/svgs/map/GearIcon";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 
@@ -238,7 +237,7 @@ export default function MapScreen() {
         <View
           style={[{ bottom: buttonWidth + buttonSpacing }, allButtonStyling]}
         >
-          <BusIcon  
+          <BusIcon
             onPress={() => {
               if (!isLoading && routeItems.length > 0) {
                 setScheduleVisible(true);
