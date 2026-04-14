@@ -13,8 +13,7 @@ import {
 import { Asset } from "expo-asset";
 import { File } from "expo-file-system";
 import { LeafletView, WebviewLeafletMessage } from "react-native-leaflet-view";
-import Mapbox, {Camera, MapView} from "@rnmapbox/maps"
-Mapbox.setAccessToken("<INSERT YOUR MAPBOX ACCESS TOKEN>");
+import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -25,6 +24,11 @@ import { buildActiveRouteList, buildRouteDetail } from "@/components/bus/model";
 import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
+
+const MAPBOX_PUBLIC_ACCESS_TOKEN =
+  process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
+
+Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
 
 const buttonWidth = 70;
 const buttonSpacing = 15;
@@ -120,22 +124,25 @@ function LeafletMap({
   );
 }
 
-
 function MapboxMap() {
-  return <MapView style={{ flex: 1 }}>
-    <Camera
-      centerCoordinate={[DEFAULT_LOCATION.longitude, DEFAULT_LOCATION.latitude]}
-      // maxBounds={{
-      //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
-      //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
-      // }}
-      zoomLevel={14}
-      animationMode="none"
-      animationDuration={0}
-    />
-  </MapView>;
+  return (
+    <MapView style={{ flex: 1 }}>
+      <Camera
+        centerCoordinate={[
+          DEFAULT_LOCATION.longitude,
+          DEFAULT_LOCATION.latitude,
+        ]}
+        // maxBounds={{
+        //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
+        //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
+        // }}
+        zoomLevel={14}
+        animationMode="none"
+        animationDuration={0}
+      />
+    </MapView>
+  );
 }
-
 
 export default function MapScreen() {
   const [routes, setRoutes] = useState<ActiveRoute[]>([]);
@@ -244,8 +251,6 @@ export default function MapScreen() {
       GLOBAL.navbar?.setState({ navBarVisibility: true });
     };
   }, [scheduleVisible]);
-
-
 
   return (
     <View style={styles.screen}>
