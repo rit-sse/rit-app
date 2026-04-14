@@ -20,10 +20,10 @@ export default function calendar() {
 
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center", backgroundColor: "#ffffff" }} >
-      <View className="w-[85%]">
+    <SafeAreaView style={{ flex: 1, alignItems: "center", backgroundColor: "#ffffff",}} >
+      <View className="w-[90%]">
         <Text className="text-[30px] font-bold">Events</Text>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 150}}>
           {
             events.map((event: any, index: number) => (
               <EventContainer key={index} event={event} />
