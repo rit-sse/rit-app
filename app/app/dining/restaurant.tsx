@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, St
 import { use, useEffect, useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
 import VisitingChef from "@/components/Dining/RestaurantDetailComponents/VisitingChef";
+import { buildApiUrl } from "@/lib/api";
 
 export default function RestaurantPage({ route }: { route: any }) {
     const router = useRouter();
@@ -58,7 +59,7 @@ export default function RestaurantPage({ route }: { route: any }) {
     // }, [restaurantCode]);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/dining/restaurantdetail?restaurantCode=${restaurantCode}`)
+        fetch(buildApiUrl(`/dining/restaurantdetail?restaurantCode=${restaurantCode}`))
             .then(response => response.json())
             .then(data => {
                 setRestaurantData(data["data"]);
