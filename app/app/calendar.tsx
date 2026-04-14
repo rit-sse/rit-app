@@ -1,9 +1,36 @@
-import React, { View, Text } from "react-native";
+import { useState } from "react";
+import React, { View, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from "@/components/ui/text";
+import { useEffect } from "react";
+import { buildApiUrl } from "@/lib/api";
+import EventContainer from "@/components/Events/EventContainer";
 
 export default function calendar() {
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(buildApiUrl("/events"))
+      .then(response => response.json())
+      .then((data: any) => {
+        console.log(data);
+        setEvents(data["data"].filter((event: any) => event.eventName != null));
+      });
+  }, []);
+
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Calendar Screen</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1, alignItems: "center", backgroundColor: "#ffffff" }} >
+      <View className="w-[85%]">
+        <Text className="text-[30px] font-bold">Events</Text>
+        <ScrollView>
+          {
+            events.map((event: any, index: number) => (
+              <EventContainer key={index} event={event} />
+            ))
+          }
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
