@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
+import { ScrapeCache } from "../../db/cache";
 import * as cheerio from "cheerio";
 
+const scrapeCache = new ScrapeCache();
+
+
 export async function GET(req: Request, res: Response) {
+    if(await scrapeCache.getCache("club_infos") && !(await scrapeCache.isExpired("club_infos"))) {
+        return res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
+    }
     let clubPage = await (await fetch("https://campusgroups.rit.edu/club_signup?view=all&group_type=9999")).text();
     let $ = cheerio.load(clubPage);
 
@@ -50,6 +57,7 @@ export async function GET(req: Request, res: Response) {
             closed: fullClub,
             image: clubImage
         })
-    }
-    res.send(parsedClubs);
+    }   
+    await scrapeCache.setCache("club_infos", parsedClubs);
+    res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
 }

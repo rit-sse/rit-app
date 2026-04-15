@@ -51,6 +51,7 @@ export default {
           RNMapboxMapsImpl: "mapbox",
         },
       ],
+      "expo-notifications",
     ],
     experiments: {
       typedRoutes: true,
