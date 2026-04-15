@@ -5,6 +5,7 @@ import BackChevron from "../../components/svgs/BackChevron"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import RestaurantContainerSkeleton from "@/components/Dining/Search/RestaurantContainerSkeleton"
+import { buildApiUrl } from "@/lib/api";
 
 export default function DiningSearch() {
     const navigator = useRouter();
@@ -13,7 +14,7 @@ export default function DiningSearch() {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        fetch("http://localhost:3000/dining")
+        fetch(buildApiUrl("/dining"))
             .then(response => response.json())
             .then(data => {
                 setRestaurantsData(data["data"]["data"]);

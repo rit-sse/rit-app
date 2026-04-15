@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { buildApiUrl } from "@/lib/api";
 
 export default function report() {
   const navigator = useRouter();
@@ -29,7 +30,7 @@ export default function report() {
       Alert.alert("Error", "Please fill out all fields before submitting.");
       return;
     }
-    fetch("http://localhost:3000/report", {
+    fetch(buildApiUrl("/report"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

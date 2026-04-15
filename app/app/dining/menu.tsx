@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView, Button, TouchableOpacity, Dimensions, St
 import { use, useEffect, useState } from "react";
 import BackChevron from "@/components/svgs/BackChevron";
 import CategoryContainer from "@/components/Dining/Search/CategoryContainer";
+import { buildApiUrl } from "@/lib/api";
 
 export default function Menu({ route }: { route: any }) {
     const router = useRouter();
@@ -53,7 +54,7 @@ export default function Menu({ route }: { route: any }) {
         setCategories([]);
         setCategory("");
         setLoadedMenu(false);
-        fetch(`http://localhost:3000/dining/menu?store=${restaurantCode}`)
+        fetch(buildApiUrl("/dining/menu", { store: String(restaurantCode) }))
             .then(response => response.json())
             .then(data => {
                 setMenu(data["data"]["menu"]);

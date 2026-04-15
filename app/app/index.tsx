@@ -10,6 +10,7 @@ import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
+import { buildApiUrl } from "@/lib/api";
 import { clearRecentlyView, getRecentlyView, gridBox, storeRecentlyView } from "@/lib/utils";
 
 interface NewsArticle {
@@ -59,7 +60,7 @@ export default function Index() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/news")
+    fetch(buildApiUrl("/news"))
       .then(response => response.json())
       .then(data => setNews(data["data"]))
       .catch(error => console.error('Error fetching news:', error));
