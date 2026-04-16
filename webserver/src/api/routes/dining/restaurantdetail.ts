@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-import { ScrapeCache } from "../../db/cache";
+import { ScrapeCache } from "../../../db/cache";
 import { writeFileSync } from "node:fs";
 
 const scrapeCache = new ScrapeCache();

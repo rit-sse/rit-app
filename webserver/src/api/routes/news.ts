@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-import { ScrapeCache } from "../db/cache";
+import { ScrapeCache } from "../../db/cache";
 // import fs  from 'fs'; used this to make a html file of rit news, just for debugging stuff
 // psql -U postgres -h localhost -p 5433 -d ritApp to log into sql db on the termial, JUST TO LOOK AT DATA DO NOT USE RAW SQL WE HAVE PRISMA FOR A REASON
 interface NewsArticle {

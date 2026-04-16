@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-import { getPrisma } from "../../db/client";
-import { ScrapeCache } from "../../db/cache";
+import { getPrisma } from "../../../db/client";
+import { ScrapeCache } from "../../../db/cache";
 
 // Prisma Client Setup
 const prisma = getPrisma();

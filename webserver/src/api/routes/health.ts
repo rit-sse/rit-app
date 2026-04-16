@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getPrisma } from "../db/client";
+import { getPrisma } from "../../db/client";
 
 export async function GET(req: Request, res: Response) {
   let prisma = getPrisma();

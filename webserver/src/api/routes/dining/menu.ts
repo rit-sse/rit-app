@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ScrapeCache } from "../../db/cache";
+import { ScrapeCache } from "../../../db/cache";
 import fs from "fs";
 
 // Preset Menu codes that correspond to MealPlanner IDs
