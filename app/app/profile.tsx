@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 120,
     height: 120,
-    borderRadius: "100%"
+    borderRadius: 9999
   },
   page: {
     flex: 1,
