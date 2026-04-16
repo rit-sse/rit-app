@@ -60,9 +60,7 @@ function filterMenu(
 
   switch (conditional) {
     case "Vegan":
-      return filteredMenu.filter((item) =>
-        item.conditionals.includes("Vegan"),
-      );
+      return filteredMenu.filter((item) => item.conditionals.includes("Vegan"));
     case "Vegetarian":
       return filteredMenu.filter((item) =>
         item.conditionals.includes("Vegetarian"),

@@ -56,7 +56,7 @@ export const clearRecentlyView = async () => {
    * Created by Addison A
    */
 export async function openLink(link: string, routeNavigator: any) {
-  await AsyncStorage.setItem("recently_viewed", link);
+  // await AsyncStorage.setItem("recently_viewed", link);
 
   if (link === "PLACEHOLDER") {
     // account for placeholders

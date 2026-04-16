@@ -6,8 +6,8 @@ import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
+import { clearRecentlyView, getRecentlyView, gridBox, storeRecentlyView } from "@/lib/utils";
 import { buildApiUrl } from "@/lib/api";
-import { getRecentlyView, gridBox } from "@/lib/utils";
 
 interface NewsArticle {
   uri: string;
@@ -54,9 +54,15 @@ export default function Index() {
 
   useEffect(() => {
     fetch(buildApiUrl("/news"))
+<<<<<<< HEAD
       .then((response) => response.json())
       .then((data) => setNews(data["data"]))
       .catch((error) => console.error("Error fetching news:", error));
+=======
+      .then(response => response.json())
+      .then(data => setNews(data["data"]))
+      .catch(error => console.error('Error fetching news:', error));
+>>>>>>> dev/staging
   }, []);
 
   return (

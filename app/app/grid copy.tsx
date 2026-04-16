@@ -274,7 +274,7 @@ export default function Grid() {
    * @returns null
    */
   async function openLink(link: string) {
-    await AsyncStorage.setItem("recently_viewed", link);
+    // await AsyncStorage.setItem("recently_viewed", link);
 
     if (link === "PLACEHOLDER") {
       // account for placeholders
