@@ -124,25 +124,25 @@ function LeafletMap({
   );
 }
 
-// function MapboxMap() {
-//   return (
-//     <MapView style={{ flex: 1 }}>
-//       <Camera
-//         centerCoordinate={[
-//           DEFAULT_LOCATION.longitude,
-//           DEFAULT_LOCATION.latitude,
-//         ]}
-//         // maxBounds={{
-//         //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
-//         //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
-//         // }}
-//         zoomLevel={14}
-//         animationMode="none"
-//         animationDuration={0}
-//       />
-//     </MapView>
-//   );
-// }
+//  function MapboxMap() {
+//    return (
+//      <MapView style={{ flex: 1 }}>
+//        <Camera
+//          centerCoordinate={[
+//            DEFAULT_LOCATION.longitude,
+//            DEFAULT_LOCATION.latitude,
+//          ]}
+//          // maxBounds={{
+//          //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
+//          //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
+//          // }}
+//          zoomLevel={14}
+//          animationMode="none"
+//          animationDuration={0}
+//        />
+//      </MapView>
+//    );
+//  }
 
 export default function MapScreen() {
   const [routes, setRoutes] = useState<ActiveRoute[]>([]);
@@ -254,8 +254,8 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-      <LeafletMap onMapMessage={onMapMessage} />
-      {/* <MapboxMap /> */}
+     <LeafletMap onMapMessage={onMapMessage} />
+     {/* <MapboxMap /> */}
 
       <View style={styles.buttonsColumn}>
         {/* <View
