@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
-import { useEffect } from "react";
 import { buildApiUrl } from "@/lib/api";
 import EventContainer from "@/components/Events/EventContainer";
 
