@@ -10,6 +10,7 @@ import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
+import { buildApiUrl } from "@/lib/api";
 import { clearRecentlyView, getRecentlyView, gridBox, storeRecentlyView } from "@/lib/utils";
 import { buildApiUrl } from "@/lib/api";
 

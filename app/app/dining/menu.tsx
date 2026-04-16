@@ -54,7 +54,7 @@ export default function Menu({ route }: { route: any }) {
         setCategories([]);
         setCategory("");
         setLoadedMenu(false);
-        fetch(buildApiUrl(`/dining/menu?store=${restaurantCode}`))
+        fetch(buildApiUrl("/dining/menu", { store: String(restaurantCode) }))
             .then(response => response.json())
             .then(data => {
                 setMenu(data["data"]["menu"]);

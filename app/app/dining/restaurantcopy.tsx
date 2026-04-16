@@ -24,7 +24,7 @@ export default function RestaurantPage({ route }: { route: any }) {
     const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch(buildApiUrl(`/dining/menu?store=${restaurantCode}`))
+        fetch(buildApiUrl("/dining/menu", { store: String(restaurantCode) }))
             .then(response => response.json())
             .then(data => {
                 setMenu(data["data"]["menu"]);
