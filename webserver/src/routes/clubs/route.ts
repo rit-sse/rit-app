@@ -46,8 +46,8 @@ export async function GET(req: Request, res: Response) {
         });
 
         // Get image
-        let clubImage = $(club).find('img').attr('src') || '';
-        clubImage = "http://campusgroups.rit.edu" + clubImage;
+        let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
+        clubImage = "https://static-prod-us-east-1.campusgroups.com" + clubImage;
 
         parsedClubs.push({
             name: clubName,
