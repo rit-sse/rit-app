@@ -59,7 +59,7 @@ export default function RestaurantPage({ route }: { route: any }) {
     // }, [restaurantCode]);
 
     useEffect(() => {
-        fetch(buildApiUrl(`/dining/restaurantdetail?restaurantCode=${restaurantCode}`))
+        fetch(buildApiUrl("/dining/restaurantdetail", { restaurantCode: String(restaurantCode) }))
             .then(response => response.json())
             .then(data => {
                 setRestaurantData(data["data"]);
