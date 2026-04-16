@@ -1,6 +1,12 @@
 import * as cheerio from "cheerio";
 import { CheerioAPI } from "cheerio";
-import type { Route, RouteSchedule, ServiceDay, ServiceWindow, Stop } from "../../types/bus";
+import type {
+  Route,
+  RouteSchedule,
+  ServiceDay,
+  ServiceWindow,
+  Stop,
+} from "../../../types/bus";
 
 interface RouteMetadata extends Route {
   url: string;
@@ -17,7 +23,9 @@ const DAY_NAME_TO_INDEX: Record<string, ServiceDay> = {
 };
 
 function parseTimeToMinutes(rawTime: string): number | null {
-  const match = /(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m?\.?/i.exec(rawTime.trim());
+  const match = /(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m?\.?/i.exec(
+    rawTime.trim(),
+  );
   if (!match) {
     return null;
   }
@@ -80,7 +88,9 @@ function parseServiceDays(days: string): ServiceDay[] {
   }
 
   if (normalizedDays.includes("through")) {
-    const [startLabel, endLabel] = normalizedDays.split("through").map((part) => part.trim());
+    const [startLabel, endLabel] = normalizedDays
+      .split("through")
+      .map((part) => part.trim());
     const start = DAY_NAME_TO_INDEX[startLabel];
     const end = DAY_NAME_TO_INDEX[endLabel];
 
@@ -103,7 +113,9 @@ function parseServiceDays(days: string): ServiceDay[] {
   return Array.from(new Set(matchedDays)).sort((a, b) => a - b) as ServiceDay[];
 }
 
-export function enrichRouteServiceFields<T extends Pick<Route, "days" | "timeRange">>(
+export function enrichRouteServiceFields<
+  T extends Pick<Route, "days" | "timeRange">,
+>(
   route: T & Partial<Pick<Route, "serviceDays" | "serviceWindow">>,
 ): T & Pick<Route, "serviceDays" | "serviceWindow"> {
   return {

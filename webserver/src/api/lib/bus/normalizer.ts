@@ -1,5 +1,9 @@
-import type {NormalizedResidenceSchedule, NormalizedRoute, ResidenceSchedule, Route } from '../../types/bus';
-
+import type {
+  NormalizedResidenceSchedule,
+  NormalizedRoute,
+  ResidenceSchedule,
+  Route,
+} from "../../../types/bus";
 
 /**
  * Normalizes raw scraped schedule data to ensure consistent formatting.
@@ -16,22 +20,24 @@ import type {NormalizedResidenceSchedule, NormalizedRoute, ResidenceSchedule, Ro
  * const normalized = normalizeSchedules(raw);
  * // "7 a.m.- 11:46 p.m." becomes "7:00 a.m. - 11:46 p.m."
  */
-export function normalizeSchedules(schedules: ResidenceSchedule[]): NormalizedResidenceSchedule[] {
-    return schedules.map(schedule => ({
-        ...schedule,
-        routes: schedule.routes.map(normalizeRoute)
-    }));
+export function normalizeSchedules(
+  schedules: ResidenceSchedule[],
+): NormalizedResidenceSchedule[] {
+  return schedules.map((schedule) => ({
+    ...schedule,
+    routes: schedule.routes.map(normalizeRoute),
+  }));
 }
 
 /**
  * Normalizes a single route's time range and days fields
  */
 function normalizeRoute(route: Route): NormalizedRoute {
-    return {
-        ...route,
-        timeRange: normalizeTimeRange(route.timeRange),
-        days: normalizeDays(route.days),
-    };
+  return {
+    ...route,
+    timeRange: normalizeTimeRange(route.timeRange),
+    days: normalizeDays(route.days),
+  };
 }
 
 /**
@@ -42,15 +48,15 @@ function normalizeRoute(route: Route): NormalizedRoute {
  * @returns Normalized time range string
  */
 function normalizeTimeRange(timeRange: string): string {
-    return timeRange
-        .replace(/\s*-\s*/g, ' - ')
-        .replace(/(\d+)\s*([ap]\.?m\.?)/gi, (_, num, period) => {
-            const normalizedPeriod = period.toLowerCase().replace(/\./g, '');
-            const paddedNum = num.length === 1 ? `${num}:00` : num;
-            return `${paddedNum} ${normalizedPeriod}.`;
-        })
-        .replace(/\s+/g, ' ')
-        .trim();
+  return timeRange
+    .replace(/\s*-\s*/g, " - ")
+    .replace(/(\d+)\s*([ap]\.?m\.?)/gi, (_, num, period) => {
+      const normalizedPeriod = period.toLowerCase().replace(/\./g, "");
+      const paddedNum = num.length === 1 ? `${num}:00` : num;
+      return `${paddedNum} ${normalizedPeriod}.`;
+    })
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /**
@@ -60,7 +66,5 @@ function normalizeTimeRange(timeRange: string): string {
  * @returns Normalized days string
  */
 function normalizeDays(days: string): string {
-    return days
-        .replace(/\s+/g, ' ')
-        .trim();
+  return days.replace(/\s+/g, " ").trim();
 }

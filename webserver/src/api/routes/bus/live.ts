@@ -1,6 +1,9 @@
-import {Request, Response} from "express";
-import {ScrapeCache} from "../../db/cache";
-import {getActiveRoutes, getRoutesFromCacheOrScrape} from "../../lib/bus/liveData";
+import { Request, Response } from "express";
+import { ScrapeCache } from "@/api/db/cache";
+import {
+  getActiveRoutes,
+  getRoutesFromCacheOrScrape,
+} from "@/api/lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 
@@ -27,17 +30,17 @@ const scrapeCache = new ScrapeCache();
  * @returns 200 with active bus predictions, or 500 on error
  */
 export async function GET(req: Request, res: Response) {
-    try {
-        const routes = await getRoutesFromCacheOrScrape(scrapeCache);
-        const activeRoutes = getActiveRoutes(routes);
+  try {
+    const routes = await getRoutesFromCacheOrScrape(scrapeCache);
+    const activeRoutes = getActiveRoutes(routes);
 
-        res.send({
-            data: activeRoutes,
-        });
-    } catch (err) {
-        res.status(500).send({
-            error: "Failed to fetch live bus data",
-            message: err instanceof Error ? err.message : String(err)
-        });
-    }
+    res.send({
+      data: activeRoutes,
+    });
+  } catch (err) {
+    res.status(500).send({
+      error: "Failed to fetch live bus data",
+      message: err instanceof Error ? err.message : String(err),
+    });
+  }
 }
