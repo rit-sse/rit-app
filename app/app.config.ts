@@ -21,6 +21,7 @@ export default {
         backgroundImage: "./assets/images/android-icon-background.png",
         monochromeImage: "./assets/images/android-icon-monochrome.png",
       },
+      usesCleartextTraffic: true,
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: "com.sse.rit.app",
@@ -45,6 +46,8 @@ export default {
         },
       ],
       "expo-asset",
+      "expo-font",
+      "expo-web-browser",
       [
         "@rnmapbox/maps",
         {
