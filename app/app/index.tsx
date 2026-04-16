@@ -54,15 +54,9 @@ export default function Index() {
 
   useEffect(() => {
     fetch(buildApiUrl("/news"))
-<<<<<<< HEAD
       .then((response) => response.json())
       .then((data) => setNews(data["data"]))
       .catch((error) => console.error("Error fetching news:", error));
-=======
-      .then(response => response.json())
-      .then(data => setNews(data["data"]))
-      .catch(error => console.error('Error fetching news:', error));
->>>>>>> dev/staging
   }, []);
 
   return (

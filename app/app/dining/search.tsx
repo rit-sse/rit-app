@@ -5,11 +5,7 @@ import BackChevron from "../../components/svgs/BackChevron"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import RestaurantContainerSkeleton from "@/components/Dining/Search/RestaurantContainerSkeleton"
-<<<<<<< HEAD
 import { buildApiUrl } from "@/lib/api";
-=======
-import { buildApiUrl } from "@/lib/api"
->>>>>>> dev/staging
 
 export default function DiningSearch() {
     const navigator = useRouter();
