@@ -1,4 +1,3 @@
-import "dotenv/config";
 
 export default {
   expo: {
@@ -55,6 +54,7 @@ export default {
         },
       ],
       "expo-notifications",
+      "expo-image"
     ],
     experiments: {
       typedRoutes: true,

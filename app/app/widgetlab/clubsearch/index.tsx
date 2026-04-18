@@ -26,6 +26,7 @@ export default function ClubSearch() {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [clubLimit, setClubLimit] = useState<number>(20);
     const [closedStatus, setClosedStatus] = useState<string>("notSelected");
+    const [passwordLockedStatus, setPasswordLockedStatus] = useState<string>("notSelected");
     const [filterView, setFilterView] = useState<any[]>([]);
 
     useEffect(() => {
@@ -52,8 +53,12 @@ export default function ClubSearch() {
             const isClosed = (closedStatus == "closed");
             filteredClubs = filteredClubs.filter(club => club.closed === isClosed);
         }
+        if (passwordLockedStatus !== "notSelected" && passwordLockedStatus !== undefined) {
+            const isPasswordLocked = (passwordLockedStatus == "passwordLocked");
+            filteredClubs = filteredClubs.filter(club => club.isPasswordLocked === isPasswordLocked);
+        }
         setFilterView(filteredClubs);
-    }, [searchQuery, closedStatus, clubList]);
+    }, [searchQuery, closedStatus, clubList, passwordLockedStatus]);
 
     const onScrollEvent = (scrollEvent: any) => {
         const scrollPosition = scrollEvent.nativeEvent.contentOffset.y;
@@ -88,11 +93,22 @@ export default function ClubSearch() {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
+                <Select onValueChange={(value) => {setPasswordLockedStatus(value?.value ? value.value : "notSelected");}} >
+                    <SelectTrigger className="w-fit">
+                        <SelectValue placeholder="Password Locked" />
+                    </SelectTrigger>
+                    <SelectContent insets={contentInsets} className="w-fit">
+                        <SelectGroup>
+                          <SelectItem value="passwordLocked" label="Password Locked" />
+                          <SelectItem value="notPasswordLocked" label="Not Password Locked" />
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
             </ScrollView>
             <FlatList
                 data={filterView}
                 numColumns={2}
-                contentContainerStyle={{}}
+                contentContainerStyle={{minHeight: "100%"}}
                 columnWrapperStyle={{ flexWrap: 'wrap', justifyContent: 'space-between' }}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => <ClubContainer club={item} />}
