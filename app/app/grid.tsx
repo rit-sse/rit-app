@@ -99,7 +99,7 @@ export default function Grid() {
               onPress={() => processQuickLink(item)}
               className="w-[100px] h-[120px] flex items-center justify-center bg-gray-200 rounded-lg my-3 border-[1px] border-gray-400"
             >
-              <Image source={item.requireImage} className="w-12 h-12" />
+              <Image source={resourceController[item.imageID]} className="w-12 h-12" />
               <Text className="text-center ">{item.name}</Text>
             </TouchableOpacity>
           )}

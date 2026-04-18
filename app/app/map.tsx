@@ -21,10 +21,10 @@ import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 
-// const MAPBOX_PUBLIC_ACCESS_TOKEN =
-//   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
+const MAPBOX_PUBLIC_ACCESS_TOKEN =
+  process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
 
-// Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
+Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
 
 const buttonWidth = 70;
 const buttonSpacing = 15;
@@ -197,8 +197,8 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-     <LeafletMap onMapMessage={onMapMessage} />
-     {/* <MapboxMap /> */}
+     {/* <LeafletMap onMapMessage={onMapMessage} /> */}
+     <MapboxMap />
 
       <View style={styles.buttonsColumn}>
         {/* <View
