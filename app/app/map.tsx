@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   RefreshControl,
   ScrollView,
   StyleProp,
@@ -10,10 +9,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Asset } from "expo-asset";
-import { File } from "expo-file-system";
-import { LeafletView, WebviewLeafletMessage } from "react-native-leaflet-view";
-// import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
+import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -60,10 +56,6 @@ const allButtonStyling: StyleProp<ViewStyle> = {
   elevation: 5,
 };
 
-function onMapMessage(message: WebviewLeafletMessage) {
-  return message;
-}
-
 async function fetchActiveRoutes(): Promise<ActiveRoute[]> {
   const response = await fetch(buildApiUrl("/bus/live"));
   const json = await response.json();
@@ -75,74 +67,25 @@ async function fetchActiveRoutes(): Promise<ActiveRoute[]> {
   return json.data ?? [];
 }
 
-function LeafletMap({
-  onMapMessage: onMapMessageProp,
-}: Readonly<{
-  onMapMessage: (message: WebviewLeafletMessage) => unknown;
-}>) {
-  const [webViewContent, setWebViewContent] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isAlive = true;
-
-    const loadHtml = async () => {
-      try {
-        const path = require("../assets/leaflet.html");
-        const asset = Asset.fromModule(path);
-        await asset.downloadAsync();
-        const htmlContent = await new File(asset.localUri!).text();
-
-        if (isAlive) {
-          setWebViewContent(htmlContent);
-        }
-      } catch {
-        Alert.alert("Error loading map", "Unable to load map content.");
-      }
-    };
-
-    void loadHtml();
-
-    return () => {
-      isAlive = false;
-    };
-  }, []);
-
-  if (!webViewContent) {
-    return <ActivityIndicator size="large" />;
-  }
-
+function MapboxMap() {
   return (
-    <LeafletView
-      source={{ html: webViewContent }}
-      mapCenterPosition={{
-        lat: DEFAULT_LOCATION.latitude,
-        lng: DEFAULT_LOCATION.longitude,
-      }}
-      onMessageReceived={onMapMessageProp}
-      doDebug={false}
-    />
+    <MapView style={{ flex: 1 }}>
+      <Camera
+        centerCoordinate={[
+          DEFAULT_LOCATION.longitude,
+          DEFAULT_LOCATION.latitude,
+        ]}
+        // maxBounds={{
+        //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
+        //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
+        // }}
+        zoomLevel={14}
+        animationMode="none"
+        animationDuration={0}
+      />
+    </MapView>
   );
 }
-
-//  function MapboxMap() {
-//    return (
-//      <MapView style={{ flex: 1 }}>
-//        <Camera
-//          centerCoordinate={[
-//            DEFAULT_LOCATION.longitude,
-//            DEFAULT_LOCATION.latitude,
-//          ]}
-//          // maxBounds={{
-//          //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
-//          //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
-//          // }}
-//          zoomLevel={14}
-//          animationMode="none"
-//          animationDuration={0}
-//        />
-//      </MapView>
-//    );
-//  }
 
 export default function MapScreen() {
   const [routes, setRoutes] = useState<ActiveRoute[]>([]);

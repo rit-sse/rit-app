@@ -1,16 +1,8 @@
 import { Platform } from "react-native";
 
 function getDefaultApiBaseUrl(): string {
-  const configuredUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-  if (configuredUrl) {
-    if (Platform.OS === "android") {
-      return configuredUrl
-        .replace("://localhost", "://10.0.2.2")
-        .replace("://127.0.0.1", "://10.0.2.2");
-    }
-
-    return configuredUrl;
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
   }
 
   if (Platform.OS === "android") {

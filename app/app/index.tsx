@@ -1,5 +1,4 @@
-import { Button, Text, View, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { Text, View, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
 import * as GLOBAL from "./globals";
@@ -8,7 +7,6 @@ import AsyncStorage, {
 } from "@react-native-async-storage/async-storage";
 
 import PagerView from "react-native-pager-view";
-import { ButtonCustomWrap } from "@/components/Home/ButtonCustomWrap";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
@@ -29,9 +27,7 @@ interface NewsArticle {
 }
 
 export default function Index() {
-  const routeNavigator = useRouter();
   const [scrollOffset, setscrollOffset] = useState(0);
-  const [hiding, setHiding] = useState(false);
   const [news, setNews] = useState<NewsArticle[]>([]);
 
   const [recentlyViewed, setRecentlyViewed] = useState<gridBox[]>();
@@ -96,7 +92,7 @@ export default function Index() {
           initialPage={0}
           onPageScroll={onPageScrolled}
         >
-          {draggableExample.map((page, index) => page)}
+          {draggableExample.map((page) => page)}
         </PagerView>
         <View
           style={{

@@ -3,7 +3,10 @@ import BackChevron from "@/components/svgs/BackChevron";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { backToProfile } from "../profile";
 import { useRouter } from "expo-router";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import {
   Select,
   SelectContent,
@@ -12,16 +15,16 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { buildApiUrl } from "@/lib/api";
 
-export default function report() {
+export default function Report() {
   const navigator = useRouter();
   const contentInsets = useSafeAreaInsets();
 
-  const selectRef = React.useRef(null);
+  // const selectRef = React.useRef(null); // never used so i commented it out, but if we need it later we can just uncomment it
   const [description, setDescription] = useState("");
   const [reportType, setReportType] = useState("");
 
@@ -36,37 +39,65 @@ export default function report() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        report: "Issue Type: " + reportType + "\nDescription: " + description
+        report: "Issue Type: " + reportType + "\nDescription: " + description,
       }),
       // holy cursed
-    })
-  }
+    });
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center", }} className="bg-white">
-      <View style={{ width: "90%", height: 70, alignItems: "center", flexDirection: "row" }} >
-        <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }} onPress={() => { backToProfile(navigator); }}>
+    <SafeAreaView
+      style={{ flex: 1, alignItems: "center" }}
+      className="bg-white"
+    >
+      <View
+        style={{
+          width: "90%",
+          height: 70,
+          alignItems: "center",
+          flexDirection: "row",
+        }}
+      >
+        <TouchableOpacity
+          style={{ flexDirection: "row", alignItems: "center" }}
+          onPress={() => {
+            backToProfile(navigator);
+          }}
+        >
           <BackChevron style={{ width: 40, height: 40 }} color="#000" />
-          <Text style={{ paddingLeft: 5, fontSize: 25, fontWeight: "bold" }}>Report an Issue</Text>
+          <Text style={{ paddingLeft: 5, fontSize: 25, fontWeight: "bold" }}>
+            Report an Issue
+          </Text>
         </TouchableOpacity>
       </View>
-      <View style={{ width: "85%", marginTop: 0, justifyContent: "flex-start", flexDirection: "column" }} >
+      <View
+        style={{
+          width: "85%",
+          marginTop: 0,
+          justifyContent: "flex-start",
+          flexDirection: "column",
+        }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text>Issue Type: </Text>
-          <Select onValueChange={(option) => {setReportType(option?.label ?? "Not given")}}>
-            <SelectTrigger className='w-[200px]' >
-              <SelectValue placeholder='Issue Type' />
+          <Select
+            onValueChange={(option) => {
+              setReportType(option?.label ?? "Not given");
+            }}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Issue Type" />
             </SelectTrigger>
-            <SelectContent insets={contentInsets} className='w-[200px]'>
+            <SelectContent insets={contentInsets} className="w-[200px]">
               <SelectGroup>
                 <SelectLabel>Issue Types</SelectLabel>
-                <SelectItem label='Feature Request' value='fr'>
+                <SelectItem label="Feature Request" value="fr">
                   Feature Request
                 </SelectItem>
-                <SelectItem label='Bug' value='bug'>
+                <SelectItem label="Bug" value="bug">
                   Bug
                 </SelectItem>
-                <SelectItem label='Legal Issue' value='legal'>
+                <SelectItem label="Legal Issue" value="legal">
                   Legal Issue
                 </SelectItem>
               </SelectGroup>
@@ -85,5 +116,4 @@ export default function report() {
       </View>
     </SafeAreaView>
   );
-
 }
