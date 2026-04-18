@@ -1,6 +1,6 @@
 import "../global.css";
 import React, { useState } from "react";
-import { RelativePathString, Stack, useRouter } from "expo-router";
+import { RelativePathString, Stack, useRouter, usePathname } from "expo-router";
 import NavigationBar from "@/components/Navigation/NavigationBar";
 import { StackAnimationTypes } from "react-native-screens";
 import { PortalHost } from "@rn-primitives/portal";
@@ -10,6 +10,7 @@ export default function RootLayout() {
   const [onScreen, setScreenName] = useState<string>("home");
   const [animationType, setAnimationType] =
     useState<StackAnimationTypes>("slide_from_right");
+  const [pathUsingHook, setPathUsingHook] = useState<string>("");
 
   const pageWeights: { [key: string]: number } = {
     home: 0,
@@ -19,9 +20,16 @@ export default function RootLayout() {
     profile: 4,
   };
 
+  const currentPath = usePathname();
+
+  React.useEffect(() => {
+    setPathUsingHook(currentPath);
+  }, [currentPath]);
+
   const navigatorFunc = (screenSwitch: string) => {
     let setType = screenSwitch === "/" ? "/home" : screenSwitch;
-    if (setType === "/" + onScreen) {
+    let pathCorrector = pathUsingHook === "/" ? "/home" : pathUsingHook;
+    if (pathCorrector === setType) {
       return;
     }
 
@@ -30,6 +38,11 @@ export default function RootLayout() {
     } else {
       setAnimationType("slide_from_right");
     }
+
+    if(!Object.keys(pageWeights).includes(pathCorrector.substring(1))) {
+      setAnimationType("slide_from_left")
+    }
+    
     routeNavigator.replace(screenSwitch as RelativePathString);
   };
 

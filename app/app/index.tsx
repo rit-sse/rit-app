@@ -1,13 +1,22 @@
 import { Text, View, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import EventsContainer from "@/components/Home/EventsContainer";
+import * as GLOBAL from "./globals";
+import AsyncStorage, {
+  useAsyncStorage,
+} from "@react-native-async-storage/async-storage";
 
 import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NewsContainer from "@/components/Home/NewsContainer";
 import RecentlyViewedButton from "@/components/Home/RecentlyViewedButton";
-import { clearRecentlyView, getRecentlyView, gridBox, storeRecentlyView } from "@/lib/utils";
 import { buildApiUrl } from "@/lib/api";
+import {
+  clearRecentlyView,
+  getRecentlyView,
+  gridBox,
+  storeRecentlyView,
+} from "@/lib/utils";
 
 interface NewsArticle {
   uri: string;
@@ -37,7 +46,7 @@ export default function Index() {
       key={0}
     />,
     <EventsContainer
-      image="https://picsum.photos/500/300"
+      image="http://campusgroups.rit.edu/upload/rit/2023/s2_image_upload_1555914_Mascots_929123537.png"
       title={[{ content: "Event 2", color: "#fff" }]}
       key={1}
     />,

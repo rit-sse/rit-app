@@ -8,7 +8,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export interface gridBox {
-  requireImage: any;
   imageID: string;
   name: string;
   link: string;

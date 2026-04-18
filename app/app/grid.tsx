@@ -2,6 +2,7 @@ import React from "react";
 import { View, FlatList, Image, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import { LinearGradient } from "expo-linear-gradient";
+import { resourceController } from "@/components/resourcefetch";
 
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,27 +23,28 @@ export default function Grid() {
   // Icons sourced from https://lucide.dev/icons
   const GRID_DATA: gridBox[] = [
     {
-      requireImage: require("../assets/icons/grid/sis.png"),
       imageID: "sis_icon",
       name: "SIS",
       link: "https://campus.ps.rit.edu/",
     },
     {
-      requireImage: require("../assets/icons/grid/course-browser.png"),
       imageID: "course_browser_icon",
       name: "Schedule Maker",
       link: "https://schedulemaker.csh.rit.edu/",
     },
     {
-      requireImage: require("../assets/icons/grid/academic-calendar.png"),
       imageID: "academic_calendar_icon",
       name: "Academic Calendar",
-      link: "https://www.rit.edu/calendar",
+      link: "https://www.rit.edu/calendar"
     },
-  ];
+    {
+      imageID: "group_icon",
+      name: "Group Search",
+      link: "/widgetlab/clubsearch/"
+    }
+  ]
 
   const special_Dining: gridBox = {
-    requireImage: require("../assets/icons/grid/dining.png"),
     imageID: "dining_icon",
     name: "Dining & Menus",
     link: "/dining/search",
