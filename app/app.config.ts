@@ -1,4 +1,3 @@
-import "dotenv/config";
 
 export default {
   expo: {
@@ -54,6 +53,8 @@ export default {
           RNMapboxMapsImpl: "mapbox",
         },
       ],
+      "expo-notifications",
+      "expo-image"
     ],
     experiments: {
       typedRoutes: true,

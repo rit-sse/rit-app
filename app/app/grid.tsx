@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Text } from "@/components/ui/text";
 import { LinearGradient } from "expo-linear-gradient";
+import { resourceController } from "@/components/resourcefetch";
 
 import { RelativePathString, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -33,27 +34,28 @@ export default function Grid() {
   // Icons sourced from https://lucide.dev/icons
   const GRID_DATA: gridBox[] = [
     {
-      requireImage: require("../assets/icons/grid/sis.png"),
       imageID: "sis_icon",
       name: "SIS",
       link: "https://campus.ps.rit.edu/"
     },
     {
-      requireImage: require("../assets/icons/grid/course-browser.png"),
       imageID: "course_browser_icon",
       name: "Schedule Maker",
       link: "https://schedulemaker.csh.rit.edu/"
     },
     {
-      requireImage: require("../assets/icons/grid/academic-calendar.png"),
       imageID: "academic_calendar_icon",
       name: "Academic Calendar",
       link: "https://www.rit.edu/calendar"
+    },
+    {
+      imageID: "group_icon",
+      name: "Group Search",
+      link: "/widgetlab/clubsearch/"
     }
   ]
 
   const special_Dining: gridBox = {
-    requireImage: require("../assets/icons/grid/dining.png"),
     imageID: "dining_icon",
     name: "Dining & Menus",
     link: "/dining/search"
@@ -86,7 +88,7 @@ export default function Grid() {
           scrollEnabled={false}
           renderItem={({ item }) => (
             <TouchableOpacity activeOpacity={0.5} key={item.name} onPress={() => processQuickLink(item)} className="w-[100px] h-[120px] flex items-center justify-center bg-gray-200 rounded-lg my-3 border-[1px] border-gray-400">
-              <Image source={item.requireImage} className="w-12 h-12" />
+              <Image source={resourceController[item.imageID]} className="w-12 h-12" />
               <Text className="text-center ">{item.name}</Text>
             </TouchableOpacity>
           )}

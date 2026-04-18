@@ -50,7 +50,7 @@ export default function Index() {
       key={0}
     />,
     <EventsContainer
-      image="https://picsum.photos/500/300"
+      image="http://campusgroups.rit.edu/upload/rit/2023/s2_image_upload_1555914_Mascots_929123537.png"
       title={[{ content: "Event 2", color: "#fff" }]}
       key={1}
     />,
