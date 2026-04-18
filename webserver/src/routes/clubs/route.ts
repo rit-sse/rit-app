@@ -49,6 +49,10 @@ export async function GET(req: Request, res: Response) {
         let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
         clubImage = "https://static-prod-us-east-1.campusgroups.com" + clubImage;
 
+        // Detect if the club is password locked.
+        let passwordLocked = false;
+        $(club).find('.listing-element__title-block').text().includes("Group password") ? passwordLocked = true : passwordLocked = false;
+
         parsedClubs.push({
             name: clubName,
             type: clubType,

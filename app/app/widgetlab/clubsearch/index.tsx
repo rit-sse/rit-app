@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/text";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import BackChevron from "@/components/svgs/BackChevron";
 import { useRouter } from "expo-router";
-import { Input } from "@/components/ui/input";
+    import { Input } from "@/components/ui/input";
 import { buildApiUrl } from "@/lib/api";
 import {
     Select,

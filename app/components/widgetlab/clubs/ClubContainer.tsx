@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 
 import { openLink } from "@/lib/utils";
-import { useRouter } from "@/.expo/types/router";
+import { useRouter } from "expo-router";
 interface clubType {
     name: string;
     type: string;
