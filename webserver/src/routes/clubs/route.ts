@@ -46,7 +46,7 @@ export async function GET(req: Request, res: Response) {
         });
 
         // Get image
-        let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
+         let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
         clubImage = "https://static-prod-us-east-1.campusgroups.com" + clubImage;
 
         // Detect if the club is password locked.
@@ -59,9 +59,10 @@ export async function GET(req: Request, res: Response) {
             website: $(club).find('a[aria-label=Website]').attr('href') || '',
             mission: missionStatement,
             closed: fullClub,
-            image: clubImage
+            image: clubImage,
+            isPasswordLocked: passwordLocked
         })
-    }   
+    } 
     await scrapeCache.setCache("club_infos", parsedClubs);
     res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
 }
