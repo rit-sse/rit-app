@@ -36,10 +36,16 @@ export default function ClubContainer({ club }: { club: clubType }) {
             <Text className="w-full px-[10px] font-bold text-[14px] line-clamp-2">{club.name}</Text>
             <Text className="w-full px-[10px] font-bold text-[13px] color-gray-500 line-clamp-3">{club.type}</Text>
         </View>
-        <View className="w-full mb-[10px] px-[10px]">
+        <View className="w-full mb-[10px] px-[10px] flex-row items-center">
             <Badge variant="default" className={(club.closed ? "bg-red-500" : "bg-green-500")}>
                 <Text>{club.closed ? "Closed" : "Open"}</Text>
             </Badge>
-        </View>
+            {
+              club.isPasswordLocked ?
+                <Badge variant="default" className="bg-yellow-500 ml-2">
+                    <Text>Pass Locked</Text>
+                </Badge> : null
+            }
+          </View>
     </TouchableOpacity>
 }
