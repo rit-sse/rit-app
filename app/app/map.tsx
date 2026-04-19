@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -197,8 +197,8 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-     {/* <LeafletMap onMapMessage={onMapMessage} /> */}
-     <MapboxMap />
+      {/* <LeafletMap onMapMessage={onMapMessage} /> */}
+      <MapboxMap />
 
       <View style={styles.buttonsColumn}>
         {/* <View
