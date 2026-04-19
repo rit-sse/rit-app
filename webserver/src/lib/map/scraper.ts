@@ -1,0 +1,46 @@
+import { ScrapeCache } from "@/db/cache";
+import { Location, RawLocation } from "../../types/locations";
+
+const scrapeCache = new ScrapeCache();
+
+async function fetchLocations(): Promise<RawLocation[]> {
+  // If cache exists and is recent (within 1 hour), return cached data
+  if (
+    (await scrapeCache.inCache("map_locations_raw")) &&
+    !(await scrapeCache.isExpired("map_locations_raw"))
+  ) {
+    const cahed = await scrapeCache.getCache("map_locations_raw");
+    return (cahed.data as RawLocation[]) || [];
+  } else {
+    // Otherwise, fetch new data and update cache
+    const response = await fetch("https://mapserver.rit.edu/api/locations");
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch locations: ${response.status}`);
+    }
+
+    const locations = (await response.json()) as RawLocation[];
+    await scrapeCache.setCache("map_locations_raw", locations);
+    return locations;
+  }
+}
+
+function mapRawLocation(loc: RawLocation): Location {
+  return {
+    id: loc.id,
+    mdoId: loc.mdo_id,
+    name: loc.name,
+    descShort: loc.descShort,
+    abbreviation: loc.abbreviation,
+    buildingNumber: loc.buildingNumber,
+    roomNumber: loc.roomNumber,
+    webLink: loc.webLink,
+    isSearchable: loc.isSearchable,
+    geometryId: loc.geometry_id,
+  };
+}
+
+export async function getLocations(): Promise<Location[]> {
+  const rawLocations = await fetchLocations();
+  return rawLocations.map(mapRawLocation);
+}
