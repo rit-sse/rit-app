@@ -1,4 +1,4 @@
-import { ScrapeCache } from "@/db/cache";
+import { ScrapeCache } from "../../db/cache";
 import {
   Location,
   RawLocation,

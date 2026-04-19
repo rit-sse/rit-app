@@ -6,7 +6,7 @@ import type {
   ServiceDay,
   ServiceWindow,
   Stop,
-} from "../../../types/bus";
+} from "../../types/bus";
 
 interface RouteMetadata extends Route {
   url: string;

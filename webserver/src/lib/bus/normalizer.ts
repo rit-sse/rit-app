@@ -3,7 +3,7 @@ import type {
   NormalizedRoute,
   ResidenceSchedule,
   Route,
-} from "../../../types/bus";
+} from "../../types/bus";
 
 /**
  * Normalizes raw scraped schedule data to ensure consistent formatting.

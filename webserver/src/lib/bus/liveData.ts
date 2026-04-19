@@ -9,7 +9,7 @@ import {
   InferredSchedule,
   RouteLiveSummary,
   RouteSchedule,
-} from "../../../types/bus";
+} from "../../types/bus";
 
 const BUS_CACHE_KEY = "bus_schedules";
 
@@ -75,9 +75,7 @@ export function buildRouteSummary(
   };
 }
 
-export function getSummaryStops(
-  inferred: InferredSchedule,
-): {
+export function getSummaryStops(inferred: InferredSchedule): {
   fromStop: InferredSchedule["inferredStops"][number];
   toStop: InferredSchedule["inferredStops"][number];
 } | null {

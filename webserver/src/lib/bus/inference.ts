@@ -7,7 +7,7 @@ import {
   RouteSchedule,
   ServiceDay,
   Stop,
-} from "../../../types/bus";
+} from "../../types/bus";
 
 const MINUTES_PER_DAY = 24 * 60;
 const RUN_COMPLETION_GRACE_MINUTES = 5;
