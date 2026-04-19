@@ -50,6 +50,11 @@ export interface MapBootstrapResponse {
 
 export type Position = [number, number]; // [long, lat]
 
+export interface Bounds {
+  southWest: Position;
+  northEast: Position;
+}
+
 export interface PointGeometry {
   type: "Point";
   coordinates: Position;
@@ -124,4 +129,11 @@ export interface EnrichedLocation {
   search: LocationSearchRecord;
   features: LocationFeature[];
   labelPoint: Position | null;
+}
+
+export interface LocationGeometryResponse {
+  mdoId: number;
+  features: LocationFeature[];
+  labelPoint: Position | null;
+  bounds: Bounds | null;
 }

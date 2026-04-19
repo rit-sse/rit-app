@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {extname, resolve, sep} from "node:path";
 
 const PORT: number = Number(process.env.PORT) || 3000; // I didn't make a .env file D:
-const SOURCE_DIR: string = resolve(__dirname + '/routes');
+const SOURCE_DIR: string = resolve(__dirname + '/api/routes');
 
 
 const app: express.Express = express();
@@ -48,13 +48,12 @@ const normalizeRoutePath = (routePath: string) => {
 
 const recursiveLoadRoutes = (dir: string) => {
     fs.readdirSync(dir).forEach((file) => {
-        if(file.toString() == "route.js") {
+        if(file.toString() == "route.js" || file.toString() == "route.ts") {
             const route = require(`${dir}/${file}`);
             // const routePath = `${dir.split("/webserver/dist/routes")[1]}/`;
-            let routePath = `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/')}/` || '/';
-            if(!routePath.startsWith("/")) {
-                routePath = "/" + routePath;
-            }
+            const routePath = normalizeRoutePath(
+                `${dir.split(`${sep}routes${sep}`)[1]?.replace(/\\/g, '/') || ''}`,
+            );
             if (route.GET) {
                 app.get(routePath, route.GET);
             }
