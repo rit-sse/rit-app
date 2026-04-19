@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Svg, { Use, Image as SVGImage } from 'react-native-svg';
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { clearRecentlyView } from "@/lib/utils";
 
 const PREF = [
   {
@@ -49,6 +50,8 @@ const SUPPORT = [
   },
 ];
 
+const DEBUG_ENABLED = true;
+
 function changePage(filename: any, navigator: Router) {
   GLOBAL.default.showNavbar ? GLOBAL.default.showNavbar(false) : null;
   navigator.push(filename);
@@ -59,16 +62,16 @@ export function backToProfile(navigator: Router) {
   navigator.push("/profile");
 }
 
-type ItemProps = {title: string, filename: string, navigator: any, icon: ImageSourcePropType};
+type ItemProps = { title: string, filename: string, navigator: any, icon: ImageSourcePropType };
 
-const Item = ({title, filename, navigator, icon}: ItemProps) => (
-  <TouchableOpacity style={styles.button} onPress={() => {changePage(filename, navigator);}}>
+const Item = ({ title, filename, navigator, icon }: ItemProps) => (
+  <TouchableOpacity style={styles.button} onPress={() => { changePage(filename, navigator); }}>
     <View style={styles.item}>
       <View>
-        <Image source = {icon} style = {{width: 30, height: 30, marginRight: 10}}/>
+        <Image source={icon} style={{ width: 30, height: 30, marginRight: 10 }} />
       </View>
       <Text style={styles.title}>{title}</Text>
-      <Image source={require("../assets/images/profile/grayrightchevron.png")} style={{width: 30, height: 30}}/>
+      <Image source={require("../assets/images/profile/grayrightchevron.png")} style={{ width: 30, height: 30 }} />
     </View>
   </TouchableOpacity>
 );
@@ -78,7 +81,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 120,
     height: 120,
-    borderRadius: "100%"
+    borderRadius: 9999
   },
   page: {
     flex: 1,
@@ -130,10 +133,10 @@ export default function Profile() {
       <SafeAreaView style={styles.page}>
         <View style={styles.user}>
           <Image
-            source = {require("../assets/images/placeholderpicture.jpg")}
-            style = {styles.profileImage}
+            source={require("../assets/images/placeholderpicture.jpg")}
+            style={styles.profileImage}
           />
-          <Text style = {{fontSize: 24, padding: 10}}>Guest</Text>
+          <Text style={{ fontSize: 24, padding: 10 }}>Guest</Text>
           {/* <Text>No Email</Text> */}
         </View>
         <View style={styles.sections}>
@@ -150,11 +153,27 @@ export default function Profile() {
             <Text style={styles.sectionTitle}>Support</Text>
             <FlatList
               data={SUPPORT}
-              renderItem={({item}) => <Item title={item.title} filename={item.filename} navigator={navigator} icon={item.icon}/>}
+              renderItem={({ item }) => <Item title={item.title} filename={item.filename} navigator={navigator} icon={item.icon} />}
               keyExtractor={item => item.id}
-              scrollEnabled = {false}
+              scrollEnabled={false}
             />
           </View>
+          {DEBUG_ENABLED && (
+            <View>
+              <Text style={styles.sectionTitle}>Debug</Text>
+              <TouchableOpacity style={styles.button} onPress={() => { clearRecentlyView(); }}>
+                <View style={styles.item}>
+                  <View>
+                    <Image source={require("../assets/icons/wrench.png")} style={{ width: 30, height: 30, marginRight: 10 }} />
+                  </View>
+                  <Text style={styles.title}>Clear AsyncStorage Data</Text>
+                  
+                </View>
+                
+              </TouchableOpacity>
+            </View>
+          )}
+
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

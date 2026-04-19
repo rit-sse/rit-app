@@ -1,9 +1,5 @@
-import { View } from "react-native"
+import React, { View } from "react-native";
 
 export default function EventInfo() {
-    return (
-        <View>
-
-        </View>
-    )
+  return <View></View>;
 }
