@@ -12,11 +12,11 @@ import { MapBootstrapResponse } from "../../../types/locations";
  */
 export async function GET(req: Request, res: Response): Promise<void> {
   try {
-    const locations = await getSearchableLocations();
+    const locationSearchRecords = await getSearchableLocations();
     const response: MapBootstrapResponse = {
       fetchedAt: Date.now(),
       expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-      locations,
+      searchRecords: locationSearchRecords,
     };
     res.header("Content-Type", "application/json").send(response);
   } catch (error) {

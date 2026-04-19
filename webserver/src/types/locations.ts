@@ -44,7 +44,7 @@ export interface LocationSearchRecord {
 export interface MapBootstrapResponse {
   fetchedAt: number;
   expiresAt: number;
-  locations: LocationSearchRecord[];
+  searchRecords: LocationSearchRecord[];
 }
 
 export type Position = [number, number]; // [long, lat]

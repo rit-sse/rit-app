@@ -1,11 +1,5 @@
-import { ScrapeCache } from "../../db/cache";
-import {
-  Location,
-  RawLocation,
-  LocationSearchRecord,
-} from "../../types/locations";
-
-const scrapeCache = new ScrapeCache();
+import { Location, RawLocation, LocationSearchRecord } from "../../types/locations";
+import { fetchLocations } from "./scraper";
 
 // Normalizes search text by trimming whitespace, converting to lowercase, and collapsing multiple spaces into one
 function normalizeSearchText(value: string): string {
@@ -39,29 +33,6 @@ function buildSearchTokens(loc: Location): string[] {
         .map(normalizeSearchText),
     ),
   );
-}
-
-// Fetches raw location data from the RIT map server API, with caching to reduce load and improve performance
-async function fetchLocations(): Promise<RawLocation[]> {
-  // If cache exists and is recent (within 1 hour), return cached data
-  if (
-    (await scrapeCache.inCache("map_locations_raw")) &&
-    !(await scrapeCache.isExpired("map_locations_raw"))
-  ) {
-    const cached = await scrapeCache.getCache("map_locations_raw");
-    return (cached.data as RawLocation[]) || [];
-  } else {
-    // Otherwise, fetch new data and update cache
-    const response = await fetch("https://mapserver.rit.edu/api/locations");
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch locations: ${response.status}`);
-    }
-
-    const locations = (await response.json()) as RawLocation[];
-    await scrapeCache.setCache("map_locations_raw", locations);
-    return locations;
-  }
 }
 
 // Maps raw location data from the API to a more structured Location type used in the application
