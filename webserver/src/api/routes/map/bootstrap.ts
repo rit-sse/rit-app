@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getSearchableLocations } from "../../lib/map/mapper";
+import { getSearchableLocations } from "../../../lib/map/mapper";
 
 export async function GET(req: Request, res: Response) {
   try {
@@ -10,9 +10,12 @@ export async function GET(req: Request, res: Response) {
       locations,
     });
   } catch (error) {
-    res.status(500).header("Content-Type", "application/json").send({
-      error: "Failed to fetch map bootstrap data",
-      message: error instanceof Error ? error.message : String(error),
-    });
+    res
+      .status(500)
+      .header("Content-Type", "application/json")
+      .send({
+        error: "Failed to fetch map bootstrap data",
+        message: error instanceof Error ? error.message : String(error),
+      });
   }
 }

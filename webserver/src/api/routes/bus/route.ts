@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ScrapeCache } from "../../../db/cache";
-import { getRoutesFromCacheOrScrape } from "@/lib/bus/liveData";
+import { getRoutesFromCacheOrScrape } from "../../../lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 

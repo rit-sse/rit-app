@@ -4,7 +4,7 @@ import {
   buildRouteSummary,
   getActiveRoutes,
   getRoutesFromCacheOrScrape,
-} from "@/lib/bus/liveData";
+} from "../../../lib/bus/liveData";
 
 const scrapeCache = new ScrapeCache();
 
