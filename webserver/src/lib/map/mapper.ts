@@ -1,4 +1,9 @@
-import { Location, RawLocation, LocationSearchRecord } from "../../types/locations";
+import {
+  Location,
+  RawLocation,
+  LocationSearchRecord,
+  MapBootstrapResponse,
+} from "../../types/locations";
 import { fetchLocations } from "./scraper";
 
 // Normalizes search text by trimming whitespace, converting to lowercase, and collapsing multiple spaces into one
@@ -79,4 +84,18 @@ export async function getSearchableLocations(): Promise<
   return locations
     .filter((loc) => loc.isSearchable)
     .map(buildLocationSearchRecord);
+}
+
+export async function getMapBootstrapData(): Promise<
+  Pick<MapBootstrapResponse, "locations" | "searchRecords">
+> {
+  const locations = await getLocations();
+  const searchRecords = locations
+    .filter((loc) => loc.isSearchable)
+    .map(buildLocationSearchRecord);
+
+  return {
+    locations,
+    searchRecords,
+  };
 }

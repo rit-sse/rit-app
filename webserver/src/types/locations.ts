@@ -44,6 +44,7 @@ export interface LocationSearchRecord {
 export interface MapBootstrapResponse {
   fetchedAt: number;
   expiresAt: number;
+  locations: Location[];
   searchRecords: LocationSearchRecord[];
 }
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getSearchableLocations } from "../../../lib/map/mapper";
+import { getMapBootstrapData } from "../../../lib/map/mapper";
 import { MapBootstrapResponse } from "../../../types/locations";
 
 /**
@@ -12,12 +12,15 @@ import { MapBootstrapResponse } from "../../../types/locations";
  */
 export async function GET(req: Request, res: Response): Promise<void> {
   try {
-    const locationSearchRecords = await getSearchableLocations();
+    const { locations, searchRecords } = await getMapBootstrapData();
+
     const response: MapBootstrapResponse = {
       fetchedAt: Date.now(),
       expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-      searchRecords: locationSearchRecords,
+      locations,
+      searchRecords,
     };
+
     res.header("Content-Type", "application/json").send(response);
   } catch (error) {
     res
