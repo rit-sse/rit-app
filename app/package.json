@@ -53,7 +53,6 @@
     "react-native": "0.83.4",
     "react-native-css-interop": "0.2.3",
     "react-native-gesture-handler": "~2.30.0",
-    "react-native-leaflet-view": "^1.1.2",
     "react-native-maps": "1.27.2",
     "react-native-pager-view": "8.0.0",
     "react-native-reanimated": "4.2.1",
@@ -68,9 +67,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/react": "~19.1.0",
+    "@types/react": "~19.2.10",
     "eslint": "^9.25.0",
-    "eslint-config-expo": "~10.0.0",
+    "eslint-config-expo": "~55.0.0",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.9.2"
