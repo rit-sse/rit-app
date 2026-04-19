@@ -7,6 +7,40 @@ import {
 
 const scrapeCache = new ScrapeCache();
 
+// Normalizes search text by trimming whitespace, converting to lowercase, and collapsing multiple spaces into one
+function normalizeSearchText(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+// Builds a secondary label for a location by combining available details like abbreviation, building number, and room number
+function buildSecondaryLabel(loc: Location): string | null {
+  const parts = [loc.abbreviation, loc.buildingNumber, loc.roomNumber].filter(
+    Boolean,
+  );
+
+  return parts.length > 0 ? parts.join(" ") : null;
+}
+
+// Builds a list of search tokens for a location, including various combinations of its name, abbreviation, building number, and room number
+function buildSearchTokens(loc: Location): string[] {
+  const rawTokens = [
+    loc.name,
+    loc.abbreviation,
+    loc.buildingNumber,
+    loc.roomNumber,
+    [loc.abbreviation, loc.buildingNumber].filter(Boolean).join(" "),
+    [loc.abbreviation, loc.roomNumber].filter(Boolean).join(" "),
+    [loc.buildingNumber, loc.roomNumber].filter(Boolean).join(" "),
+  ];
+
+  return Array.from(
+    new Set(
+      rawTokens
+        .filter((token): token is string => Boolean(token))
+        .map(normalizeSearchText),
+    ),
+  );
+}
+
 // Fetches raw location data from the RIT map server API, with caching to reduce load and improve performance
 async function fetchLocations(): Promise<RawLocation[]> {
   // If cache exists and is recent (within 1 hour), return cached data
@@ -14,8 +48,8 @@ async function fetchLocations(): Promise<RawLocation[]> {
     (await scrapeCache.inCache("map_locations_raw")) &&
     !(await scrapeCache.isExpired("map_locations_raw"))
   ) {
-    const cahed = await scrapeCache.getCache("map_locations_raw");
-    return (cahed.data as RawLocation[]) || [];
+    const cached = await scrapeCache.getCache("map_locations_raw");
+    return (cached.data as RawLocation[]) || [];
   } else {
     // Otherwise, fetch new data and update cache
     const response = await fetch("https://mapserver.rit.edu/api/locations");
@@ -54,15 +88,6 @@ export async function getLocations(): Promise<Location[]> {
 
 // Builds a LocationSearchRecord from a Location, which includes search tokens for efficient searching and display labels
 function buildLocationSearchRecord(loc: Location): LocationSearchRecord {
-  const searchTokens = [
-    loc.name,
-    loc.abbreviation,
-    loc.buildingNumber,
-    loc.roomNumber,
-  ]
-    .filter(Boolean)
-    .map((s) => s!.toLowerCase());
-
   return {
     mdoId: loc.mdoId,
     name: loc.name,
@@ -70,13 +95,12 @@ function buildLocationSearchRecord(loc: Location): LocationSearchRecord {
     buildingNumber: loc.buildingNumber,
     roomNumber: loc.roomNumber,
     primaryLabel: loc.name,
-    secondaryLabel: [loc.buildingNumber, loc.roomNumber]
-      .filter(Boolean)
-      .join(" "),
-    searchTokens,
+    secondaryLabel: buildSecondaryLabel(loc),
+    searchTokens: buildSearchTokens(loc),
   };
 }
 
+// Main function to get searchable location records, which filters locations to only those marked as searchable and then builds search records for them
 export async function getSearchableLocations(): Promise<
   LocationSearchRecord[]
 > {
