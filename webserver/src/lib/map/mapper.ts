@@ -1,6 +1,8 @@
 import {
   Bounds,
   Location,
+  MapPoiCategory,
+  MapPoiRecord,
   RawLocation,
   RawLocationFeature,
   LocationSearchRecord,
@@ -25,7 +27,7 @@ function buildSecondaryLabel(loc: Location): string | null {
     Boolean,
   );
 
-  return parts.length > 0 ? parts.join(" ") : null;
+  return parts.length > 0 ? parts.join(" • ") : null;
 }
 
 // Builds a list of search tokens for a location, including various combinations of its name, abbreviation, building number, and room number
@@ -35,6 +37,8 @@ function buildSearchTokens(loc: Location): string[] {
     loc.abbreviation,
     loc.buildingNumber,
     loc.roomNumber,
+    [loc.name, loc.abbreviation].filter(Boolean).join(" "),
+    [loc.name, loc.buildingNumber].filter(Boolean).join(" "),
     [loc.abbreviation, loc.buildingNumber].filter(Boolean).join(" "),
     [loc.abbreviation, loc.roomNumber].filter(Boolean).join(" "),
     [loc.buildingNumber, loc.roomNumber].filter(Boolean).join(" "),
@@ -56,6 +60,7 @@ function mapRawLocation(loc: RawLocation): Location {
     mdoId: loc.mdo_id,
     name: loc.name,
     descShort: loc.descShort,
+    descLong: loc.descLong,
     abbreviation: loc.abbreviation,
     buildingNumber: loc.buildingNumber,
     roomNumber: loc.roomNumber,
@@ -168,7 +173,9 @@ function getFeatureArea(bounds: Bounds | null): number {
   );
 }
 
-function pickPrimaryFeature(features: LocationFeature[]): LocationFeature | null {
+function pickPrimaryFeature(
+  features: LocationFeature[],
+): LocationFeature | null {
   if (features.length === 0) {
     return null;
   }
@@ -192,7 +199,9 @@ function pickPrimaryFeature(features: LocationFeature[]): LocationFeature | null
     );
   }
 
-  return features.find((feature) => feature.geometry.type === "Point") ?? features[0];
+  return (
+    features.find((feature) => feature.geometry.type === "Point") ?? features[0]
+  );
 }
 
 function getLocationBounds(features: LocationFeature[]): Bounds | null {
@@ -228,6 +237,363 @@ function buildLocationSearchRecord(loc: Location): LocationSearchRecord {
   };
 }
 
+function shouldCreateAmbientLabel(loc: Location): boolean {
+  return loc.isSearchable && loc.geometryId !== null && loc.roomNumber === null;
+}
+
+function normalizeMenus(menus: string[]): string[] {
+  return menus.map(normalizeSearchText);
+}
+
+function matchesAny(value: string, patterns: RegExp[]): boolean {
+  return patterns.some((pattern) => pattern.test(value));
+}
+
+const SUPPRESSED_AMBIENT_LABEL_PATTERNS = [
+  /bike rack/i,
+  /blue light/i,
+  /accessible entrance/i,
+  /designated tobacco/i,
+  /construction/i,
+  /hydration station/i,
+  /vending/i,
+  /lactation room/i,
+  /higi kiosk/i,
+  /aed/i,
+  /chalk zone/i,
+  /\blawn\b/i,
+  /\brock\b/i,
+  /trailhead/i,
+  /info booth/i,
+  /ambulance/i,
+  /public skate/i,
+  /game room/i,
+  /parkmobile area/i,
+  /^ucs\s*-/i,
+  /^rka\s*-/i,
+  /^pga\s*-/i,
+  /^conference room/i,
+] as const;
+
+const DINING_NAME_PATTERNS = [
+  /gracie'?s/i,
+  /cafe/i,
+  /grille/i,
+  /market/i,
+  /deli/i,
+  /commons/i,
+  /corner store/i,
+  /beanz/i,
+  /java'?s/i,
+  /nathan'?s/i,
+  /brick city/i,
+  /cantina/i,
+  /bakery/i,
+  /ben\s*&\s*jerry/i,
+  /concessions/i,
+] as const;
+
+const SERVICE_NAME_PATTERNS = [
+  /^office of /i,
+  /human resources/i,
+  /public safety/i,
+  /service center/i,
+  /postal hub/i,
+  /post office/i,
+  /financial services/i,
+  /financial aid/i,
+  /admissions/i,
+  /employment/i,
+  /main office/i,
+  /registrar/i,
+  /residence halls association/i,
+  /rotc office/i,
+] as const;
+
+const LANDMARK_NAME_PATTERNS = [
+  /statue/i,
+  /sundial/i,
+  /quad/i,
+  /plaza/i,
+  /garden/i,
+  /walk/i,
+  /fountain/i,
+  /sentinel/i,
+  /unity/i,
+  /sign/i,
+  /labyrinth/i,
+  /painted rocks/i,
+] as const;
+
+const ATHLETICS_NAME_PATTERNS = [
+  /field house/i,
+  /arena/i,
+  /gymnasium/i,
+  /aquatics/i,
+  /fitness center/i,
+  /field/i,
+  /courts/i,
+  /track/i,
+] as const;
+
+const BUILDING_NAME_PATTERNS = [
+  /hall/i,
+  /library/i,
+  /center/i,
+  /arena/i,
+  /gymnasium/i,
+  /union/i,
+  /building/i,
+  /house/i,
+  /barn/i,
+  /crossroads/i,
+  /observatory/i,
+  /marketplace/i,
+] as const;
+
+function buildLocationSearchCorpus(loc: Location): string {
+  return normalizeSearchText(
+    [loc.name, loc.descShort, loc.descLong, loc.webLink]
+      .filter((value): value is string => Boolean(value))
+      .join(" "),
+  );
+}
+
+function isSuppressedAmbientLabel(loc: Location): boolean {
+  return matchesAny(loc.name, [...SUPPRESSED_AMBIENT_LABEL_PATTERNS]);
+}
+
+function isDiningPoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some((menu) => menu.includes("dining")) ||
+    matchesAny(loc.name, [...DINING_NAME_PATTERNS]) ||
+    loc.webLink?.includes("/dining/") === true
+  );
+}
+
+function isParkingPoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some(
+      (menu) =>
+        menu.includes("parking") ||
+        menu.includes("lot") ||
+        menu.includes("parkmobile"),
+    ) ||
+    /(^|\s)([a-z]|\w{1,2}) lot$/i.test(loc.name) ||
+    /\blot\s+\d/i.test(loc.name) ||
+    /business and technology park lot/i.test(loc.name) ||
+    /parking lot/i.test(loc.descShort ?? "")
+  );
+}
+
+function isBusStopPoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some(
+      (menu) => menu.includes("bus") || menu.includes("transit"),
+    ) || /^bus stop/i.test(loc.name)
+  );
+}
+
+function isEvChargingPoi(loc: Location): boolean {
+  return /electric vehicle charging/i.test(loc.name);
+}
+
+function isServicePoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some(
+      (menu) =>
+        menu.includes("public safety") ||
+        menu.includes("emergency") ||
+        menu.includes("service") ||
+        menu.includes("support"),
+    ) ||
+    matchesAny(loc.name, [...SERVICE_NAME_PATTERNS])
+  );
+}
+
+function isLandmarkPoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some(
+      (menu) =>
+        menu.includes("art") ||
+        menu.includes("museum") ||
+        menu.includes("sculpture") ||
+        menu.includes("plaza") ||
+        menu.includes("quad") ||
+        menu.includes("garden"),
+    ) || matchesAny(loc.name, [...LANDMARK_NAME_PATTERNS])
+  );
+}
+
+function isAthleticsPoi(loc: Location, normalizedMenus: string[]): boolean {
+  return (
+    normalizedMenus.some(
+      (menu) =>
+        menu.includes("athletic") ||
+        menu.includes("fitness") ||
+        menu.includes("recreation"),
+    ) || matchesAny(loc.name, [...ATHLETICS_NAME_PATTERNS])
+  );
+}
+
+function isPrimaryBuildingPoi(loc: Location): boolean {
+  if (!loc.buildingNumber) {
+    return false;
+  }
+
+  if (
+    isSuppressedAmbientLabel(loc) ||
+    matchesAny(loc.name, [...DINING_NAME_PATTERNS, ...SERVICE_NAME_PATTERNS])
+  ) {
+    return false;
+  }
+
+  const searchCorpus = buildLocationSearchCorpus(loc);
+
+  return (
+    matchesAny(loc.name, [...BUILDING_NAME_PATTERNS]) ||
+    searchCorpus.includes("academic building") ||
+    searchCorpus.includes("mixed use building") ||
+    searchCorpus.includes("teaching and training facility") ||
+    searchCorpus.includes("fitness center") ||
+    searchCorpus.includes("student life center") ||
+    searchCorpus.includes("home to")
+  );
+}
+
+function classifyMapPoi(
+  loc: Location,
+  menus: string[],
+):
+  | Omit<
+      MapPoiRecord,
+      "mdoId" | "name" | "abbreviation" | "buildingNumber" | "menus" | "labelPoint"
+    >
+  | null {
+  const normalizedMenus = normalizeMenus(menus);
+
+  if (isSuppressedAmbientLabel(loc)) {
+    return null;
+  }
+
+  if (isPrimaryBuildingPoi(loc)) {
+    return {
+      category: "building",
+      iconName: "marker-stroked",
+      minZoom: 13,
+      priority: 120,
+    };
+  }
+
+  if (isAthleticsPoi(loc, normalizedMenus)) {
+    return {
+      category: "culture",
+      iconName: "music-15",
+      minZoom: 14.75,
+      priority: 88,
+    };
+  }
+
+  if (isLandmarkPoi(loc, normalizedMenus)) {
+    return {
+      category: "culture",
+      iconName: "music-15",
+      minZoom: 15.1,
+      priority: 76,
+    };
+  }
+
+  if (isDiningPoi(loc, normalizedMenus)) {
+    return {
+      category: "dining",
+      iconName: "restaurant-15",
+      minZoom: 16.1,
+      priority: 58,
+    };
+  }
+
+  if (isServicePoi(loc, normalizedMenus)) {
+    return {
+      category: "service",
+      iconName: "shop-15",
+      minZoom: 16.2,
+      priority: 54,
+    };
+  }
+
+  if (isBusStopPoi(loc, normalizedMenus)) {
+    return {
+      category: "parkingTransit",
+      iconName: "parking-15",
+      minZoom: 16.7,
+      priority: 38,
+    };
+  }
+
+  if (isEvChargingPoi(loc)) {
+    return {
+      category: "parkingTransit",
+      iconName: "parking-15",
+      minZoom: 17.2,
+      priority: 28,
+    };
+  }
+
+  if (isParkingPoi(loc, normalizedMenus)) {
+    return {
+      category: "parkingTransit",
+      iconName: "parking-15",
+      minZoom: 15.8,
+      priority: 42,
+    };
+  }
+
+  if (loc.buildingNumber) {
+    return {
+      category: "building",
+      iconName: "marker-stroked",
+      minZoom: 14.2,
+      priority: 96,
+    };
+  }
+
+  return {
+    category: "building",
+    iconName: "marker-stroked",
+    minZoom: 15.2,
+    priority: 64,
+  };
+}
+
+async function buildMapPoiRecord(
+  loc: Location,
+): Promise<MapPoiRecord | null> {
+  const geometry = await getLocationGeometryByMdoId(loc.mdoId);
+
+  if (!geometry.labelPoint) {
+    return null;
+  }
+
+  const menus = Array.from(
+    new Set(geometry.features.flatMap((feature) => feature.properties.menus)),
+  );
+  const classified = classifyMapPoi(loc, menus);
+
+  if (!classified) {
+    return null;
+  }
+
+  return {
+    mdoId: loc.mdoId,
+    name: loc.name,
+    abbreviation: loc.abbreviation,
+    buildingNumber: loc.buildingNumber,
+    ...classified,
+    menus,
+    labelPoint: geometry.labelPoint,
+  };
+}
+
 // Main function to get searchable location records, which filters locations to only those marked as searchable and then builds search records for them
 export async function getSearchableLocations(): Promise<
   LocationSearchRecord[]
@@ -239,16 +605,24 @@ export async function getSearchableLocations(): Promise<
 }
 
 export async function getMapBootstrapData(): Promise<
-  Pick<MapBootstrapResponse, "locations" | "searchRecords">
+  Pick<MapBootstrapResponse, "locations" | "searchRecords" | "mapPois">
 > {
   const locations = await getLocations();
   const searchRecords = locations
     .filter((loc) => loc.isSearchable)
     .map(buildLocationSearchRecord);
+  const mapPois = (
+    await Promise.all(
+      locations
+        .filter(shouldCreateAmbientLabel)
+        .map(buildMapPoiRecord),
+    )
+  ).filter((record): record is MapPoiRecord => record !== null);
 
   return {
     locations,
     searchRecords,
+    mapPois,
   };
 }
 

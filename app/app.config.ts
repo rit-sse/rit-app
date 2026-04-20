@@ -12,6 +12,10 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.sse.rit.app",
+      infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          "RIT App uses your location to show where you are on campus and provide walking directions.",
+      },
     },
     android: {
       adaptiveIcon: {
@@ -24,6 +28,10 @@ export default {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: "com.sse.rit.app",
+      permissions: [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+      ],
     },
     web: {
       output: "static",
