@@ -13,7 +13,11 @@ import { fetchLocationFeaturesByMdoId, fetchLocations } from "./scraper";
 
 // Normalizes search text by trimming whitespace, converting to lowercase, and collapsing multiple spaces into one
 function normalizeSearchText(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, " ")
+    .replace(/\s+/g, " ");
 }
 // Builds a secondary label for a location by combining available details like abbreviation, building number, and room number
 function buildSecondaryLabel(loc: Location): string | null {
@@ -153,6 +157,44 @@ function getFeatureLabelPoint(feature: LocationFeature): Position | null {
   return bounds ? getBoundsCenter(bounds) : null;
 }
 
+function getFeatureArea(bounds: Bounds | null): number {
+  if (!bounds) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return (
+    (bounds.northEast[0] - bounds.southWest[0]) *
+    (bounds.northEast[1] - bounds.southWest[1])
+  );
+}
+
+function pickPrimaryFeature(features: LocationFeature[]): LocationFeature | null {
+  if (features.length === 0) {
+    return null;
+  }
+
+  if (features.length === 1) {
+    return features[0];
+  }
+
+  const polygonFeatures = features.filter(
+    (feature) =>
+      feature.geometry.type === "Polygon" ||
+      feature.geometry.type === "MultiPolygon",
+  );
+
+  if (polygonFeatures.length > 0) {
+    return polygonFeatures.reduce((best, current) =>
+      getFeatureArea(getFeatureBounds(current)) <
+      getFeatureArea(getFeatureBounds(best))
+        ? current
+        : best,
+    );
+  }
+
+  return features.find((feature) => feature.geometry.type === "Point") ?? features[0];
+}
+
 function getLocationBounds(features: LocationFeature[]): Bounds | null {
   const boundsList = features
     .map(getFeatureBounds)
@@ -162,12 +204,8 @@ function getLocationBounds(features: LocationFeature[]): Bounds | null {
 }
 
 function getLocationLabelPoint(features: LocationFeature[]): Position | null {
-  if (features[0]?.geometry.type === "Point") {
-    return features[0].geometry.coordinates;
-  }
-
-  const bounds = getLocationBounds(features);
-  return bounds ? getBoundsCenter(bounds) : null;
+  const primaryFeature = pickPrimaryFeature(features);
+  return primaryFeature ? getFeatureLabelPoint(primaryFeature) : null;
 }
 
 // Main function to get structured location data, which first fetches raw data (with caching) and then maps it to the Location type

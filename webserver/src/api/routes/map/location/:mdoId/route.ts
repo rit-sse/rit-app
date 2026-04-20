@@ -15,6 +15,15 @@ export async function GET(req: Request, res: Response): Promise<void> {
 
   try {
     const location = await getLocationGeometryByMdoId(mdoId);
+
+    if (location.features.length === 0) {
+      res.status(404).json({
+        error: "Location geometry not found",
+        mdoId,
+      });
+      return;
+    }
+
     res.header("Content-Type", "application/json").json(location);
   } catch (error) {
     res.status(500).json({
