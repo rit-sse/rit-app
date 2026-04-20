@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { buildApiUrl } from "@/lib/api";
+import { openLink } from "@/lib/utils";
 
 import globals from "../globals";
 import { View, Image, TouchableOpacity, Dimensions, ScrollView } from "react-native";
@@ -50,7 +52,7 @@ export default function EventViewer() {
                 })
                 .catch(error => {
                     console.error("Error fetching event info:", error);
-                    setLoading(false);
+                    setLoading(true);
                 });
         }
     }, [])
@@ -60,24 +62,27 @@ export default function EventViewer() {
         globals.showNavbar? globals.showNavbar(true) : null;
     }
 
+    function goToCampusGroups() {
+        if (eventData) {
+            openLink(`https://campusgroups.rit.edu/rsvp_boot?id=${eventID}`, router);
+        }
+    }
+
     return (
         <>
-            <SafeAreaView style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 10 }}>
-                <TouchableOpacity onPress={goBack} style={{ backgroundColor: "rgba(0,0,0,.6)", width: 50, height: 50, borderRadius: 200, left: "5%", justifyContent: "center", alignItems: "center" }}>
-                    <BackChevron color="white" style={{ width: 40, height: 40, borderRadius: 200, left: "-5%" }} />
-                </TouchableOpacity>
-            </SafeAreaView>
+            <TouchableOpacity onPress={goBack} style={{position:"absolute", top: useSafeArea.top, zIndex: 10, backgroundColor: "rgba(0,0,0,.6)", width: 50, height: 50, borderRadius: 200, left: "5%", justifyContent: "center", alignItems: "center" }}>
+                <BackChevron color="white" style={{ width: 40, height: 40, borderRadius: 200, left: "-5%" }} />
+            </TouchableOpacity>
 
-            <View style={{ flex: 1, alignItems: "center" }}>    
+            <View style={{ flex: 1, alignItems: "center" }}>
                 {
                     loading ? (
-                        <Text className="text-white text-[20px]">Loading...</Text>
+                        <Text className="text-black text-[20px]">Loading...</Text>
                     ) : (
                         <>
-
                             <Image style={{ width: Dimensions.get("screen").width, height: 200 + useSafeArea.top, borderRadius: 0, borderWidth: 0, borderColor: "#F76902" }}
                                 source={{ uri: eventData["image"] ? eventData["image"][0] : undefined }} />
-                            <ScrollView className={`w-full px-[5%] pt-[15px] pb-[${useSafeArea.bottom + 300}px]`} style={{ backgroundColor: "rgb(24, 24, 24)" }}>
+                            <ScrollView className={`w-full px-[5%] pt-[15px]`} style={{ backgroundColor: "rgb(24, 24, 24)" }}>
                                 <Text className="text-white text-[25px] font-bold">{eventData["name"]}</Text>
                                 <Text className="text-white text-[16px]">by {eventData["organizer"]}</Text>
                                 <View className="w-full h-[1px] bg-white mt-[15px]" />
@@ -96,11 +101,19 @@ export default function EventViewer() {
                                         )
                                     }
                                 </View>
+
+                                <View style={{height: useSafeArea.bottom + 120}}>
+                                </View>
                             </ScrollView>
                         </>
                     )
                 }
             </View>
+            <View style={{ position: "absolute", bottom: useSafeArea.bottom, width: "100%", alignItems: "center", paddingBottom: 10 }}>
+                <Button className="bg-[#F76902] active:bg-[#F76902] active:opacity-[0.5] w-[90%] h-[50px] rounded-lg justify-center items-center" onPress={() => {goToCampusGroups()}}>
+                  <Text>View on CampusGroups</Text>
+                </Button>
+            </View>
         </>
     )
-}   
+} 

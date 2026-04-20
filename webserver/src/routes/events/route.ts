@@ -21,7 +21,15 @@ const getEventData = async (increments: number) => {
               eventData[fields[x]] = event[`p${x}`];
           }
           if (eventData["eventName"]) {
-              eventData["eventDates"] = cheerio.load(eventData["eventDates"]).text().trim();
+              let dates: string[] = [];
+              // eventData["eventDates"] = cheerio.load(eventData["eventDates"]).teHH
+              for(const date of cheerio.load(eventData["eventDates"])("p")) {
+                  let dateParse = cheerio.load(date).text().trim();
+                  if(dateParse != "" && !dates.includes(dateParse)) {
+                      dates.push(dateParse);
+                  }
+              }
+              eventData["eventDates"] = dates.join(" ");;
           }
           if (eventData["eventTags"]) {
               let allTags: string[] =[];
