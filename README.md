@@ -1,4 +1,4 @@
-# RIT App
+# tiger GO!
 ![RIT App Logo](.github/assets/banner.png)
 
 <p align="center">
