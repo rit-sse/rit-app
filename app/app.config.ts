@@ -1,8 +1,8 @@
 
 export default {
   expo: {
-    name: "RIT",
-    slug: "RIT",
+    name: "tigerGO!",
+    slug: "tigergo",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
@@ -11,7 +11,7 @@ export default {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.sse.rit.app",
+      bundleIdentifier: "com.sse.tigergo.app",
     },
     android: {
       adaptiveIcon: {
@@ -23,7 +23,7 @@ export default {
       usesCleartextTraffic: true,
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
-      package: "com.sse.rit.app",
+      package: "com.sse.tigergo.app",
     },
     web: {
       output: "static",

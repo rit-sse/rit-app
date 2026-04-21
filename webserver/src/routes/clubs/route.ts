@@ -62,7 +62,7 @@ export async function GET(req: Request, res: Response) {
             image: clubImage,
             isPasswordLocked: passwordLocked
         })
-    } 
+    }
     await scrapeCache.setCache("club_infos", parsedClubs);
     res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
 }
