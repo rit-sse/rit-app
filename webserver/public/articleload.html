@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{ARTICLE_TITLE}</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const button = document.getElementById("submitButton")
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                const title = document.getElementById("title").value;
+                const articleImage = document.getElementById("articleImage").value;
+                const author = document.getElementById("author").value;
+                const authorRole = document.getElementById("authorRole").value;
+                const date = document.getElementById("date").value;
+                const article = document.getElementById("article").value;
+                const secretKey = document.getElementById("secretKey").value;
+
+                // Create an object to hold the form data
+                const formData = {
+                    id: parseInt(new URLSearchParams(window.location.search).get('id')), // Assuming you have the article ID available in the query parameters
+                    title: title,
+                    imageurl: articleImage,
+                    author: author,
+                    authorRole: authorRole,
+                    articledate: date,
+                    body: article,
+                    secretKey: secretKey
+                };
+
+                // You can now send the formData object to your server using fetch or any other method
+                fetch('/featuredarticles', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    }).catch((error) => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    </script>
+</head>
+
+<body>
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" value="{ARTICLE_TITLE}"><br>
+        <label for="articleImage">Article Image URL:</label><br>
+        <input type="text" id="articleImage" name="articleImage" value="{ARTICLE_IMAGE}"><br>
+        <label for="author">Author:</label><br>
+        <input type="text" id="author" name="author" value="{ARTICLE_AUTHOR}"><br>
+        <label for="authorRole">Author Role:</label><br>
+        <input type="text" id="authorRole" name="authorRole" value="{ARTICLE_AUTHOR_ROLE}"><br>
+        <label for="date">Date:</label><br>
+        <input type="text" id="date" name="date" value="{ARTICLE_DATE}"><br>
+        <label for="article">Text:</label><br>
+        <textarea id="article" name="article" rows="10" cols="50">{ARTICLE_BODY}</textarea><br>
+        <label for="secretKey">Secret Key:</label><br>
+        <input type="text" id="secretKey" name="secretKey"><br>
+        <input type="submit" value="Submit" id="submitButton">
+</body>
+
+</html>

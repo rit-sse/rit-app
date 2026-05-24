@@ -26,9 +26,20 @@ interface NewsArticle {
   image: string;
 }
 
+interface FeaturedArticle {
+  id: number;
+  title: string;
+  image: string;
+  articleDate: string;
+  body: string;
+  author: string;
+  authorRole: string;
+}
+
 export default function Index() {
   const [scrollOffset, setscrollOffset] = useState(0);
   const [news, setNews] = useState<NewsArticle[]>([]);
+  const [featuredArticles, setFeaturedArticles] = useState<FeaturedArticle[]>([]);
 
   const [recentlyViewed, setRecentlyViewed] = useState<gridBox[]>();
 
@@ -36,26 +47,33 @@ export default function Index() {
     getRecentlyView().then((data) => setRecentlyViewed(data.reverse()));
   }, []);
 
-  const draggableExample = [
-    <EventsContainer
-      image={require("../assets/images/careerfair.png")}
-      title={[
-        { content: "Prepare for", color: "#fff" },
-        { content: "Career Fair", color: "#F76902" },
-      ]}
-      key={0}
-    />,
-    <EventsContainer
-      image="http://campusgroups.rit.edu/upload/rit/2023/s2_image_upload_1555914_Mascots_929123537.png"
-      title={[{ content: "Event 2", color: "#fff" }]}
-      key={1}
-    />,
-    <EventsContainer
-      image="https://picsum.photos/500/300"
-      title={[{ content: "Event 3", color: "#fff" }]}
-      key={2}
-    />,
-  ];
+  useEffect(() => {
+    fetch(buildApiUrl("/featuredarticles"))
+      .then((response) => response.json())
+      .then((data) => setFeaturedArticles(data))
+      .catch((error) => console.error("Error fetching featured articles:", error));
+  }, []);
+
+  // const draggableExample = [
+  //   <EventsContainer
+  //     image={require("../assets/images/careerfair.png")}
+  //     title={[
+  //       { content: "Prepare for", color: "#fff" },
+  //       { content: "Career Fair", color: "#F76902" },
+  //     ]}
+  //     key={0}
+  //   />,
+  //   <EventsContainer
+  //     image="http://campusgroups.rit.edu/upload/rit/2023/s2_image_upload_1555914_Mascots_929123537.png"
+  //     title={[{ content: "Event 2", color: "#fff" }]}
+  //     key={1}
+  //   />,
+  //   <EventsContainer
+  //     image="https://picsum.photos/500/300"
+  //     title={[{ content: "Event 3", color: "#fff" }]}
+  //     key={2}
+  //   />,
+  // ];
   const onPageScrolled = (e: any) => {
     let offset = e.nativeEvent.offset + e.nativeEvent.position;
     setscrollOffset(Math.round(offset * 1000) / 1000);
@@ -92,7 +110,13 @@ export default function Index() {
           initialPage={0}
           onPageScroll={onPageScrolled}
         >
-          {draggableExample.map((page) => page)}
+          {featuredArticles.map((article, idx) => (
+            <EventsContainer
+              key={idx}
+              image={article.image}
+              title={[{ content: article.title, color: "#fff" }]}
+            />
+          ))}
         </PagerView>
         <View
           style={{
@@ -104,7 +128,7 @@ export default function Index() {
             marginTop: 10,
           }}
         >
-          {draggableExample.map((_, index) => (
+          {featuredArticles.map((_, index) => (
             //
             <View
               key={index}

@@ -28,4 +28,14 @@ model news{
   date String
 }
 
+model featuredNews {
+  id Int @id @default(autoincrement())
+  title String
+  image String
+  articleDate String
+  body String
 
+  author String
+  authorRole String
+  
+}

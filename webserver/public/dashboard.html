@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Featured News Article Dashboard</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:3000/featuredarticles')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('featured-articles-table-body');
+                    data.forEach(article => {
+                        const row = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.innerText = article.title;
+                        const td2 = document.createElement('td');
+                        const img = document.createElement('img');
+                        img.src = article.image;
+                        img.alt = article.title;
+                        img.width = 150;
+                        td2.appendChild(img);
+                        row.appendChild(td);
+                        row.appendChild(td2);
+                        row.appendChild(document.createElement('td')).innerText = article.articleDate;
+                        let editButton = document.createElement('button');
+                        editButton.innerText = 'Edit';
+                        editButton.addEventListener('click', function() {
+                            window.location.href = `http://localhost:3000/dashboard?id=${article.id}`;
+                        });
+                        row.appendChild(document.createElement('td')).appendChild(editButton);
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching featured articles:', error));
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <!-- Featured News Article Dashboard Content. Table view of featured news articles -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Date</th>
+                    <th>Modify</th>
+                </tr>
+            </thead>
+            <tbody id ="featured-articles-table-body">
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
