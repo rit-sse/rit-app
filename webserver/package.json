@@ -16,9 +16,9 @@
   "main": "App.js",
   "scripts": {
     "prisma:check": "prisma validate && prisma generate",
-    "start": "source .env && tsc && node ./dist/App.js",
+    "start": "source .env && tsc && cp -r src/lib/webdoc/shells dist/lib/webdoc/ && node ./dist/App.js",
     "clean": "rm -rf ./dist",
-    "build": "npm run prisma:check && tsc"
+    "build": "npm run prisma:check && tsc && cp -r src/lib/webdoc/shells dist/lib/webdoc/"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
@@ -27,6 +27,7 @@
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "marked": "^18.0.5",
     "pg": "^8.17.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
