@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client"
 
 export class ScrapeCache {
     private prisma: PrismaClient = getPrisma();
-    private EXPIRATION_TIME_MS: number = 1000 * 60 * 60 * 3; // 3 hours
+    private EXPIRATION_TIME_MS: number = 1000 * 60 * 60 * 24; // 24 hours
 
     constructor() {
     }
