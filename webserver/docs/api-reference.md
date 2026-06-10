@@ -2,6 +2,8 @@
 
 Base URL: `http://localhost:3000` (or configured `PORT`)
 
+Our staging is `https://ritappdev.sse-dev.org` and our main will be `https://ritapp.sse-dev.org`
+
 All responses are JSON. Cached responses include a `cachetime` field (Unix ms timestamp of when the data was last fetched).
 
 ---
