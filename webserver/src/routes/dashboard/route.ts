@@ -6,6 +6,9 @@ import { server } from "typescript";
 
 
 export async function GET(req: Request, res: Response) {
+  if (req.query.new) {
+    return res.status(200).sendFile("articlecreate.html", { root: "public" });
+  }
   if (req.query.id) {
     const prisma: PrismaClient = getPrisma();
 

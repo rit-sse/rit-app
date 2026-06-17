@@ -3,54 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Featured News Article Dashboard</title>
+    <title>Featured Articles Dashboard</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        header h1 span { color: #F76902; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.15s;
+            text-decoration: none;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn-primary { background: #F76902; color: #fff; }
+        .btn-ghost {
+            background: transparent;
+            color: #F76902;
+            border: 1.5px solid #F76902;
+        }
+
+        main { padding: 32px;  margin: 0 auto; }
+
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead tr { background: #fafafa; border-bottom: 1px solid #e8e8e8; }
+
+        th {
+            text-align: left;
+            padding: 13px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #888;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.1s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fef9f5; }
+
+        td {
+            padding: 14px 18px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        td.title-cell { font-weight: 500; max-width: 260px; }
+
+        td img {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+        }
+
+        td.date-cell { color: #666; white-space: nowrap; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #aaa;
+            font-size: 15px;
+        }
+    </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://localhost:3000/featuredarticles')
-                .then(response => response.json())
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/featuredarticles')
+                .then(r => r.json())
                 .then(data => {
-                    const tableBody = document.getElementById('featured-articles-table-body');
+                    const tbody = document.getElementById('featured-articles-table-body');
+                    if (!data.length) {
+                        tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">No articles yet. Create one to get started.</div></td></tr>';
+                        return;
+                    }
                     data.forEach(article => {
                         const row = document.createElement('tr');
-                        const td = document.createElement('td');
-                        td.innerText = article.title;
-                        const td2 = document.createElement('td');
-                        const img = document.createElement('img');
-                        img.src = article.image;
-                        img.alt = article.title;
-                        img.width = 150;
-                        td2.appendChild(img);
-                        row.appendChild(td);
-                        row.appendChild(td2);
-                        row.appendChild(document.createElement('td')).innerText = article.articleDate;
-                        let editButton = document.createElement('button');
-                        editButton.innerText = 'Edit';
-                        editButton.addEventListener('click', function() {
-                            window.location.href = `http://localhost:3000/dashboard?id=${article.id}`;
+
+                        const tdTitle = document.createElement('td');
+                        tdTitle.className = 'title-cell';
+                        tdTitle.innerText = article.title;
+
+                        const tdImg = document.createElement('td');
+                        if (article.image) {
+                            const img = document.createElement('img');
+                            img.src = article.image;
+                            img.alt = article.title;
+                            tdImg.appendChild(img);
+                        }
+
+                        const tdDate = document.createElement('td');
+                        tdDate.className = 'date-cell';
+                        tdDate.innerText = article.articleDate || '—';
+
+                        const tdAction = document.createElement('td');
+                        const editBtn = document.createElement('button');
+                        editBtn.innerText = 'Edit';
+                        editBtn.className = 'btn btn-ghost';
+                        editBtn.style.padding = '6px 14px';
+                        editBtn.style.fontSize = '13px';
+                        editBtn.addEventListener('click', () => {
+                            window.location.href = `/dashboard?id=${article.id}`;
                         });
-                        row.appendChild(document.createElement('td')).appendChild(editButton);
-                        tableBody.appendChild(row);
+                        tdAction.appendChild(editBtn);
+
+                        row.append(tdTitle, tdImg, tdDate, tdAction);
+                        tbody.appendChild(row);
                     });
                 })
-                .catch(error => console.error('Error fetching featured articles:', error));
+                .catch(err => console.error('Error fetching featured articles:', err));
         });
     </script>
 </head>
 <body>
-    <div>
-        <!-- Featured News Article Dashboard Content. Table view of featured news articles -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Image</th>
-                    <th>Date</th>
-                    <th>Modify</th>
-                </tr>
-            </thead>
-            <tbody id ="featured-articles-table-body">
-            </tbody>
-        </table>
-    </div>
+    <header>
+        <h1>Article Management</h1>
+        <button class="btn btn-primary" onclick="window.location.href='/dashboard?new=true'">+ New Article</button>
+    </header>
+    <main>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Image</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="featured-articles-table-body"></tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>
