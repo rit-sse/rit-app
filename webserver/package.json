@@ -12,7 +12,7 @@
   },
   "license": "ISC",
   "author": "Society of Software Engineers",
-  "type": "module",
+  "type": "commonjs",
   "main": "App.js",
   "scripts": {
     "prisma:check": "prisma validate && prisma generate",
