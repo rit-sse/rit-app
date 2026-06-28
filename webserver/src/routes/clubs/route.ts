@@ -1,35 +1,25 @@
 import { Request, Response } from "express";
-import { ScrapeCache } from "../../db/cache";
+import { scheduler } from "../../lib/cache-scheduler/scheduler";
 import * as cheerio from "cheerio";
 
-const scrapeCache = new ScrapeCache();
+const CACHE_KEY = "club_infos";
 
+const fetchClubs = async () => {
+    const clubPage = await (await fetch("https://campusgroups.rit.edu/club_signup?view=all&group_type=9999")).text();
+    const $ = cheerio.load(clubPage);
 
-export async function GET(req: Request, res: Response) {
-    if(await scrapeCache.getCache("club_infos") && !(await scrapeCache.isExpired("club_infos"))) {
-        return res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
-    }
-    let clubPage = await (await fetch("https://campusgroups.rit.edu/club_signup?view=all&group_type=9999")).text();
-    let $ = cheerio.load(clubPage);
+    const parsedClubs: { [key: string]: any }[] = [];
 
-    let clubList = $('.list-group-item').toArray();
-
-    let parsedClubs: { [key: string]: any }[] = [];
-
-    for (let club of clubList) {
-        // Club Name Parser
-        let clubName = $(club).find('.media-heading.header-cg--h4').text().trim();
+    for (const club of $('.list-group-item').toArray()) {
+        const clubName = $(club).find('.media-heading.header-cg--h4').text().trim();
         if (clubName === "") continue;
 
-        // Club type (e.g., Academic, Sports, Cultural)
         let clubType = $(club).find('.h5.media-heading.grey-element').text().trim().replaceAll("\t", " ").replaceAll("\n", " ");
         clubType = clubType.replaceAll(/\s+/g, " ");
 
-        // Mission Statement Parser
         let missionStatement = "";
-        let missionStatementScan = $(club).find('p');
-        for (let p of missionStatementScan.toArray()) {
-            if ($(p).attr("onclick") && $(p).attr("onclick")!.includes("mission")) {
+        for (const p of $(club).find('p').toArray()) {
+            if ($(p).attr("onclick")?.includes("mission")) {
                 missionStatement += $(p).text().trim() + " ";
             }
         }
@@ -37,21 +27,13 @@ export async function GET(req: Request, res: Response) {
         missionStatement = missionStatement.replaceAll(/\s+/g, " ");
         missionStatement = missionStatement.substring("Mission".length).trim();
 
-        // Detect if the club is full/closed
-        let fullClub = false;
-        $(club).find('.checkbox.checkbox-cg--group').toArray().forEach(p => {
-            if($(p).children().toArray().some(child => $(child).is('span'))) {
-                fullClub = true;
-            }
-        });
+        const fullClub = $(club).find('.checkbox.checkbox-cg--group').toArray()
+            .some(p => $(p).children().toArray().some(child => $(child).is('span')));
 
-        // Get image
-         let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
+        let clubImage = $(club).find('.media-object.media-object--bordered').attr('src') || '';
         clubImage = "https://static-prod-us-east-1.campusgroups.com" + clubImage;
 
-        // Detect if the club is password locked.
-        let passwordLocked = false;
-        $(club).find('.listing-element__title-block').text().includes("Group password") ? passwordLocked = true : passwordLocked = false;
+        const passwordLocked = $(club).find('.listing-element__title-block').text().includes("Group password");
 
         parsedClubs.push({
             name: clubName,
@@ -61,8 +43,22 @@ export async function GET(req: Request, res: Response) {
             closed: fullClub,
             image: clubImage,
             isPasswordLocked: passwordLocked
-        })
+        });
     }
-    await scrapeCache.setCache("club_infos", parsedClubs);
-    res.header("Content-Type", "application/json").send(await scrapeCache.getCache("club_infos"));
+
+    return parsedClubs;
+};
+
+export const CACHEJOB = {
+    key: CACHE_KEY,
+    intervalMs: 1000 * 60 * 60 * 6, // 6 hours — club listings change infrequently
+    fetcher: fetchClubs,
+};
+
+export function GET(_req: Request, res: Response) {
+    const cached = scheduler.getCache(CACHE_KEY);
+    if (!cached) {
+        return res.status(503).json({ error: "Cache is warming up, try again shortly." });
+    }
+    return res.header("Content-Type", "application/json").json({ cachetime: cached.cacheTime, data: cached.data });
 }
