@@ -35,7 +35,7 @@ export const GET = async (req: Request, res: Response) => {
     if (onlyNTID) criteria.push({ field: "ntid_NTIDINSTR", value: "Y" });
 
     if(criteria.length == 0) {
-        return res.status(400).json({ error: "At least one search criteria must be provided." });
+        return res.status(400).json({ error: "At least one search criteria must be provided. Such as `college`, `subject`, `keyword`, `gradType`, `perspective`, `ged`, `typeofWritingIntensive`, `honors`, or `onlyNTID`." });
     }
 
     if(criteria.length == 1) {
