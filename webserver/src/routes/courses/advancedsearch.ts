@@ -4,6 +4,7 @@ import { HEADERS } from "./search"
 
 const CACHE_KEY = "rit_courses";
 const COURSES_URL = "https://academiccatalog.rit.edu/course-search/api/?page=fose&route=search";
+const STALE_CACHE_MS = 1000 * 60 * 60 * 24 * 4; // 4 days
 
 export const GET = async (req: Request, res: Response) => {
     const { college, keyword, gradType, subject, ged, perspective, typeofWritingIntensive, honors, onlyNTID } = req.query;
@@ -33,9 +34,16 @@ export const GET = async (req: Request, res: Response) => {
     if (honors) criteria.push({ field: "honors_HONORS", value: "Y" });
     if (onlyNTID) criteria.push({ field: "ntid_NTIDINSTR", value: "Y" });
 
-    console.log(criteria);
     if(criteria.length == 0) {
         return res.status(400).json({ error: "At least one search criteria must be provided." });
+    }
+
+    if(criteria.length == 1) {
+        const { field, value } = criteria[0] as { field: string; value: any };
+        const cached = scheduler.getCache(`rit_courses_${field}_${value}`);
+        if (cached && Date.now() - cached.cacheTime < STALE_CACHE_MS) { // 4 days
+            return res.header("Content-Type", "application/json").json(cached.data);
+        }
     }
 
     const response = await fetch(COURSES_URL, {
