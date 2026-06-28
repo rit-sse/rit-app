@@ -31,6 +31,18 @@ export class CacheScheduler {
         return entry;
     }
 
+    async setCache(key: string, data: any, intervalMs: number = OVERLY_OUTDATED_MS): Promise<void> {
+        const cacheTime = Date.now();
+        const expiry = cacheTime + intervalMs;
+        this.store.set(key, { data, cacheTime });
+        const exists = await this.prisma.webscrapeCache.findFirst({ where: { cacheName: key } });
+        if (exists) {
+            await this.prisma.webscrapeCache.updateMany({ where: { cacheName: key }, data: { data, expiry, cacheTime } });
+        } else {
+            await this.prisma.webscrapeCache.create({ data: { cacheName: key, data, expiry, cacheTime } });
+        }
+    }
+
     start(): void {
         // Seed in-memory store from persisted DB entries so the first requests
         // are served immediately, before the initial fetcher runs finish.
