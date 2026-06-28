@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express, {Request, Response} from 'express';
 import fs from 'node:fs';
 import {extname, resolve, sep} from "node:path";
-import { CacheScheduler } from './lib/cache-scheduler/scheduler';
+import { scheduler } from './lib/cache-scheduler/scheduler';
 
 const PORT: number = Number(process.env.PORT) || 3000; // I didn't make a .env file D:
 const SOURCE_DIR: string = resolve(__dirname + '/routes');
@@ -10,8 +10,6 @@ const SOURCE_DIR: string = resolve(__dirname + '/routes');
 
 const app: express.Express = express();
 app.use(express.json()); // Middleware to parse JSON bodies
-
-const scheduler = new CacheScheduler();
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
