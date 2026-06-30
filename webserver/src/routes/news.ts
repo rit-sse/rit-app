@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import * as cheerio from 'cheerio';
-import { ScrapeCache } from '../db/cache';
-// import fs  from 'fs'; used this to make a html file of rit news, just for debugging stuff 
-// psql -U postgres -h localhost -p 5433 -d ritApp to log into sql db on the termial, JUST TO LOOK AT DATA DO NOT USE RAW SQL WE HAVE PRISMA FOR A REASON
+import { scheduler } from '../lib/cache-scheduler/scheduler';
+
 interface NewsArticle {
   uri: string;
   title: string;
@@ -11,123 +10,76 @@ interface NewsArticle {
   image: string;
 }
 
-const scrapeCache = new ScrapeCache();
+const DEFAULT_PAGE = 0;
+const DEFAULT_PAGE_COUNT = 1;
+const CACHE_KEY = `news_page${DEFAULT_PAGE}_count${DEFAULT_PAGE_COUNT}`;
 
-/**
- * Scrapes news articles from RIT's news stories page
- * @param page - Page number (0-based)
- * @returns Array of news articles sorted by newest to oldest
- */
 async function scrapeRITNews(page: number = 0): Promise<NewsArticle[]> {
-  const baseUrl = 'https://www.rit.edu/news/news-stories';
-	const url = page > 0 ? `${baseUrl}?page=${page}` : baseUrl;
+    const baseUrl = 'https://www.rit.edu/news/news-stories';
+    const url = page > 0 ? `${baseUrl}?page=${page}` : baseUrl;
 
-	try {
-		const response = await fetch(url);
-		
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		
-		const html = await response.text();
-		const $ = cheerio.load(html);
-		
-		const articles: NewsArticle[] = [];
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-		// Target the actual news articles
-		$('article.news-teaser').each((_, element) => {
-			const $article = $(element);
-			
-			// Get the date from card-header
-			const date = $article.find('.card-header').text().trim();
-			
-			// Get the main link
-			const $link = $article.find('a.card-link');
-			const href = $link.attr('href');
-			const title = $article.find('.card-title').text().trim();
-			
-			// Get the description from card-text
-			const description = $article.find('.card-text p').text().trim();
+    const $ = cheerio.load(await response.text());
+    const articles: NewsArticle[] = [];
 
-			// Get image of the news card
-			const image = $article.find('img.card-img-top').attr('src');
-			
-			// Only add if we have valid data
-			if (href && title) {
-				articles.push({
-					uri: href.startsWith('http') ? href : `https://www.rit.edu${href}`,
-					title: title.replace(/\s+/g, ' '), // Clean up extra whitespace
-					description: description || '',
-					date: date || 'Date not available',
-					image: "https://rit.edu" + image || ''
-				});
-			}
-		});
+    $('article.news-teaser').each((_, element) => {
+        const $article = $(element);
+        const date = $article.find('.card-header').text().trim();
+        const href = $article.find('a.card-link').attr('href');
+        const title = $article.find('.card-title').text().trim();
+        const description = $article.find('.card-text p').text().trim();
+        const image = $article.find('img.card-img-top').attr('src');
 
-		console.log(`Found ${articles.length} articles`);
-		return articles;
-		
-	} catch (error) {
-		console.error('Error scraping RIT news:', error);
-		throw error;
-	}
+        if (href && title) {
+            articles.push({
+                uri: href.startsWith('http') ? href : `https://www.rit.edu${href}`,
+                title: title.replace(/\s+/g, ' '),
+                description: description || '',
+                date: date || 'Date not available',
+                image: "https://rit.edu" + image || ''
+            });
+        }
+    });
+
+    return articles;
 }
 
-/**
- * GET /news
- * Query params:
- *   - page: Page number (0-based, optional, default: 0)
- *   - pageCount: Number of pages to fetch (optional, default: 1)
- * 
- * Returns array of news articles in format:
- * {
- *   cachetime: number,
- *   data: NewsArticle[]
- * }
- */
+async function fetchNewsPages(page: number, pageCount: number): Promise<NewsArticle[]> {
+    const allArticles: NewsArticle[] = [];
+    for (let i = 0; i < pageCount; i++) {
+        allArticles.push(...await scrapeRITNews(page + i));
+    }
+    return allArticles;
+}
+
+export const CACHEJOB = {
+    key: CACHE_KEY,
+    intervalMs: 1000 * 60 * 60, // 1 hour
+    fetcher: () => fetchNewsPages(DEFAULT_PAGE, DEFAULT_PAGE_COUNT),
+};
+
 export async function GET(req: Request, res: Response) {
-	try {
-		const page = parseInt(req.query.page as string) || 0;
-		const pageCountParam = parseInt(req.query.pageCount as string);
-		const pageCount = pageCountParam && pageCountParam > 0 ? pageCountParam : 1;
+    const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
+    const pageCount = parseInt(req.query.pageCount as string) || DEFAULT_PAGE_COUNT;
+    const isDefault = page === DEFAULT_PAGE && pageCount === DEFAULT_PAGE_COUNT;
 
-		// Create cache key based on page and pageCount
-		const cacheKey = `news_page${page}_count${pageCount}`; //for some reason this isn't working because of caching reasons that I dont know
-    //const cacheKey = `news_v2_page${page}_count${pageCount}`;
+    if (isDefault) {
+        const cached = scheduler.getCache(CACHE_KEY);
+        if (!cached) {
+            return res.status(503).json({ error: "Cache is warming up, try again shortly." });
+        }
+        return res.json({ cachetime: cached.cacheTime, data: cached.data });
+    }
 
-		// TEMPORARILY DISABLE CACHE FOR DEBUGGING
-		const bypassCache = req.query.nocache === 'true';
-
-		// Check if cache exists and is not expired
-		if (!bypassCache && await scrapeCache.inCache(cacheKey) && !(await scrapeCache.isExpired(cacheKey))) {
-			console.log('Returning cached data');
-			res.send(await scrapeCache.getCache(cacheKey));
-			return;
-		}
-
-		console.log('Scraping fresh data...');
-
-		// Otherwise, scrape new data
-		let allArticles: NewsArticle[] = [];
-		
-		// Fetch multiple pages if requested
-		for (let i = 0; i < pageCount; i++) {
-			const articles = await scrapeRITNews(page + i);
-			allArticles.push(...articles);
-		}
-
-		// Cache the results
-		await scrapeCache.setCache(cacheKey, allArticles);
-
-		// Return newly scraped data
-		res.send(await scrapeCache.getCache(cacheKey));
-		
-	} catch (error) {
-		console.error('Error fetching news:', error);
-		res.status(500).json({
-			success: false,
-			error: 'Failed to fetch news articles',
-			message: error instanceof Error ? error.message : 'Unknown error'
-		});
-	}
+    try {
+        const articles = await fetchNewsPages(page, pageCount);
+        return res.json({ cachetime: Date.now(), data: articles });
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Failed to fetch news articles',
+            message: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
 }
