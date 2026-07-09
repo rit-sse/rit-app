@@ -65,7 +65,8 @@ export default function Index() {
     fetch(buildApiUrl("/news"))
       .then((response) => response.json())
       .then((data) => setNews(data["data"]))
-      .catch((error) => console.error("Error fetching news:", error));
+      .catch((error) => console.error("Error fetching news:", error);
+
   }, []);
 
   return (

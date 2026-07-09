@@ -2,7 +2,6 @@ import 'dotenv/config'
 import express, {Request, Response} from 'express';
 import fs from 'node:fs';
 import {extname, resolve, sep} from "node:path";
-import { scheduler } from './lib/cache-scheduler/scheduler';
 
 const PORT: number = Number(process.env.PORT) || 3000; // I didn't make a .env file D:
 const SOURCE_DIR: string = resolve(__dirname + '/routes');
@@ -36,11 +35,6 @@ const registerRouteModule = (modulePath: string, routePath: string, file: string
     if(route.DELETE) {
         app.delete(routePath, route.DELETE);
     }
-    if (route.CACHEJOB) {
-        const { key, intervalMs, fetcher } = route.CACHEJOB;
-        scheduler.registerLoop(key, intervalMs, fetcher);
-        console.log(`Registered cache job: [${key}] from file: ${file}`);
-    }
     console.log(`Loaded route: [${routePath}] from file: ${file}`);
 }
 
@@ -73,11 +67,6 @@ const recursiveLoadRoutes = (dir: string) => {
             if(route.DELETE) {
                 app.delete(routePath, route.DELETE);
             }
-            if (route.CACHEJOB) {
-                const { key, intervalMs, fetcher } = route.CACHEJOB;
-                scheduler.registerLoop(key, intervalMs, fetcher);
-                console.log(`Registered cache job: [${key}] from file: ${file}`);
-            }
             // Add other HTTP methods as needed
             console.log(`Loaded route: [${routePath}] from file: ${file}`);
             return;
@@ -96,15 +85,6 @@ const recursiveLoadRoutes = (dir: string) => {
 
 recursiveLoadRoutes(SOURCE_DIR);
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    scheduler.start();
 });
-
-const shutdown = () => {
-    scheduler.stop();
-    server.close(() => process.exit(0));
-};
-
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
