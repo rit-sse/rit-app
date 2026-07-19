@@ -23,6 +23,11 @@ export default function Grid() {
   // Icons sourced from https://lucide.dev/icons
   const GRID_DATA: gridBox[] = [
     {
+      imageID: "dining_icon",
+      name: "Dining & Menus",
+      link: "/dining/search",
+    },
+    {
       imageID: "sis_icon",
       name: "SIS",
       link: "https://campus.ps.rit.edu/",
@@ -41,14 +46,14 @@ export default function Grid() {
       imageID: "group_icon",
       name: "Group Search",
       link: "/widgetlab/clubsearch/"
+    },
+    {
+      imageID: "hours",
+      name: "Building Hours",
+      link: "/widgetlab/building-hours/"
     }
   ]
 
-  const special_Dining: gridBox = {
-    imageID: "dining_icon",
-    name: "Dining & Menus",
-    link: "/dining/search",
-  };
 
   function processQuickLink(gridItem: gridBox) {
     console.log("Processing quick link for: " + gridItem.name);
@@ -60,7 +65,7 @@ export default function Grid() {
   return (
     <SafeAreaView className="flex-1 justify-center items-center">
       <View className="w-full  items-center h-[80%]">
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.8}
           className="w-[85%] h-24 rounded-lg overflow-hidden"
           onPress={() => processQuickLink(special_Dining)}
@@ -84,7 +89,7 @@ export default function Grid() {
           <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">
             Dining & Menus
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <FlatList
           data={GRID_DATA}
           numColumns={3}
