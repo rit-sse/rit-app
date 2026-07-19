@@ -1,10 +1,9 @@
+
 import { scheduler } from "../../lib/cache-scheduler/scheduler";
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
-// The fixed set of buildings whose hours we scrape. This dataset is small and
-// consistent (one page per building), so it fits the cache-scheduler model:
-// the scheduler fetches all of them on an interval, independent of user traffic.
-// See src/lib/cache-scheduler/README.md for the "schedule vs. lazy" heuristic.
+// This file uses some of the tools that RIT provides that enable a near "real-time" tracking.
+// Other locations have a static hourly set, while other more frequently visited locations may have dynamic schedules.
 
 export interface BuildingLocation {
     id: number;
@@ -13,7 +12,7 @@ export interface BuildingLocation {
     url: string;
 }
 
-const CACHE_KEY = "locations";
+const CACHE_KEY = "building-hours";
 
 const fetchBuildings = async () => {
     let data = await (await fetch("https://www.rit.edu/facilities")).text();
