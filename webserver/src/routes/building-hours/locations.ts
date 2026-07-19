@@ -6,13 +6,6 @@ import * as cheerio from "cheerio";
 // the scheduler fetches all of them on an interval, independent of user traffic.
 // See src/lib/cache-scheduler/README.md for the "schedule vs. lazy" heuristic.
 
-export interface BuildingLocation {
-    id: number;
-    name: string;
-    /** RIT facilities page to scrape the Hours block from. */
-    url: string;
-}
-
 const CACHE_KEY = "locations";
 
 const fetchBuildings = async () => {
