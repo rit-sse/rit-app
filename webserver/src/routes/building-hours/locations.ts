@@ -43,10 +43,18 @@ export const CACHEJOB = {
     fetcher: fetchBuildings
 }
 
-export const GET = (_req: Request, res: Response) => {
+export const GET = (req: Request, res: Response) => {
     const cached = scheduler.getCache(CACHE_KEY);
     if (!cached) {
         return res.status(503).json({ error: "Cache is warming up, try again shortly." });
     }
-    return res.header("Content-Type", "application/json").json({ cachetime: cached.cacheTime, data: cached.data });
+
+    let data = cached.data as { title: string; link: string; image: string }[];
+
+    const q = (req.query.q as string | undefined)?.trim().toLowerCase();
+    if (q) {
+        data = data.filter((b) => b.title.toLowerCase().includes(q));
+    }
+
+    return res.header("Content-Type", "application/json").json({ cachetime: cached.cacheTime, data });
 };
