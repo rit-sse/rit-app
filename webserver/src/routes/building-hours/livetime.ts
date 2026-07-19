@@ -65,77 +65,38 @@ const fetchLiveHours = async () => {
     data.wallace = wallace;
 
     // ********************
-    // SHED Atrium Logic
+    // SHED Makerspaces (Atrium, General, Textiles)
     // ********************
 
-    let shedAtrium = await (await fetch("https://make.rit.edu/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(
-            { "operationName": "GetMakerspaceByID", "variables": { "id": "36" }, "query": "query GetMakerspaceByID($id: ID!) {\n  makerspaceByID(id: $id) {\n    id\n    hours {\n      day\n      makerspaceID\n      open\n      close\n      closed\n      __typename\n    }}\n}" }
-        )
-    })).json();
-
-    // Normalize the GraphQL hours into the same "{day}: {time}" shape as the
-    // scraped locations, so the response stays consistent across all buildings.
-    const atrium: Record<string, string> = {};
-    for (const h of shedAtrium?.data?.makerspaceByID?.hours ?? []) {
-        // "day" is an ISO timestamp — take the weekday name (UTC to avoid shifting).
-        const day = new Date(h.day).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-        atrium[day] = h.closed ? "Closed" : `${formatTime(h.open)}–${formatTime(h.close)}`;
-    }
-
-    data.atriumSHED = atrium;
-
-
-    // ********************
-    // SHED General Makerspace Logic
-    // ********************
-
-    let generalAtrium = await (await fetch("https://make.rit.edu/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(
-            { "operationName": "GetMakerspaceByID", "variables": { "id": "37" }, "query": "query GetMakerspaceByID($id: ID!) {\n  makerspaceByID(id: $id) {\n    id\n    hours {\n      day\n      makerspaceID\n      open\n      close\n      closed\n      __typename\n    }}\n}" }
-        )
-    })).json();
-
-    const general: Record<string, string> = {};
-    for (const h of generalAtrium?.data?.makerspaceByID?.hours ?? []) {
-        const day = new Date(h.day).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-        general[day] = h.closed ? "Closed" : `${formatTime(h.open)}–${formatTime(h.close)}`;
-    }
-
-    data.generalSHED = general;
-
-    // ********************
-    // SHED Textiles Logic
-    // ********************
-
-    let textilesSHED = await (await fetch("https://make.rit.edu/graphql", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(
-            { "operationName": "GetMakerspaceByID", "variables": { "id": "38" }, "query": "query GetMakerspaceByID($id: ID!) {\n  makerspaceByID(id: $id) {\n    id\n    hours {\n      day\n      makerspaceID\n      open\n      close\n      closed\n      __typename\n    }}\n}" }
-        )
-    })).json();
-
-    const textiles: Record<string, string> = {};
-    for (const h of textilesSHED?.data?.makerspaceByID?.hours ?? []) {
-        const day = new Date(h.day).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-        textiles[day] = h.closed ? "Closed" : `${formatTime(h.open)}–${formatTime(h.close)}`;
-    }
-
-    data.textilesSHED = textiles;
+    data.atriumSHED = await fetchMakerspaceHours("36");
+    data.generalSHED = await fetchMakerspaceHours("37");
+    data.textilesSHED = await fetchMakerspaceHours("38");
 
     console.log(data)
     return data;
+};
+
+// Fetches a SHED makerspace's hours from the GraphQL API and normalizes them
+// into the same "{day}: {time}" shape as the scraped locations, so the response
+// stays consistent across all buildings.
+const fetchMakerspaceHours = async (id: string): Promise<Record<string, string>> => {
+    const res = await (await fetch("https://make.rit.edu/graphql", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+            { "operationName": "GetMakerspaceByID", "variables": { id }, "query": "query GetMakerspaceByID($id: ID!) {\n  makerspaceByID(id: $id) {\n    id\n    hours {\n      day\n      makerspaceID\n      open\n      close\n      closed\n      __typename\n    }}\n}" }
+        )
+    })).json();
+
+    const hours: Record<string, string> = {};
+    for (const h of res?.data?.makerspaceByID?.hours ?? []) {
+        // "day" is an ISO timestamp — take the weekday name (UTC to avoid shifting).
+        const day = new Date(h.day).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+        hours[day] = h.closed ? "Closed" : `${formatTime(h.open)}–${formatTime(h.close)}`;
+    }
+    return hours;
 };
 
 // Converts a "HH:MM:SS" time into a compact label like "9am" or "5:30pm".
