@@ -1,13 +1,15 @@
 import React from "react";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function EventsContainer(props: {
   image: string | any;
   title: { content: string; color: string | "#fff" }[];
+  onPress?: () => void;
 }) {
   return (
-    <View
+    <Pressable
+      onPress={props.onPress}
       style={{
         flex: 1,
         justifyContent: "center",
@@ -70,6 +72,6 @@ export default function EventsContainer(props: {
           </Text>
         ))}
       </LinearGradient>
-    </View>
+    </Pressable>
   );
 }

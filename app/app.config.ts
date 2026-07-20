@@ -53,8 +53,8 @@ export default {
           RNMapboxMapsImpl: "mapbox",
         },
       ],
-      "expo-notifications",
-      "expo-image"
+      "expo-image",
+      "expo-dev-client"
     ],
     experiments: {
       typedRoutes: true,

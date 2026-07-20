@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit — {ARTICLE_TITLE}</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-link {
+            color: #F76902;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+
+        main { padding: 32px; max-width: 680px; margin: 0 auto; }
+
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            padding: 28px 32px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1d1d1f;
+            background: #fafafa;
+            transition: border-color 0.15s;
+            outline: none;
+        }
+        input[type="text"]:focus,
+        textarea:focus { border-color: #F76902; background: #fff; }
+
+        textarea { resize: vertical; min-height: 180px; line-height: 1.6; }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .form-actions { margin-top: 24px; display: flex; gap: 10px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.15s;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn-primary { background: #F76902; color: #fff; }
+        .btn-ghost {
+            background: transparent;
+            color: #555;
+            border: 1.5px solid #ddd;
+        }
+
+        .status-msg {
+            margin-top: 14px;
+            font-size: 13px;
+            display: none;
+        }
+        .status-msg.error { color: #c0392b; }
+        .status-msg.success { color: #27ae60; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('submitButton').addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const statusMsg = document.getElementById('statusMsg');
+                statusMsg.style.display = 'none';
+
+                const formData = {
+                    id: parseInt(new URLSearchParams(window.location.search).get('id')),
+                    title: document.getElementById('title').value,
+                    imageurl: document.getElementById('articleImage').value,
+                    author: document.getElementById('author').value,
+                    authorRole: document.getElementById('authorRole').value,
+                    articledate: document.getElementById('date').value,
+                    body: document.getElementById('article').value,
+                    secretKey: document.getElementById('secretKey').value,
+                };
+
+                fetch('/featuredarticles', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.id) {
+                            statusMsg.textContent = 'Saved successfully.';
+                            statusMsg.className = 'status-msg success';
+                            statusMsg.style.display = 'block';
+                        } else {
+                            statusMsg.textContent = 'Error: ' + (data.error || 'Unknown error');
+                            statusMsg.className = 'status-msg error';
+                            statusMsg.style.display = 'block';
+                        }
+                    })
+                    .catch(() => {
+                        statusMsg.textContent = 'Network error. Please try again.';
+                        statusMsg.className = 'status-msg error';
+                        statusMsg.style.display = 'block';
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <a href="/dashboard" class="back-link">← Dashboard</a>
+        <h1>Edit Article</h1>
+    </header>
+    <main>
+        <div class="form-card">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{ARTICLE_TITLE}">
+            </div>
+            <div class="form-group">
+                <label for="articleImage">Image URL</label>
+                <input type="text" id="articleImage" name="articleImage" value="{ARTICLE_IMAGE}">
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="author">Author</label>
+                    <input type="text" id="author" name="author" value="{ARTICLE_AUTHOR}">
+                </div>
+                <div class="form-group">
+                    <label for="authorRole">Author Role</label>
+                    <input type="text" id="authorRole" name="authorRole" value="{ARTICLE_AUTHOR_ROLE}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="text" id="date" name="date" value="{ARTICLE_DATE}">
+            </div>
+            <div class="form-group">
+                <label for="article">Body</label>
+                <textarea id="article" name="article">{ARTICLE_BODY}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="secretKey">Secret Key</label>
+                <input type="text" id="secretKey" name="secretKey" placeholder="••••••••">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="submitButton">Save Changes</button>
+                <button class="btn btn-ghost" onclick="window.location.href='/dashboard'">Cancel</button>
+            </div>
+            <p id="statusMsg" class="status-msg"></p>
+        </div>
+    </main>
+</body>
+</html>
