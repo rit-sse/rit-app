@@ -50,7 +50,7 @@
     "react-dom": "19.2.0",
     "react-leaflet": "^5.0.0",
     "react-native": "0.83.4",
-    "react-native-css-interop": "0.2.6",
+    "react-native-css-interop": "0.2.3",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-maps": "1.27.2",
     "react-native-markdown-display": "^7.0.2",

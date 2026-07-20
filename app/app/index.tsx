@@ -68,6 +68,7 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
+    console.log(buildApiUrl("/featuredarticles"))
     fetch(buildApiUrl("/featuredarticles"))
       .then((response) => response.json())
       .then((data) => setFeaturedArticles(data))

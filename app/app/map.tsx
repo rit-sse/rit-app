@@ -198,7 +198,7 @@ export default function MapScreen() {
   return (
     <View style={styles.screen}>
       {/* <LeafletMap onMapMessage={onMapMessage} /> */}
-//       <MapboxMap />
+      {/* <MapboxMap /> */}
 
       <View style={styles.buttonsColumn}>
         {/* <View

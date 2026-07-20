@@ -53,9 +53,8 @@ export default {
           RNMapboxMapsImpl: "mapbox",
         },
       ],
-      "expo-image",
-      "expo-dev-client"
-    ],
+      "expo-image"
+        ],
     experiments: {
       typedRoutes: true,
       reactCompiler: true,
