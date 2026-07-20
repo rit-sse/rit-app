@@ -107,6 +107,88 @@ const formatTime = (t: string): string => {
     return m ? `${hour12}:${String(m).padStart(2, "0")}${period}` : `${hour12}${period}`;
 };
 
+const ALL_DAYS = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
+// Parses a compact label like "9am", "5:30pm", "noon" or "7 p.m." into minutes
+// past midnight. Returns null when the label isn't a time at all.
+const parseTimeLabel = (label: string): { minutes: number; hadMeridiem: boolean } | null => {
+    const text = label.toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim();
+
+    if (text === "noon") return { minutes: 12 * 60, hadMeridiem: true };
+    if (text === "midnight") return { minutes: 0, hadMeridiem: true };
+
+    const match = text.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
+    if (!match) return null;
+
+    const hour = Number(match[1]);
+    const minute = match[2] ? Number(match[2]) : 0;
+    const meridiem = match[3];
+
+    if (hour > 23 || minute > 59) return null;
+
+    // Without a meridiem the hour is taken as-is; the caller may correct it from
+    // the other end of the range (e.g. the "9" in "9 - 5pm").
+    if (!meridiem) return { minutes: hour * 60 + minute, hadMeridiem: false };
+
+    const hour24 = meridiem === "pm" ? (hour % 12) + 12 : hour % 12;
+    return { minutes: hour24 * 60 + minute, hadMeridiem: true };
+};
+
+// Turns a day's raw hours string into [open, close] minutes past midnight.
+// A close time at or before the open time means the range runs past midnight,
+// so close is pushed into the next day (e.g. "7pm - 1am" -> [1140, 1500]).
+// Returns null for "Closed", empty values, and anything unparseable.
+const parseHoursRange = (raw: string): [number, number] | null => {
+    const text = (raw ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+    if (!text || text.includes("closed")) return null;
+    if (/24\s*hours?/.test(text)) return [0, 24 * 60];
+
+    const parts = text.split(/\s*(?:–|—|-|\bto\b)\s*/).filter(Boolean);
+    if (parts.length < 2) return null;
+
+    const open = parseTimeLabel(parts[0]);
+    const close = parseTimeLabel(parts[1]);
+    if (!open || !close) return null;
+
+    const openMinutes = open.minutes;
+
+    // "9am - 5": a bare close hour that lands before the open time is the
+    // afternoon one. The reverse ("1 - 8pm") is genuinely ambiguous, so a bare
+    // open hour is left as written.
+    let closeMinutes = close.minutes;
+    if (!close.hadMeridiem && closeMinutes < openMinutes) {
+        closeMinutes += 12 * 60;
+    }
+    if (closeMinutes <= openMinutes) {
+        closeMinutes += 24 * 60;
+    }
+
+    return [openMinutes, closeMinutes];
+};
+
+// Decides whether a location is open right now, using the server's clock.
+// Checks today's range, then yesterday's in case it runs past midnight.
+const isOpenAt = (hours: Record<string, string>, now: Date): boolean => {
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    const todayIndex = now.getDay();
+
+    const today = parseHoursRange(hours[ALL_DAYS[todayIndex]]);
+    if (today && minutes >= today[0] && minutes < today[1]) return true;
+
+    const yesterday = parseHoursRange(hours[ALL_DAYS[(todayIndex + 6) % 7]]);
+    if (yesterday && yesterday[1] > 24 * 60 && minutes < yesterday[1] - 24 * 60) return true;
+
+    return false;
+};
+
 export const CACHEJOB = {
     key: CACHE_KEY,
     intervalMs: 1000 * 60 * 60,
@@ -119,5 +201,16 @@ export const GET = (req: Request, res: Response) => {
         return res.status(503).json({ error: "Cache is warming up, try again shortly." });
     }
 
-    return res.header("Content-Type", "application/json").json({ cachetime: cached.cacheTime, data: cached.data });
+    // "closed" is derived per-request rather than cached alongside the hours,
+    // since the cache only refreshes hourly and would otherwise go stale.
+    const now = new Date();
+    const locations = cached.data as Record<string, Record<string, string>>;
+    const data = Object.fromEntries(
+        Object.entries(locations).map(([name, hours]) => [
+            name,
+            { hours, closed: !isOpenAt(hours, now) },
+        ])
+    );
+
+    return res.header("Content-Type", "application/json").json({ cachetime: cached.cacheTime, data });
 };
