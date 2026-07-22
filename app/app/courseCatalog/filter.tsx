@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 
-export default function CatalogScreen() {
+export default function FilterScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Course Catalog</Text>

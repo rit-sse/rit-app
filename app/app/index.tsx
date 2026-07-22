@@ -143,7 +143,7 @@ export default function Index() {
           </Text>
           <ScrollView
             horizontal={true}
-            style={{ width: "100%" }}
+            style={{ width: "100%"}}
             showsHorizontalScrollIndicator={false}
           >
             {/* {

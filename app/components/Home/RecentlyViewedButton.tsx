@@ -16,6 +16,6 @@ export default function RecentlyViewedButton({item}: {item:gridBox}) {
     }
 
      return <TouchableOpacity activeOpacity={0.6} onPress={pressHandler} className="rounded-lg w-[60px] h-[60px] bg-gray-200 mr-3 flex items-center justify-center">
-        <Image source={imageSource} className="w-4/6 h-4/6"/>
+        <Image source={imageSource} className="w-24 h-24" style={{width: 100, height: 100}}/>
     </TouchableOpacity>;
 }

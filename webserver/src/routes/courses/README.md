@@ -38,3 +38,7 @@ Returns static lookup data for populating filter UI controls. Includes:
 ### `GET /courses/info?code=COURSECODE`
 
 Returns detailed information for a specific course by its code (e.g. `?code=CSCI-142`). Fetches live from the RIT academic catalog API each time.
+
+### `GET /courses/classlookup?course_code=COURSECODE`
+
+Returns more detailed information for a specific course by its code (e.g. `?course_code=CSCI-142`). Fetches live from the RIT academic catalog API each time.

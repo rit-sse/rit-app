@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { TouchableOpacity, Text, View } from "react-native";
 
 export default function CatalogScreen() {
   return (

@@ -79,3 +79,10 @@ export async function openLink(link: string, routeNavigator: any) {
     routeNavigator.push(link as RelativePathString);
   }
 }
+
+export async function processQuickLink(gridItem: gridBox) {
+    console.log("Processing quick link for: " + gridItem.name);
+    console.log("Link: " + gridItem.link);
+    openLink(gridItem.link, routeNavigator);
+    storeRecentlyView(gridItem);
+  }
