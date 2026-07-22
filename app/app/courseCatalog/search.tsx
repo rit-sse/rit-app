@@ -70,7 +70,7 @@ export default function ResultsScreen() {
             </TouchableOpacity>
         </View>
 
-        <View className="w-full items-center" style = {{padding: "5%"}}>
+        <View className="w-full items-center" style = {{padding: "2%"}}>
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search courses..."
@@ -88,11 +88,16 @@ export default function ResultsScreen() {
                                     pathname: "/courseCatalog/courseInfo",
                                     params: {q: item.code}
                                     })}}>
-                            <Text style={styles.resultTitle}>{item.code}</Text>
-                            <Text style={styles.resultName}>{item.title}</Text>
+                                <Text style={styles.resultTitle}>{item.code}</Text>
+                                <Text style={styles.resultName}>{item.title}</Text>
+                                <View style={styles.tagContainer}>
+                                    <Text style={styles.tags}>{item.code}</Text>
+                                    <Text style={styles.tags}>{item.code}</Text>
+                                </View>
                             </TouchableOpacity>
                         </View>
                         )}
+                    ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
                     ListEmptyComponent={
                         !loading && query.length >= 3 && <Text style={styles.emptyText} >No results found.</Text>
                     }/>
@@ -102,10 +107,12 @@ export default function ResultsScreen() {
 }
 const styles = StyleSheet.create({
         container: { flex: 1, padding: 20},
-        searchInput: { height: 50, borderWidth: 1, borderColor: '#F76902', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15 },
+        searchInput: { height: 50, borderWidth: 2, borderColor: '#00000050', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15 },
         loader: { marginVertical: 15 },
-        resultItem: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#F76902' },
+        resultItem: { padding: 10, borderWidth: 2, borderColor: '#F7690250', borderRadius: 8 },
         resultTitle: { fontSize: 16, color: '#F76902', fontWeight: 'bold' },
-        resultName: { fontSize: 16, color: '#00000' },
+        resultName: { fontSize: 16, color: '#000000' },
         emptyText: { textAlign: 'center', color: '#888', marginTop: 20 },
+        tagContainer: {flexDirection: 'row', padding: 3},
+        tags: {fontSize: 11, backgroundColor: '#F7690233', padding: 5, borderRadius: 8, margin: 4},
     });

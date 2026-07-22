@@ -41,7 +41,8 @@ export default function CourseInfoScreen() {
     const credits = course.hours_html;
         console.log(course.title);
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
+        {/*Mandatory back button*/}
         <View className="w-full items-center">
              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
                  <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
@@ -51,10 +52,41 @@ export default function CourseInfoScreen() {
                 </View>
             </TouchableOpacity>
         </View>
-        <View>
-          <Text> {semester}</Text>
-          <Text>{credits}</Text>
+        {/*Mandatory back button*/}
+
+        <View className="w-full items-center" style = {{padding: 10}}>
+            <View>
+                <Text style={{ color: "#F76902", fontSize: 15,
+                                    fontWeight: "bold",
+                                    paddingTop: 1}}>{course.code}</Text>
+                <Text style={{ color: "#00000", fontSize: 30,
+                                    addingTop: 1, fontWeight: 'bold'}}>{course.title}</Text>
+                <View style={styles.tagContainer}>
+                    <Text style={styles.tags}>{semester}</Text>
+                    <Text style={styles.tags}>{credits}</Text>
+                </View>
+            </View>
+
+            <View>
+                <Text style={{ color: "#F76902", fontSize: 15,
+                            fontWeight: "bold",
+                            paddingTop: 1}}>Description</Text>
+                <Text style={{ color: "#00000", fontSize: 15,
+                             addingTop: 1}}>{course.description}</Text>
+            </View>
         </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+        container: { flex: 1, padding: 20},
+        searchInput: { height: 50, borderWidth: 1, borderColor: '#F76902', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15 },
+        loader: { marginVertical: 15 },
+        resultItem: { padding: 10, borderWidth: 1, borderColor: '#F76902', borderRadius: 8 },
+        resultTitle: { fontSize: 16, color: '#F76902', fontWeight: 'bold' },
+        resultName: { fontSize: 16, color: '#000000' },
+        emptyText: { textAlign: 'center', color: '#888', marginTop: 20 },
+        tagContainer: {flexDirection: 'row', padding: 3},
+        tags: {fontSize: 13, fontWeight: 'bold', color: '#00000095', backgroundColor: '#F7690233', padding: 5, borderRadius: 8, marginRight: 6},
+    });
