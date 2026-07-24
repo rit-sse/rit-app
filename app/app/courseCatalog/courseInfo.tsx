@@ -8,26 +8,27 @@ import { useRouter, useLocalSearchParams  } from "expo-router";
 
 export default function CourseInfoScreen() {
     const {q} = useLocalSearchParams();
-    console.log(q);
     const routeNavigator = useRouter();
     const holder = "hold";
     const [course, setCourse] = useState(null);
+    const [courseInfo, setCourseInfo] = useState(null);
     const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const response = await fetch(buildApiUrl(`/courses/info?code=${q}`));
-                const data = await response.json();
-                console.log(data);
-                setCourse(data);
+                const responseCourse = await fetch(buildApiUrl(`/courses/info?code=${q}`));
+                const dataCourse = await responseCourse.json();
+                console.log(dataCourse);
+                setCourse(dataCourse);
             } catch (err) {
                 console.error("Error fetching course:", err);
             } finally {
                 setLoading(false);
                 }
         };
+
         fetchCourse();
         }, [q]);
     if (loading || !course) {
@@ -39,7 +40,6 @@ export default function CourseInfoScreen() {
       }
     const semester = course.typically_offered.replace(/<[^>]+>/g, '').trim();
     const credits = course.hours_html;
-        console.log(course.title);
   return (
     <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
         {/*Mandatory back button*/}
@@ -48,7 +48,7 @@ export default function CourseInfoScreen() {
                  <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
                  <View>
                     <Text style={{ color: "#F76902", fontSize: 15,
-                                fontWeight: "bold"}}>RIT COURSES</Text>
+                                fontWeight: "bold"}}>RIT CATALOG</Text>
                 </View>
             </TouchableOpacity>
         </View>

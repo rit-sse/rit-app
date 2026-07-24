@@ -20,14 +20,13 @@ export default function ResultsScreen() {
             setResults([]);
             return;
           }
-        setLoading(true);
-//         console.log(fetch(buildApiUrl(`/courses/search?q=${encodeURIComponent(text)}`)));
+        setLoading(true);;
         try {
             const responseResults = await fetch(
                 buildApiUrl(`/courses/search?q=${text}`));
 //             console.log(responseResults);
             const data = await responseResults.json();
-//             console.log(data.data.results[0]);
+//             console.log(data.data.results);
             setResults(data.data.results || []);
 //             console.log(results);
 
@@ -65,10 +64,11 @@ export default function ResultsScreen() {
                  <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
                  <View>
                     <Text style={{ color: "#F76902", fontSize: 15,
-                                fontWeight: "bold"}}>RIT COURSES</Text>
+                                fontWeight: "bold"}}>RIT CATALOG</Text>
                 </View>
             </TouchableOpacity>
         </View>
+        {/*Mandatory back button*/}
 
         <View className="w-full items-center" style = {{padding: "2%"}}>
                 <TextInput
@@ -97,7 +97,7 @@ export default function ResultsScreen() {
                             </TouchableOpacity>
                         </View>
                         )}
-                    ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+                    ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
                     ListEmptyComponent={
                         !loading && query.length >= 3 && <Text style={styles.emptyText} >No results found.</Text>
                     }/>
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
         container: { flex: 1, padding: 20},
         searchInput: { height: 50, borderWidth: 2, borderColor: '#00000050', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15 },
         loader: { marginVertical: 15 },
-        resultItem: { padding: 10, borderWidth: 2, borderColor: '#F7690250', borderRadius: 8 },
-        resultTitle: { fontSize: 16, color: '#F76902', fontWeight: 'bold' },
+        resultItem: { padding: 10, borderWidth: 2, borderColor: '#F7690250', borderRadius: 12 },
+        resultTitle: { fontSize: 13, color: '#F76902', fontWeight: 'bold' },
         resultName: { fontSize: 16, color: '#000000' },
         emptyText: { textAlign: 'center', color: '#888', marginTop: 20 },
         tagContainer: {flexDirection: 'row', padding: 3},

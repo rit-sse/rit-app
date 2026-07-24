@@ -9,10 +9,6 @@ import { useRouter, useLocalSearchParams  } from "expo-router";
 export default function CatalogScreen() {
 
     const routeNavigator = useRouter();
-
-
-
-
     function processQuickLink(gridItem: gridBox) {
         console.log("Processing quick link for: " + gridItem.name);
         console.log("Link: " + gridItem.link);
@@ -32,15 +28,17 @@ export default function CatalogScreen() {
     return (
         <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
 
-             <View className="w-fullitems-center h-[80%]">
-                 <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
-                     <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
-                     <View>
-                        <Text style={{ color: "#F76902", fontSize: 15,
-                                    fontWeight: "bold"}}>RIT CATALOG</Text>
-                      </View>
-                </TouchableOpacity>
-            </View>
+        {/*Mandatory back button*/}
+        <View className="w-full items-center">
+             <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
+                 <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
+                 <View>
+                    <Text style={{ color: "#F76902", fontSize: 15,
+                                fontWeight: "bold"}}>RIT CATALOG</Text>
+                </View>
+            </TouchableOpacity>
+        </View>
+        {/*Mandatory back button*/}
 
 
             <View>
