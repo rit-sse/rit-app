@@ -5,17 +5,17 @@ import { Linking } from "react-native"
 import { RelativePathString } from "expo-router"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
+    }
 
-export interface gridBox {
-  imageID: string;
-  name: string;
-  link: string;
-}
+    export interface gridBox {
+      imageID: string;
+      name: string;
+      link: string;
+    }
 
-export const storeRecentlyView = async (item: gridBox) => {
-  const currentlyStored = await AsyncStorage.getItem("recentViewed");
-  if (currentlyStored) {
+    export const storeRecentlyView = async (item: gridBox) => {
+      const currentlyStored = await AsyncStorage.getItem("recentViewed");
+      if (currentlyStored) {
     const parsed = JSON.parse(currentlyStored);
     let preExistingIdx = false;
     // Find the location of a pre-existing item, if it exists. Pop it and the put it at the end.

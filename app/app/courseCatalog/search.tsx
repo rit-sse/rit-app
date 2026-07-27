@@ -5,6 +5,7 @@ import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter } from "expo-router";
+import Course from "../../components/courses/Course"
 
 export default function ResultsScreen() {
     const routeNavigator = useRouter();
@@ -27,9 +28,9 @@ export default function ResultsScreen() {
 //             console.log(responseResults);
             const data = await responseResults.json();
 //             console.log(data.data.results);
-            setResults(data.data.results || []);
+            const rawResults = (data.data.results || []);
 //             console.log(results);
-
+            setResults(data.data.results || []);
         } catch (error) {
             console.error('Error fetching courses:', error);
         } finally {
@@ -71,6 +72,13 @@ export default function ResultsScreen() {
         {/*Mandatory back button*/}
 
         <View className="w-full items-center" style = {{padding: "2%"}}>
+            {/*Title*/}
+                  <View style={{paddingBottom: 10}}>
+                    <Text style={{ color: "#000000", fontSize: 35,
+                              fontWeight: "bold"}}>Courses</Text>
+
+                  </View>
+              {/*Title*/}
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search courses..."
@@ -96,7 +104,7 @@ export default function ResultsScreen() {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        )}
+                    )}
                     ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
                     ListEmptyComponent={
                         !loading && query.length >= 3 && <Text style={styles.emptyText} >No results found.</Text>

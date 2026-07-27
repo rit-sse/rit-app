@@ -28,9 +28,9 @@ export const GET = async (req: Request, res: Response) => {
     // url.searchParams.set("course_code", course_code as string);
 
     // Default to course_code since course_code will already have the subject code in it.
-    if(course_code) {
-        url.searchParams.set("subject_code", (course_code as string).split("-")[0]);
-    }
+//     if(course_code) {
+//         url.searchParams.set("subject_code", (course_code as string).split("-")[0]);
+//     }
     if(terms) {
         url.searchParams.set("term", terms as string);
     }

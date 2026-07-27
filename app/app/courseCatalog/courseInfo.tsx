@@ -5,7 +5,16 @@ import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter, useLocalSearchParams  } from "expo-router";
+import Course from "../../components/courses/Course"
 
+
+interface CourseObj {
+    key: string;
+    code: string;
+    srcdb: string;
+    title: string;
+    description: string;
+}
 export default function CourseInfoScreen() {
     const {q} = useLocalSearchParams();
     const routeNavigator = useRouter();
@@ -13,15 +22,21 @@ export default function CourseInfoScreen() {
     const [course, setCourse] = useState(null);
     const [courseInfo, setCourseInfo] = useState(null);
     const [loading, setLoading] = useState(true);
-
-
     useEffect(() => {
         const fetchCourse = async () => {
             try {
+                console.log("hello");
                 const responseCourse = await fetch(buildApiUrl(`/courses/info?code=${q}`));
                 const dataCourse = await responseCourse.json();
-                console.log(dataCourse);
+//                 console.log(dataCourse);
+
                 setCourse(dataCourse);
+
+                const responseCourseInfo = await fetch(buildApiUrl(`/courses/classlookup?course_code=${q}`));
+                const dataCourseInfo = await responseCourseInfo.json();
+                console.log(dataCourseInfo);
+                setCourseInfo(dataCourseInfo);
+
             } catch (err) {
                 console.error("Error fetching course:", err);
             } finally {
@@ -38,6 +53,16 @@ export default function CourseInfoScreen() {
           </SafeAreaView>
         );
       }
+
+//     const courseObject = new Course(course);
+//     console.log(courseObject.toJSON());
+        const currentCourse: CourseObj = {
+            key: course.key,
+            code: course.code,
+            srcdb: course.srcdb,
+            title: course.title,
+            description: course.description,
+        };
     const semester = course.typically_offered.replace(/<[^>]+>/g, '').trim();
     const credits = course.hours_html;
   return (
@@ -62,8 +87,8 @@ export default function CourseInfoScreen() {
                 <Text style={{ color: "#00000", fontSize: 30,
                                     addingTop: 1, fontWeight: 'bold'}}>{course.title}</Text>
                 <View style={styles.tagContainer}>
-                    <Text style={styles.tags}>{semester}</Text>
-                    <Text style={styles.tags}>{credits}</Text>
+                    <Text style={styles.tags}>{holder}</Text>
+                    <Text style={styles.tags}>{holder}</Text>
                 </View>
             </View>
 
@@ -72,7 +97,7 @@ export default function CourseInfoScreen() {
                             fontWeight: "bold",
                             paddingTop: 1}}>Description</Text>
                 <Text style={{ color: "#00000", fontSize: 15,
-                             addingTop: 1}}>{course.description}</Text>
+                             addingTop: 1}}>{currentCourse.description}</Text>
             </View>
         </View>
     </SafeAreaView>

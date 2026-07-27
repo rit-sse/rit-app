@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
+import { View, Text, Image, Button, ScrollView, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
@@ -26,7 +26,7 @@ export default function CatalogScreen() {
         link: "/courseCatalog/search",
     };
     return (
-        <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
+        <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"20%", paddingLeft: 20}} >
 
         {/*Mandatory back button*/}
         <View className="w-full items-center">
@@ -40,22 +40,37 @@ export default function CatalogScreen() {
         </View>
         {/*Mandatory back button*/}
 
-
-            <View>
-                <Text style={{ color: "#000000", fontSize: 35,
-                                fontWeight: "bold",
-                                paddingTop: 1}}>Catalog Browser</Text>
-                <Text style={{ color: "#7B7878", fontSize: 16,
-                                addingTop: 1}}>Find courses, plan your semester</Text>
-            </View>
-
-
             <View className="w-full items-center h-[80%]" style={{buttonStyle, padding: 10}}>
+                {/*Title*/}
+                <View>
+                    <Text style={{ color: "#000000", fontSize: 35,
+                                    fontWeight: "bold"}}>Catalog Browser</Text>
+                    <Text style={{ color: "#7B7878", fontSize: 16,
+                                    addingTop: 1,
+                                    paddingTop: 10,
+                                    paddingBottom: 15}}>Find courses, plan your semester</Text>
+                </View>
+                {/*Title*/}
+
+
                 <TouchableOpacity title="Search All Courses"
-                        style={{backgroundColor: "#F76902",
+                        style={{backgroundColor: "#000000",
                         borderRadius: 10,
-                        alignItems: "center",}} onPress={() => processQuickLink(course_catalog)}>
-                    <Text style={{buttonStyle, fontWeight: "bold", fontSize: 15, padding: "5%"}}>Course Catalog</Text>
+                        alignItems: "center",
+                        flexDirection: "row",}} onPress={() => processQuickLink(course_catalog)}>
+                        <View style={{ width: 60, height: 60 , padding: 10}}>
+                            <Image
+                                source={require("../../assets/icons/grid/course-browser.png")}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="contain"
+                              />
+                        </View>
+                     <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
+                        <Text style={{buttonStyle, fontWeight: "bold", fontSize: 15, color: "#F5F5F5"}}>Search All Courses</Text>
+                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#F5F5F5"}}>Browse All Coursees At RIT</Text>
+                     </View>
+                     <Text style={{color: "#F5F5F5", fontSize: 40, paddingLeft: 90}}>></Text>
+                     {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
                 </TouchableOpacity>
             </View>
             <View className="w-full items-center h-[80%]" style={{buttonStyle, padding: 10}}>
