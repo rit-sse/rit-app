@@ -11,7 +11,7 @@ export default {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.sse.tigergo.app",
+      bundleIdentifier: "edu.ritsse.info",
     },
     android: {
       adaptiveIcon: {
@@ -54,10 +54,16 @@ export default {
         },
       ],
       "expo-image"
-        ],
+    ],
     experiments: {
       typedRoutes: true,
       reactCompiler: true,
     },
+    "extra": {
+      "eas": {
+        "projectId": "cd478027-2914-40bb-bc93-13a08d96ac1e"
+      }
+    }
   },
+
 };
