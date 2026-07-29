@@ -11,7 +11,7 @@ export default {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "edu.ritsse.info",
+      bundleIdentifier: "com.sse.ritapp.jetmon",
     },
     android: {
       adaptiveIcon: {
