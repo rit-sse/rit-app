@@ -55,10 +55,10 @@ export default function CatalogScreen() {
 
                 <TouchableOpacity title="Search All Courses"
                         style={{backgroundColor: "#000000",
-                        borderRadius: 10,
+                        borderRadius: 15,
                         alignItems: "center",
                         flexDirection: "row",}} onPress={() => processQuickLink(course_catalog)}>
-                        <View style={{ width: 60, height: 60 , padding: 10}}>
+                        <View style={{ width: 60, height: 60 , padding: 10, paddingLeft: 10}}>
                             <Image
                                 source={require("../../assets/icons/grid/course-browser.png")}
                                 style={{ width: "100%", height: "100%" }}
@@ -66,20 +66,33 @@ export default function CatalogScreen() {
                               />
                         </View>
                      <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
-                        <Text style={{buttonStyle, fontWeight: "bold", fontSize: 15, color: "#F5F5F5"}}>Search All Courses</Text>
-                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#F5F5F5"}}>Browse All Coursees At RIT</Text>
+                        <Text style={{buttonStyle, fontWeight: "bold", fontSize: 20, color: "#F5F5F5"}}>Search All Courses</Text>
+                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#F5F5F5"}}>Browse All Courses At RIT</Text>
                      </View>
-                     <Text style={{color: "#F5F5F5", fontSize: 40, paddingLeft: 90}}>></Text>
+                     <Text style={{color: "#F5F5F5", fontSize: 40, paddingLeft: 70}}>></Text>
                      {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
                 </TouchableOpacity>
             </View>
-            <View className="w-full items-center h-[80%]" style={{buttonStyle, padding: 10}}>
+            <View className="w-full items-center h-[80%]" style={{buttonStyle, padding: 10,}}>
                 <TouchableOpacity title="Search All Courses"
-                             style={{backgroundColor: "#000000",
-                            borderRadius: 10,
-                            alignItems: "center"}} onPress={() => processQuickLink(course_catalog)}>
-                    <Text style={{buttonStyle, color: "#F5F5F5", fontWeight: "bold", fontSize: 15, padding: "5%"}}>By Semester</Text>
-                 </TouchableOpacity>
+                        style={{backgroundColor: "#F5F5F5",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        flexDirection: "row", borderWidth: 2, borderColor: '#00000050',}} onPress={() => processQuickLink(course_catalog)}>
+                        <View style={{ width: 60, height: 60 , padding: 10, paddingLeft: 10}}>
+                            <Image
+                                source={require("../../assets/icons/grid/academic-calendar.png")}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="contain"
+                              />
+                        </View>
+                     <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
+                        <Text style={{buttonStyle, fontWeight: "bold", fontSize: 20, color: "#000000"}}>Search All Courses</Text>
+                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#000000"}}>Browse All Courses At RIT</Text>
+                     </View>
+                     <Text style={{color: "#000000", fontSize: 40, paddingLeft: 70}}>></Text>
+                     {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );

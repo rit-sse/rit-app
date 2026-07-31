@@ -28,13 +28,13 @@ export default function CourseInfoScreen() {
                 console.log("hello");
                 const responseCourse = await fetch(buildApiUrl(`/courses/info?code=${q}`));
                 const dataCourse = await responseCourse.json();
-//                 console.log(dataCourse);
+                console.log(dataCourse);
 
                 setCourse(dataCourse);
 
                 const responseCourseInfo = await fetch(buildApiUrl(`/courses/classlookup?course_code=${q}`));
                 const dataCourseInfo = await responseCourseInfo.json();
-                console.log(dataCourseInfo);
+                console.log(dataCourseInfo.length);
                 setCourseInfo(dataCourseInfo);
 
             } catch (err) {
@@ -87,8 +87,8 @@ export default function CourseInfoScreen() {
                 <Text style={{ color: "#00000", fontSize: 30,
                                     addingTop: 1, fontWeight: 'bold'}}>{course.title}</Text>
                 <View style={styles.tagContainer}>
-                    <Text style={styles.tags}>{holder}</Text>
-                    <Text style={styles.tags}>{holder}</Text>
+                    <Text style={styles.tags}>{semester}</Text>
+                    <Text style={styles.tags}>{credits}</Text>
                 </View>
             </View>
 

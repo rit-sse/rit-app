@@ -1,18 +1,108 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator } from "react-native";
+import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import Course from "../../components/courses/Course"
 
+
 export default function ResultsScreen() {
+
+    function CollapsibleSection({ title, children }) {
+      const [open, setOpen] = useState(false);
+
+      return (
+        <View style={{ marginVertical: 10 }}>
+          <TouchableOpacity
+            onPress={() => setOpen(!open)}
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingVertical: 10
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>{title}</Text>
+            <Text style={{ fontSize: 18 }}>{open ? "▲" : "▼"}</Text>
+          </TouchableOpacity>
+
+          {open && (
+            <View style={{ paddingLeft: 5 }}>
+              {children}
+            </View>
+          )}
+        </View>
+      );
+    }
+
+
     const routeNavigator = useRouter();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
+//     Advanced search params
+     const [filters, setFilters] = useState({
+      colleges: [],
+      graduateTypes: [],
+      // add more categories as needed
+    });
+
+    function toggleFilter(category: string, value: string) {
+      setFilters(prev => {
+        const exists = prev[category].includes(value);
+
+        return {
+          ...prev,
+          [category]: exists
+            ? prev[category].filter(v => v !== value)
+            : [...prev[category], value]
+        };
+      });
+    }
+
+
+
+    function MultiToggle({ title, items, category }) {
+          return (
+            <View style={{ marginVertical: 10 }}>
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>{title}</Text>
+
+              {items.map(item => {
+                const isSelected = filters[category].includes(item.value);
+
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    onPress={() => toggleFilter(category, item.value)}
+                    style={{
+                      padding: 10,
+                      marginVertical: 5,
+                      borderRadius: 8,
+                      backgroundColor: isSelected ? "#F76902" : "#E5E5E5"
+                    }}
+                  >
+                    <Text style={{ color: isSelected ? "#FFF" : "#000" }}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          );
+        }
+        const [selectors, setSelectors] = useState(null);
+
+    useEffect(() => {
+      const loadSelectors = async () => {
+        const response = await fetch(buildApiUrl("/courses/selectors"));
+        const data = await response.json();
+        setSelectors(data);
+      };
+
+      loadSelectors();
+    }, []);
 //     handling getting data from webserver
     const searchCourses = async (text) => {
         setQuery(text);
@@ -21,16 +111,20 @@ export default function ResultsScreen() {
             setResults([]);
             return;
           }
-        setLoading(true);;
+        setLoading(true);
         try {
+            const params = new URLSearchParams({
+                keyword: text,
+                colleges: filters.colleges.join(",")
+                });
             const responseResults = await fetch(
-                buildApiUrl(`/courses/search?q=${text}`));
-//             console.log(responseResults);
+                    buildApiUrl(`/courses/advancedsearch?${params.toString()}`));
+            console.log(responseResults);
             const data = await responseResults.json();
-//             console.log(data.data.results);
-            const rawResults = (data.data.results || []);
-//             console.log(results);
-            setResults(data.data.results || []);
+            console.log("ADVANCED SEARCH RESPONSE:", data);
+
+            const resultsArray = data?.results ?? [];
+            setResults(resultsArray);
         } catch (error) {
             console.error('Error fetching courses:', error);
         } finally {
@@ -83,9 +177,34 @@ export default function ResultsScreen() {
                     style={styles.searchInput}
                     placeholder="Search courses..."
                     value={query}
-                    onChangeText={searchCourses}/>
-                {loading && <ActivityIndicator style={styles.loader} size="large" color="#000" />}
+                    onChangeText={setQuery}
+                    returnKeyType="search" // Changes the keyboard return key to say "Search"
+                              onSubmitEditing={() => searchCourses(query)}
+                            />
+                           <Button title="Search" onPress={() => searchCourses(query)} />
 
+                {loading && <ActivityIndicator style={styles.loader} size="large" color="#000" />}
+                <View>{selectors && (
+                        <ScrollView style={{ maxHeight: 300 }}>
+                          <CollapsibleSection title="Colleges">
+                            <MultiToggle
+                              items={selectors.colleges}
+                              category="colleges"
+                            />
+                          </CollapsibleSection>
+
+                          <CollapsibleSection title="Graduate Types">
+                            <MultiToggle
+                              items={selectors.graduateTypes}
+                              category="graduateTypes"
+                            />
+                          </CollapsibleSection>
+
+                          {/* Add more collapsible sections as needed */}
+                        </ScrollView>
+                      )}
+
+                </View>
                 <FlatList
                     data={results}
                     keyExtractor={(item) => String(item.code)}
@@ -124,3 +243,4 @@ const styles = StyleSheet.create({
         tagContainer: {flexDirection: 'row', padding: 3},
         tags: {fontSize: 11, backgroundColor: '#F7690233', padding: 5, borderRadius: 8, margin: 4},
     });
+
