@@ -3,13 +3,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
-import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
+import { processQuickLink, storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import Course from "../../components/courses/Course"
 
 
 export default function ResultsScreen() {
+    //     Advanced search params
+     const [filters, setFilters] = useState({
+      colleges: [],
+      graduateTypes: [],
+      // add more categories as needed
+    });
 
+    //collapsible screen for filters--------------------------------------
     function CollapsibleSection({ title, children }) {
       const [open, setOpen] = useState(false);
 
@@ -37,18 +44,7 @@ export default function ResultsScreen() {
     }
 
 
-    const routeNavigator = useRouter();
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-//     Advanced search params
-     const [filters, setFilters] = useState({
-      colleges: [],
-      graduateTypes: [],
-      // add more categories as needed
-    });
-
+    //filter to toggle tags--------------------------------------------------
     function toggleFilter(category: string, value: string) {
       setFilters(prev => {
         const exists = prev[category].includes(value);
@@ -63,7 +59,7 @@ export default function ResultsScreen() {
     }
 
 
-
+    // multi tags -------------------------------------------------
     function MultiToggle({ title, items, category }) {
           return (
             <View style={{ marginVertical: 10 }}>
@@ -93,6 +89,11 @@ export default function ResultsScreen() {
           );
         }
         const [selectors, setSelectors] = useState(null);
+        const routeNavigator = useRouter();
+        const [query, setQuery] = useState('');
+        const [results, setResults] = useState([]);
+        const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
       const loadSelectors = async () => {
@@ -132,23 +133,10 @@ export default function ResultsScreen() {
         }
     };
 
-    function processQuickLink(gridItem: gridBox) {
-        console.log("Processing quick link for: " + gridItem.name);
-        console.log("Link: " + gridItem.link);
-        openLink(gridItem.link, routeNavigator);
-        storeRecentlyView(gridItem);
-    }
-
 
     const buttonStyle = StyleSheet.create({
         justifyContent: "center"
     });
-
-    const course_catalog: gridBox = {
-        imageID: "course_browser_icon",
-        name: "Course Catalog",
-        link: "/courseCatalog/search",
-    };
 
 
     return (
