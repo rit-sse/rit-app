@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator } from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
-import { processQuickLink, storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
+import { processQuickLink, storeRecentlyView, gridBox, openLink } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import Course from "../../components/courses/Course"
 
@@ -13,6 +13,8 @@ export default function ResultsScreen() {
      const [filters, setFilters] = useState({
       colleges: [],
       graduateTypes: [],
+      subjects: [],
+      perspectives: [],
       // add more categories as needed
     });
 
