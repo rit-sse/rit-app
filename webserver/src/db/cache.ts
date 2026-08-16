@@ -29,7 +29,10 @@ export class ScrapeCache {
             }
         });
         if (data) {
-            if (Date.now() < Number(data.expiry) + this.EXPIRATION_TIME_MS) {
+            // `expiry` is already stored as (cacheTime + EXPIRATION_TIME_MS) in
+            // setCache, so compare against it directly. Adding the window again
+            // here double-counted it and served stale data for ~24h, not 12h.
+            if (Date.now() < Number(data.expiry)) {
                 return false;
             }
         }

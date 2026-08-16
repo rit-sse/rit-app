@@ -163,19 +163,37 @@ export async function scrapeRouteMetadata(): Promise<RouteMetadata[]> {
     return [];
   }
 
-  // Process each row in the table
+  // Process each row in the table.
+  //
+  // RIT's table layout is not stable: the "Hours of Operation" column has been
+  // split across multiple <td>s (start | "-" | end) and the "Days" column has
+  // shifted position. Rather than relying on fixed column indices, identify each
+  // field by its content so the scraper survives future column reshuffles.
+  const TIME_PATTERN = /\d{1,2}(?::\d{2})?\s*[ap]\.?\s*m/i;
+  const DAY_PATTERN =
+    /(monday|tuesday|wednesday|thursday|friday|saturday|sunday|daily|weekday|weekend|break)/i;
+
   table.find("tbody tr").each((_, row) => {
-    const cells = $(row).find("td");
-    if (cells.length < 4) return;
+    const cellTexts = $(row)
+      .find("td")
+      .toArray()
+      .map((cell) => $(cell).text().trim());
 
-    // Column 1: Route text (e.g., "3 Campus Connection Shuttle")
-    const routeText = $(cells[1]).text().trim();
+    // Route text (e.g., "3 Campus Connection Shuttle") — the cell that starts
+    // with a route number. This also naturally skips the header row.
+    const routeText = cellTexts.find((text) => /^\d+\s+.+$/.test(text));
+    if (!routeText) return;
 
-    // Column 2: Time range
-    const timeRange = $(cells[2]).text().trim();
+    // Time range: reconstruct "start - end" from the time-like cells so
+    // parseServiceWindow (which splits on "-") works unchanged.
+    const timeCells = cellTexts.filter((text) => TIME_PATTERN.test(text));
+    const timeRange =
+      timeCells.length > 0
+        ? `${timeCells[0]} - ${timeCells[timeCells.length - 1]}`
+        : "";
 
-    // Column 3: Days
-    const days = $(cells[3]).text().trim();
+    // Days: the cell that mentions a day / service keyword.
+    const days = cellTexts.find((text) => DAY_PATTERN.test(text)) ?? "";
 
     // Extract route ID from text (e.g., "3 Campus Connection Shuttle" -> "3")
     const match = routeText.match(/^(\d+)\s+(.*)$/);

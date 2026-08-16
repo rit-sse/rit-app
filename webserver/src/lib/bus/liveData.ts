@@ -31,7 +31,14 @@ export async function getRoutesFromCacheOrScrape(scrapeCache: ScrapeCache): Prom
     }
 
     const normalizedRoutes = normalizeRoutes(routes);
-    await scrapeCache.setCache(BUS_CACHE_KEY, {data: normalizedRoutes});
+
+    // Never persist an empty scrape: a transient RIT outage or markup change
+    // would otherwise overwrite good cached data with [] and poison results
+    // (the app would show "No active routes") until the next successful scrape.
+    if (normalizedRoutes.length > 0) {
+        await scrapeCache.setCache(BUS_CACHE_KEY, {data: normalizedRoutes});
+    }
+
     return normalizedRoutes;
 }
 
