@@ -24,16 +24,16 @@ export const GET = async (req: Request, res: Response) => {
     if (!terms) {
         return res.status(400).json({ error: "Missing 'terms' query parameter" });
     }
-    const url = new URL(CLASSLOOKUP_URL+"/"+course_code);
-    // url.searchParams.set("course_code", course_code as string);
+//     const url = new URL(CLASSLOOKUP_URL+"/"+course_code);
+
+    const url = new URL(`${CLASSLOOKUP_URL}/${course_code}`);
+//     url.searchParams.set("course_code", course_code as string);
 
     // Default to course_code since course_code will already have the subject code in it.
 //     if(course_code) {
 //         url.searchParams.set("subject_code", (course_code as string).split("-")[0]);
 //     }
-    if(terms) {
-        url.searchParams.set("term", terms as string);
-    }
+    url.searchParams.set("term", terms as string);
     console.log(url);
     const response = await fetch(url, {
         headers: {
@@ -42,13 +42,23 @@ export const GET = async (req: Request, res: Response) => {
     });
 
     const data = await response.json();
-    if(course_code) {
-        const filteredData = data.data.filter((course: any) => {
-            let coursecode = course.course_code.split("-").slice(0, 2).join("-");
-            return coursecode == course_code;
+
+    // RIT API returns { results: [...] }
+        const courses = data?.results ?? [];
+
+//     if(course_code) {
+//         const filteredData = data.data.filter((course: any) => {
+//             let coursecode = course.course_code.split("-").slice(0, 2).join("-");
+//             return coursecode == course_code;
+//         });
+//         return res.status(response.status).json(filteredData);
+//     } else {
+//         return res.status(response.status).json(data.data);
+//     }
+    const filteredData = courses.filter((course: any) => {
+            const prefix = course.code.split("-").slice(0, 2).join("-");
+            return prefix === course_code;
         });
-        return res.status(response.status).json(filteredData);
-    } else {
-        return res.status(response.status).json(data.data);
-    }
+
+    return res.status(response.status).json(filteredData);
 };

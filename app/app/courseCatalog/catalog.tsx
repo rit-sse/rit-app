@@ -9,7 +9,12 @@ import { useRouter, useLocalSearchParams  } from "expo-router";
 export default function CatalogScreen() {
 
     const routeNavigator = useRouter();
-
+    function processQuickLink(gridItem: gridBox) {
+        console.log("Processing quick link for: " + gridItem.name);
+        console.log("Link: " + gridItem.link);
+        openLink(gridItem.link, routeNavigator);
+        storeRecentlyView(gridItem);
+      }
     const buttonStyle = StyleSheet.create({
         justifyContent: "center"
     });

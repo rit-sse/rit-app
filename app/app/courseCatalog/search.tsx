@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator } from "react-native";
+import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator, Modal } from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { processQuickLink, storeRecentlyView, gridBox, openLink } from "@/lib/utils";
@@ -17,6 +17,8 @@ export default function ResultsScreen() {
       perspectives: [],
       // add more categories as needed
     });
+    const [showFilters, setShowFilters] = useState(false);
+
 
     //collapsible screen for filters--------------------------------------
     function CollapsibleSection({ title, children }) {
@@ -62,34 +64,32 @@ export default function ResultsScreen() {
 
 
     // multi tags -------------------------------------------------
-    function MultiToggle({ title, items, category }) {
-          return (
-            <View style={{ marginVertical: 10 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 18 }}>{title}</Text>
+    function MultiToggle({ items, category, filters, toggleFilter }) {
+      return (
+        <View style={{ marginVertical: 10 }}>
+          {items.map(item => {
+            const isSelected = filters[category].includes(item.value);
 
-              {items.map(item => {
-                const isSelected = filters[category].includes(item.value);
-
-                return (
-                  <TouchableOpacity
-                    key={item.value}
-                    onPress={() => toggleFilter(category, item.value)}
-                    style={{
-                      padding: 10,
-                      marginVertical: 5,
-                      borderRadius: 8,
-                      backgroundColor: isSelected ? "#F76902" : "#E5E5E5"
-                    }}
-                  >
-                    <Text style={{ color: isSelected ? "#FFF" : "#000" }}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          );
-        }
+            return (
+              <TouchableOpacity
+                key={item.value}
+                onPress={() => toggleFilter(category, item.value)}
+                style={{
+                  padding: 10,
+                  marginVertical: 5,
+                  borderRadius: 8,
+                  backgroundColor: isSelected ? "#F76902" : "#E5E5E5"
+                }}
+              >
+                <Text style={{ color: isSelected ? "#FFF" : "#000" }}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      );
+  }
         const [selectors, setSelectors] = useState(null);
         const routeNavigator = useRouter();
         const [query, setQuery] = useState('');
@@ -118,7 +118,10 @@ export default function ResultsScreen() {
         try {
             const params = new URLSearchParams({
                 keyword: text,
-                colleges: filters.colleges.join(",")
+                colleges: filters.colleges.join(","),
+                graduateTypes: filters.graduateTypes.join(","),
+                subjects: filters.subjects.join(","),
+                perspectives: filters.perspectives.join(",")
                 });
             const responseResults = await fetch(
                     buildApiUrl(`/courses/advancedsearch?${params.toString()}`));
@@ -163,38 +166,95 @@ export default function ResultsScreen() {
 
                   </View>
               {/*Title*/}
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search courses..."
-                    value={query}
-                    onChangeText={setQuery}
-                    returnKeyType="search" // Changes the keyboard return key to say "Search"
-                              onSubmitEditing={() => searchCourses(query)}
-                            />
-                           <Button title="Search" onPress={() => searchCourses(query)} />
-
+              <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search courses..."
+                        value={query}
+                        onChangeText={setQuery}
+                        returnKeyType="search" // Changes the keyboard return key to say "Search"
+                                  onSubmitEditing={() => searchCourses(query)}
+                                />
+                    <View> <Button title="->" color="#000" onPress={() => searchCourses(query)}/> </View>
+                    <TouchableOpacity
+                        style={styles.filterButton}
+                        onPress={() => setShowFilters(true)}
+                      >
+                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>Filters</Text>
+                      </TouchableOpacity>
+              </View>
                 {loading && <ActivityIndicator style={styles.loader} size="large" color="#000" />}
-                <View>{selectors && (
-                        <ScrollView style={{ maxHeight: 300 }}>
-                          <CollapsibleSection title="Colleges">
-                            <MultiToggle
-                              items={selectors.colleges}
-                              category="colleges"
-                            />
-                          </CollapsibleSection>
 
-                          <CollapsibleSection title="Graduate Types">
-                            <MultiToggle
-                              items={selectors.graduateTypes}
-                              category="graduateTypes"
-                            />
-                          </CollapsibleSection>
+               <Modal visible={showFilters} animationType="slide" transparent={true}>
+                 <View style={styles.bottomSheetOverlay}>
+                   <View style={styles.bottomSheet}>
 
-                          {/* Add more collapsible sections as needed */}
-                        </ScrollView>
-                      )}
+                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                       <Text style={{ fontSize: 22, fontWeight: "bold" }}>Filters</Text>
+                       <TouchableOpacity onPress={() => setShowFilters(false)}>
+                         <Text style={{ fontSize: 18, color: "#F76902" }}>Close</Text>
+                       </TouchableOpacity>
+                     </View>
 
-                </View>
+                     {selectors ? (
+                       <ScrollView style={{ marginTop: 20 }}>
+                         <CollapsibleSection title="Colleges">
+                           <MultiToggle
+                             items={selectors.colleges}
+                             category="colleges"
+                             filters={filters}
+                             toggleFilter={toggleFilter}
+                           />
+                         </CollapsibleSection>
+
+                         <CollapsibleSection title="Graduate Types">
+                           <MultiToggle
+                             items={selectors.graduateTypes}
+                             category="graduateTypes"
+                             filters={filters}
+                             toggleFilter={toggleFilter}
+                           />
+                         </CollapsibleSection>
+
+                         <CollapsibleSection title="Subjects">
+                           <MultiToggle
+                             items={selectors.subjects}
+                             category="subjects"
+                             filters={filters}
+                             toggleFilter={toggleFilter}
+                           />
+                         </CollapsibleSection>
+
+                         <CollapsibleSection title="Perspectives">
+                           <MultiToggle
+                             items={selectors.perspectives}
+                             category="perspectives"
+                             filters={filters}
+                             toggleFilter={toggleFilter}
+                           />
+                         </CollapsibleSection>
+                       </ScrollView>
+                     ) : (
+                       <ActivityIndicator size="large" color="#F76902" style={{ marginTop: 20 }} />
+                     )}
+
+                     <TouchableOpacity
+                       style={styles.applyButton}
+                       onPress={() => {
+                         setShowFilters(false);
+                         searchCourses(query);
+                       }}
+                     >
+                       <Text style={{ color: "#FFF", fontWeight: "bold", fontSize: 18 }}>
+                         Apply Filters
+                       </Text>
+                     </TouchableOpacity>
+
+                   </View>
+                 </View>
+               </Modal>
+
+
                 <FlatList
                     data={results}
                     keyExtractor={(item) => String(item.code)}
@@ -224,7 +284,7 @@ export default function ResultsScreen() {
 }
 const styles = StyleSheet.create({
         container: { flex: 1, padding: 20},
-        searchInput: { height: 50, borderWidth: 2, borderColor: '#00000050', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15 },
+        searchInput: { height: 50, borderWidth: 2, borderColor: '#00000050', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15, flex: 1 },
         loader: { marginVertical: 15 },
         resultItem: { padding: 10, borderWidth: 2, borderColor: '#F7690250', borderRadius: 12 },
         resultTitle: { fontSize: 13, color: '#F76902', fontWeight: 'bold' },
@@ -232,5 +292,31 @@ const styles = StyleSheet.create({
         emptyText: { textAlign: 'center', color: '#888', marginTop: 20 },
         tagContainer: {flexDirection: 'row', padding: 3},
         tags: {fontSize: 11, backgroundColor: '#F7690233', padding: 5, borderRadius: 8, margin: 4},
-    });
+        filterButton: {
+          backgroundColor: "#F76902",
+          paddingHorizontal: 15,
+          paddingVertical: 12,
+          borderRadius: 8,
+          marginLeft: 10
+        },
+        bottomSheetOverlay: {
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          justifyContent: "flex-end"
+        },
+        bottomSheet: {
+          backgroundColor: "#FFF",
+          padding: 20,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          maxHeight: "80%"
+        },
+        applyButton: {
+          backgroundColor: "#F76902",
+          padding: 15,
+          borderRadius: 10,
+          marginTop: 10,
+          alignItems: "center"
+        }
 
+    });
