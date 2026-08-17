@@ -215,9 +215,7 @@ export default function MapScreen() {
         >
           <BusIcon
             onPress={() => {
-              if (!isLoading && routeItems.length > 0) {
-                setScheduleVisible(true);
-              }
+              setScheduleVisible(true);
             }}
             style={iconStyle}
             fill="#000"
