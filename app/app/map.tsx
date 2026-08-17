@@ -9,7 +9,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-// import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
+import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -21,10 +21,10 @@ import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 
-// const MAPBOX_PUBLIC_ACCESS_TOKEN =
-//   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
-//
-// Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
+const MAPBOX_PUBLIC_ACCESS_TOKEN =
+  process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
+
+Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
 
 const buttonWidth = 70;
 const buttonSpacing = 15;
@@ -67,25 +67,21 @@ async function fetchActiveRoutes(): Promise<ActiveRoute[]> {
   return json.data ?? [];
 }
 
-// function MapboxMap() {
-//   return (
-//     <MapView style={{ flex: 1 }}>
-//       <Camera
-//         centerCoordinate={[
-//           DEFAULT_LOCATION.longitude,
-//           DEFAULT_LOCATION.latitude,
-//         ]}
-//         // maxBounds={{
-//         //   ne: [RIT_CAMPUS_BOUNDS.northEast.longitude, RIT_CAMPUS_BOUNDS.northEast.latitude],
-//         //   sw: [RIT_CAMPUS_BOUNDS.southWest.longitude, RIT_CAMPUS_BOUNDS.southWest.latitude],
-//         // }}
-//         zoomLevel={14}
-//         animationMode="none"
-//         animationDuration={0}
-//       />
-//     </MapView>
-//   );
-// }
+function MapboxMap() {
+  return (
+    <MapView style={styles.map} scaleBarEnabled={false}>
+      <Camera
+        defaultSettings={{
+          centerCoordinate: [
+            DEFAULT_LOCATION.longitude,
+            DEFAULT_LOCATION.latitude,
+          ],
+          zoomLevel: 14,
+        }}
+      />
+    </MapView>
+  );
+}
 
 export default function MapScreen() {
   const [routes, setRoutes] = useState<ActiveRoute[]>([]);
@@ -197,8 +193,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.screen}>
-      {/* <LeafletMap onMapMessage={onMapMessage} /> */}
-      {/* <MapboxMap /> */}
+      <MapboxMap />
 
       <View style={styles.buttonsColumn}>
         {/* <View
@@ -304,12 +299,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f6f8",
   },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
   buttonsColumn: {
     position: "absolute",
     bottom: 35 + 80 + buttonSpacing,
     right: "5%",
     width: buttonWidth,
     height: 3 * buttonWidth + 2 * buttonSpacing,
+    zIndex: 10,
   },
   content: {
     paddingHorizontal: 4,
