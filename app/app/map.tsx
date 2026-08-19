@@ -29,10 +29,13 @@ import StopsGrid from "@/components/bus/StopsGrid";
 import { buildActiveRouteList, buildRouteDetail } from "@/components/bus/model";
 import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
 import { NamedBuilding } from "@/types/buildings";
+import { CampusLocation } from "@/types/campusLocations";
+import { MapPlace } from "@/types/mapPlace";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
 import BuildingRow from "@/components/map/BuildingRow";
 import BuildingCard from "@/components/map/BuildingCard";
+import SearchBar from "@/components/map/SearchBar";
 
 const MAPBOX_PUBLIC_ACCESS_TOKEN =
   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
@@ -92,6 +95,27 @@ const BUS_REFRESH_INTERVAL_MS = 60_000;
 
 type MapCameraRef = ComponentRef<typeof Camera>;
 
+function toMapPlace(source: NamedBuilding | CampusLocation): MapPlace {
+  if ("code" in source) {
+    return {
+      name: source.name,
+      latitude: source.latitude,
+      longitude: source.longitude,
+      code: source.code || undefined,
+    };
+  }
+
+  return {
+    name: source.name,
+    latitude: source.latitude,
+    longitude: source.longitude,
+    code: source.abbreviation || undefined,
+    // "Buildings" is too generic to be useful (it's on nearly every entry);
+    // prefer the next-most-specific menu category, e.g. "Academic Building".
+    category: source.menus?.filter((menu) => menu !== "Buildings")[0] ?? source.menus?.[0],
+  };
+}
+
 const allButtonStyling: StyleProp<ViewStyle> = {
   position: "absolute",
   width: buttonWidth,
@@ -123,6 +147,17 @@ async function fetchNamedBuildings(): Promise<NamedBuilding[]> {
 
   if (!response.ok) {
     throw new Error(json.message ?? "Unable to load buildings.");
+  }
+
+  return json.data ?? [];
+}
+
+async function fetchCampusLocations(): Promise<CampusLocation[]> {
+  const response = await fetch(buildApiUrl("/campus-locations/"));
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.message ?? "Unable to load campus locations.");
   }
 
   return json.data ?? [];
@@ -177,7 +212,7 @@ function MapboxMap({
   routeGeoJSON,
 }: {
   cameraRef: RefObject<MapCameraRef | null>;
-  selectedBuilding: NamedBuilding | null;
+  selectedBuilding: MapPlace | null;
   routeGeoJSON: RouteGeometry | null;
 }) {
   return (
@@ -231,10 +266,11 @@ export default function MapScreen() {
   const [buildingsRefreshing, setBuildingsRefreshing] = useState(false);
   const [buildingsError, setBuildingsError] = useState<string | null>(null);
   const [buildingsVisible, setBuildingsVisible] = useState(false);
-  const [selectedBuilding, setSelectedBuilding] = useState<NamedBuilding | null>(null);
+  const [selectedBuilding, setSelectedBuilding] = useState<MapPlace | null>(null);
   const [routeGeoJSON, setRouteGeoJSON] = useState<RouteGeometry | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
+  const [campusLocations, setCampusLocations] = useState<CampusLocation[]>([]);
   const isFetchingBuildingsRef = useRef(false);
   const cameraRef = useRef<MapCameraRef>(null);
 
@@ -365,17 +401,27 @@ export default function MapScreen() {
     }
   }, [buildingsVisible]);
 
-  const handleSelectBuilding = (building: NamedBuilding) => {
-    if (building.latitude == null || building.longitude == null) {
+  useEffect(() => {
+    void fetchCampusLocations()
+      .then(setCampusLocations)
+      .catch(() => {
+        // Search is a convenience on top of the map; fail silently and leave
+        // the search bar with no results rather than surfacing an error state.
+      });
+  }, []);
+
+  const handleSelectBuilding = (source: NamedBuilding | CampusLocation) => {
+    const place = toMapPlace(source);
+    if (place.latitude == null || place.longitude == null) {
       return;
     }
 
-    setSelectedBuilding(building);
+    setSelectedBuilding(place);
     setBuildingsVisible(false);
     setRouteGeoJSON(null);
     setRouteError(null);
     cameraRef.current?.setCamera({
-      centerCoordinate: [building.longitude, building.latitude],
+      centerCoordinate: [place.longitude, place.latitude],
       zoomLevel: 18,
       animationDuration: 1200,
       animationMode: "flyTo",
@@ -450,6 +496,8 @@ export default function MapScreen() {
         selectedBuilding={selectedBuilding}
         routeGeoJSON={routeGeoJSON}
       />
+
+      <SearchBar locations={campusLocations} onSelectLocation={handleSelectBuilding} />
 
       {selectedBuilding && (
         <BuildingCard

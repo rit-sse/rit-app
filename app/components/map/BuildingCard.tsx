@@ -1,5 +1,5 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import type { NamedBuilding } from "@/types/buildings";
+import type { MapPlace } from "@/types/mapPlace";
 
 export default function BuildingCard({
   building,
@@ -8,7 +8,7 @@ export default function BuildingCard({
   routeLoading,
   routeError,
 }: {
-  building: NamedBuilding;
+  building: MapPlace;
   onClose: () => void;
   onRouteTo: () => void;
   routeLoading: boolean;
@@ -26,7 +26,10 @@ export default function BuildingCard({
         </Pressable>
       </View>
 
-      <View style={styles.infoSlot} />
+      <View style={styles.infoSlot}>
+        {!!building.code && <Text style={styles.codeBadge}>{building.code}</Text>}
+        {!!building.category && <Text style={styles.categoryText}>{building.category}</Text>}
+      </View>
 
       {routeError && <Text style={styles.errorText}>{routeError}</Text>}
 
@@ -44,7 +47,7 @@ export default function BuildingCard({
 const styles = StyleSheet.create({
   card: {
     position: "absolute",
-    top: 60,
+    top: 130,
     left: 16,
     right: 100,
     backgroundColor: "#ffffff",
@@ -84,6 +87,21 @@ const styles = StyleSheet.create({
   infoSlot: {
     flexGrow: 1,
     minHeight: 16,
+    gap: 6,
+    paddingVertical: 10,
+    justifyContent: "center",
+  },
+  codeBadge: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#f76902",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: "#6b7280",
+    lineHeight: 20,
   },
   errorText: {
     fontSize: 13,

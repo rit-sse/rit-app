@@ -1,32 +1,19 @@
 import { Request, Response } from "express";
 import * as cheerio from "cheerio";
 import { ScrapeCache } from "../../db/cache";
+import { geometryCentroid } from "../../utils/geo";
 
 const scrapeCache = new ScrapeCache();
 
 const CACHE_KEY = "named-buildings-v2";
 
-// Centroid of a building footprint polygon from RIT's own campus map API
-// (https://mapserver.rit.edu/api/locations?mdo_id=...), keyed by the mdo_id
-// embedded in each whatsinaname building's detail page map iframe.
+// Coordinates from RIT's own campus map API (https://mapserver.rit.edu/api/locations?mdo_id=...),
+// keyed by the mdo_id embedded in each whatsinaname building's detail page map iframe.
 async function fetchBuildingCoordinates(mdoId: string): Promise<{ latitude: number, longitude: number } | null> {
     try {
         const res = await fetch(`https://mapserver.rit.edu/api/locations?mdo_id=${mdoId}`);
         const features = await res.json();
-        const geometry = features?.[0]?.geometry;
-
-        if (geometry?.type === "Point") {
-            const [lon, lat] = geometry.coordinates as [number, number];
-            return { latitude: lat, longitude: lon };
-        }
-
-        const ring: [number, number][] | undefined = geometry?.coordinates?.[0];
-        if (!ring || ring.length === 0) {
-            return null;
-        }
-
-        const sum = ring.reduce((acc, [lon, lat]) => ({ lon: acc.lon + lon, lat: acc.lat + lat }), { lon: 0, lat: 0 });
-        return { latitude: sum.lat / ring.length, longitude: sum.lon / ring.length };
+        return geometryCentroid(features?.[0]?.geometry);
     } catch {
         return null;
     }
