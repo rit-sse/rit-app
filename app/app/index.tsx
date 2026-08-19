@@ -194,11 +194,15 @@ export default function Index() {
             {/* {
               Array.from({ length: 10}).map((_, index) => <RecentlyViewedButton key={index} />)
             } */}
-            {recentlyViewed
-              ? recentlyViewed.map((item: gridBox, index: number) => (
-                  <RecentlyViewedButton key={index} item={item} />
-                ))
-              : null}
+            {recentlyViewed && recentlyViewed.length > 0 ? (
+              recentlyViewed.map((item: gridBox, index: number) => (
+                <RecentlyViewedButton key={index} item={item} />
+              ))
+            ) : recentlyViewed ? (
+              <Text style={{ fontSize: 15, color: "#9ca3af" }}>
+                No recently visited page
+              </Text>
+            ) : null}
           </ScrollView>
         </View>
         {/* <Button title="Clear recently viewed data" onPress={() => { clearRecentlyView(); setRecentlyViewed(null); }} /> */}
