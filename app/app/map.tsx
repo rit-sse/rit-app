@@ -18,8 +18,10 @@ import RouteCard from "@/components/bus/RouteCard";
 import StopsGrid from "@/components/bus/StopsGrid";
 import { buildActiveRouteList, buildRouteDetail } from "@/components/bus/model";
 import { ActiveRoute, ActiveRouteListItem } from "@/types/bus";
+import { NamedBuilding } from "@/types/buildings";
 import BusIcon from "../components/svgs/map/BusIcon";
 import BuildingIcon from "../components/svgs/map/BuildingIcon";
+import BuildingRow from "@/components/map/BuildingRow";
 
 const MAPBOX_PUBLIC_ACCESS_TOKEN =
   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
@@ -67,6 +69,17 @@ async function fetchActiveRoutes(): Promise<ActiveRoute[]> {
   return json.data ?? [];
 }
 
+async function fetchNamedBuildings(): Promise<NamedBuilding[]> {
+  const response = await fetch(buildApiUrl("/named-buildings/"));
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(json.message ?? "Unable to load buildings.");
+  }
+
+  return json.data ?? [];
+}
+
 function MapboxMap() {
   return (
     <MapView style={styles.map} scaleBarEnabled={false}>
@@ -92,6 +105,13 @@ export default function MapScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [scheduleVisible, setScheduleVisible] = useState(false);
   const isFetchingRef = useRef(false);
+
+  const [buildings, setBuildings] = useState<NamedBuilding[]>([]);
+  const [buildingsLoading, setBuildingsLoading] = useState(true);
+  const [buildingsRefreshing, setBuildingsRefreshing] = useState(false);
+  const [buildingsError, setBuildingsError] = useState<string | null>(null);
+  const [buildingsVisible, setBuildingsVisible] = useState(false);
+  const isFetchingBuildingsRef = useRef(false);
 
   const routeItems = useMemo<ActiveRouteListItem[]>(
     () => buildActiveRouteList(routes),
@@ -180,8 +200,48 @@ export default function MapScreen() {
     };
   }, [scheduleVisible]);
 
+  const loadBuildings = async ({
+    refreshing = false,
+  }: {
+    refreshing?: boolean;
+  } = {}) => {
+    if (isFetchingBuildingsRef.current) {
+      return;
+    }
+
+    isFetchingBuildingsRef.current = true;
+
+    if (refreshing) {
+      setBuildingsRefreshing(true);
+    } else {
+      setBuildingsLoading(true);
+    }
+
+    try {
+      const nextBuildings = await fetchNamedBuildings();
+      setBuildings(nextBuildings);
+      setBuildingsError(null);
+    } catch (error) {
+      setBuildingsError(
+        error instanceof Error
+          ? error.message
+          : "Unexpected error loading buildings.",
+      );
+    } finally {
+      isFetchingBuildingsRef.current = false;
+      setBuildingsLoading(false);
+      setBuildingsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    const shouldHideNavbar = scheduleVisible;
+    if (buildingsVisible && buildings.length === 0) {
+      void loadBuildings();
+    }
+  }, [buildingsVisible]);
+
+  useEffect(() => {
+    const shouldHideNavbar = scheduleVisible || buildingsVisible;
     GLOBAL.showNavbar?.(!shouldHideNavbar);
     GLOBAL.navbar?.setState({ navBarVisibility: !shouldHideNavbar });
 
@@ -189,7 +249,7 @@ export default function MapScreen() {
       GLOBAL.showNavbar?.(true);
       GLOBAL.navbar?.setState({ navBarVisibility: true });
     };
-  }, [scheduleVisible]);
+  }, [scheduleVisible, buildingsVisible]);
 
   return (
     <View style={styles.screen}>
@@ -218,7 +278,11 @@ export default function MapScreen() {
         </View>
 
         <View style={[{ bottom: 0 }, allButtonStyling]}>
-          <BuildingIcon onPress={() => {}} style={iconStyle} fill="#000" />
+          <BuildingIcon
+            onPress={() => setBuildingsVisible(true)}
+            style={iconStyle}
+            fill="#000"
+          />
         </View>
       </View>
 
@@ -290,6 +354,43 @@ export default function MapScreen() {
           )}
         </ScrollView>
       </DragUp>
+
+      <DragUp
+        visible={buildingsVisible}
+        setVisible={setBuildingsVisible}
+        bottomOffset={0}
+        heightPercent={78}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          refreshControl={
+            <RefreshControl
+              refreshing={buildingsRefreshing}
+              onRefresh={() => {
+                void loadBuildings({ refreshing: true });
+              }}
+              tintColor="#f76902"
+            />
+          }
+        >
+          <Text style={styles.title}>Buildings</Text>
+
+          {buildingsLoading ? (
+            <View style={styles.centerState}>
+              <ActivityIndicator size="large" color="#f76902" />
+              <Text style={styles.stateText}>Loading buildings...</Text>
+            </View>
+          ) : buildingsError ? (
+            <View style={styles.centerState}>
+              <Text style={styles.errorText}>{buildingsError}</Text>
+            </View>
+          ) : (
+            buildings.map((building) => (
+              <BuildingRow key={building.link || building.name} building={building} />
+            ))
+          )}
+        </ScrollView>
+      </DragUp>
     </View>
   );
 }
@@ -334,8 +435,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#111827",
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "900",
+    marginBottom: 4,
   },
   subtitle: {
     color: "#4b5563",
