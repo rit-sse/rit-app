@@ -1,19 +1,18 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { NamedBuilding } from "@/types/buildings";
 
-export default function BuildingRow({ building }: { building: NamedBuilding }) {
+export default function BuildingRow({
+  building,
+  onSelect,
+}: {
+  building: NamedBuilding;
+  onSelect: (building: NamedBuilding) => void;
+}) {
   return (
     <View style={styles.shadowWrap}>
-      <Pressable
-        style={styles.row}
-        onPress={() => {
-          if (building.link) {
-            void Linking.openURL(building.link);
-          }
-        }}
-      >
+      <Pressable style={styles.row} onPress={() => onSelect(building)}>
         <Image
           source={{ uri: building.image }}
           style={StyleSheet.absoluteFillObject}

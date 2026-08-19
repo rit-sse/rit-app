@@ -12,6 +12,10 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.sse.ritapp.jetmon",
+      infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          "tigerGO uses your location to show walking directions to campus buildings.",
+      },
     },
     android: {
       adaptiveIcon: {
@@ -24,6 +28,7 @@ export default {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: "com.sse.tigergo.app",
+      permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
     },
     web: {
       output: "static",

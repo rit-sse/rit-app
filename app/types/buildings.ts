@@ -3,4 +3,6 @@ export interface NamedBuilding {
   code: string;
   image: string;
   link: string;
+  latitude: number | null;
+  longitude: number | null;
 }
