@@ -158,9 +158,9 @@ export default function ResultsScreen() {
 
 
     return (
-        <SafeAreaView style={{padding:"15%", paddingLeft: 10}} >
+        <SafeAreaView style={{ flex: 1, flexDirection: "column", padding: "15%", paddingLeft: 10 }}>
         {/*Mandatory back button*/}
-        <View >
+        <View style={{ flexDirection: "column" }}>
              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
                  <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
                  <View>
@@ -188,7 +188,7 @@ export default function ResultsScreen() {
                         returnKeyType="search" // Changes the keyboard return key to say "Search"
                                   onSubmitEditing={() => searchCourses(query)}
                                 />
-                    <View> <Button title="->" color="#000" onPress={() => searchCourses(query)}/> </View>
+                    <View style={{ flexDirection: "column" }}> <Button title="->" color="#000" onPress={() => searchCourses(query)}/> </View>
                     <TouchableOpacity
                         style={styles.filterButton}
                         onPress={() => setShowFilters(true)}
@@ -211,7 +211,7 @@ export default function ResultsScreen() {
 
                      {selectors ? (
                        <ScrollView style={{ marginTop: 20 }}>
-                            <View>
+                            <View style={{ flexDirection: "column" }}>
                              <CollapsibleSection title="Colleges">
                                <MultiToggle
                                  items={selectors.colleges ?? []}

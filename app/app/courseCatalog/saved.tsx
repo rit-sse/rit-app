@@ -23,7 +23,7 @@ export const storeSavedCourses = async (item: course) => {
         let preExistingI = false;
 
         for (let i = 0; i< parsed.length; i++){
-            if (parsed[i].link == item.link) {
+            if (parsed[i].code == item.code) {
                 parsed.splice(i,1);
                 parsed.push(item);
                 preExistingI = true;
@@ -49,6 +49,19 @@ export const getSavedCourses = async (): Promise<course[]> => {
   }
 }
 
+export function SaveButton ({courseItem}) {
+
+    return (
+         <View>
+             <TouchableOpacity
+               style={styles.saveButton}
+               onPress={() => storeSavedCourses(courseItem)}
+             >
+               <Text style={styles.saveButtonText}>Save Course</Text>
+             </TouchableOpacity>
+         </View>
+        )
+    }
 export default function SavedCoursesScreen() {
   const [savedCourses, setSavedCourses] = useState<course[]>([]);
   const routeNavigator = useRouter();
@@ -80,7 +93,7 @@ export default function SavedCoursesScreen() {
 
       <FlatList
         data={savedCourses}
-        keyExtractor={(item) => item.link}
+        keyExtractor={(item) => item.code}
         renderItem={({item}) => (
                         <View style={styles.resultItem}>
                             <TouchableOpacity onPress={() => {

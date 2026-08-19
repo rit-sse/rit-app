@@ -6,7 +6,7 @@ import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter, useLocalSearchParams  } from "expo-router";
 import Course from "../../components/courses/Course"
-import {storeSavedCourses, courseObj} from "../courseCatalog/saved"
+import {storeSavedCourses, courseObj, SaveButton} from "../courseCatalog/saved"
 
 
 
@@ -20,7 +20,6 @@ export default function CourseInfoScreen() {
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                console.log("hello");
                 const responseCourse = await fetch(buildApiUrl(`/courses/info?code=${q}`));
                 const dataCourse = await responseCourse.json();
                 console.log(dataCourse);
@@ -76,6 +75,7 @@ export default function CourseInfoScreen() {
 
         <View style = {{padding: 10}}>
             <Button title="->" color="#000" onPress={() => storeSavedCourses(currentCourse)}/>
+            <SaveButton courseItem={currentCourse} ></SaveButton>
             <View>
                 <Text style={{ color: "#F76902", fontSize: 15,
                                     fontWeight: "bold",
