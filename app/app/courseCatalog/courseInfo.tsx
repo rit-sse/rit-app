@@ -6,15 +6,10 @@ import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter, useLocalSearchParams  } from "expo-router";
 import Course from "../../components/courses/Course"
+import {storeSavedCourses, courseObj} from "../courseCatalog/saved"
 
 
-interface CourseObj {
-    key: string;
-    code: string;
-    srcdb: string;
-    title: string;
-    description: string;
-}
+
 export default function CourseInfoScreen() {
     const {q} = useLocalSearchParams();
     const routeNavigator = useRouter();
@@ -56,7 +51,7 @@ export default function CourseInfoScreen() {
 
 //     const courseObject = new Course(course);
 //     console.log(courseObject.toJSON());
-        const currentCourse: CourseObj = {
+        const currentCourse: courseObj = {
             key: course.key,
             code: course.code,
             srcdb: course.srcdb,
@@ -66,7 +61,7 @@ export default function CourseInfoScreen() {
     const semester = course.typically_offered.replace(/<[^>]+>/g, '').trim();
     const credits = course.hours_html;
   return (
-    <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
+    <SafeAreaView style={{padding:"15%", paddingLeft: 10}} >
         {/*Mandatory back button*/}
         <View className="w-full items-center">
              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
@@ -79,7 +74,8 @@ export default function CourseInfoScreen() {
         </View>
         {/*Mandatory back button*/}
 
-        <View className="w-full items-center" style = {{padding: 10}}>
+        <View style = {{padding: 10}}>
+            <Button title="->" color="#000" onPress={() => storeSavedCourses(currentCourse)}/>
             <View>
                 <Text style={{ color: "#F76902", fontSize: 15,
                                     fontWeight: "bold",

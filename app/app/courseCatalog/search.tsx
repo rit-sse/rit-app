@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {View, Text, Button, ScrollView, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  ActivityIndicator,
+  Modal
+} from "react-native";
 import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { processQuickLink, storeRecentlyView, gridBox, openLink } from "@/lib/utils";
@@ -40,7 +51,7 @@ export default function ResultsScreen() {
 
           {open && (
             <View style={{ paddingLeft: 5 }}>
-              {children}
+             {children}
             </View>
           )}
         </View>
@@ -65,6 +76,7 @@ export default function ResultsScreen() {
 
     // multi tags -------------------------------------------------
     function MultiToggle({ items, category, filters, toggleFilter }) {
+      if (!Array.isArray(items)) return null;
       return (
         <View style={{ marginVertical: 10 }}>
           {items.map(item => {
@@ -125,6 +137,7 @@ export default function ResultsScreen() {
                 });
             const responseResults = await fetch(
                     buildApiUrl(`/courses/advancedsearch?${params.toString()}`));
+            console.log(`/courses/advancedsearch?${params.toString()}`)
             console.log(responseResults);
             const data = await responseResults.json();
             console.log("ADVANCED SEARCH RESPONSE:", data);
@@ -145,9 +158,9 @@ export default function ResultsScreen() {
 
 
     return (
-        <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"15%", paddingLeft: 10}} >
+        <SafeAreaView style={{padding:"15%", paddingLeft: 10}} >
         {/*Mandatory back button*/}
-        <View className="w-full items-center">
+        <View >
              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", paddingTop: 10 }} onPress={() => { routeNavigator.back() }}>
                  <BackChevron style={{ width: 20, height: 20 }} color="#000"/>
                  <View>
@@ -158,7 +171,7 @@ export default function ResultsScreen() {
         </View>
         {/*Mandatory back button*/}
 
-        <View className="w-full items-center" style = {{padding: "2%"}}>
+        <View style = {{padding: "2%"}}>
             {/*Title*/}
                   <View style={{paddingBottom: 10}}>
                     <Text style={{ color: "#000000", fontSize: 35,
@@ -198,41 +211,43 @@ export default function ResultsScreen() {
 
                      {selectors ? (
                        <ScrollView style={{ marginTop: 20 }}>
-                         <CollapsibleSection title="Colleges">
-                           <MultiToggle
-                             items={selectors.colleges}
-                             category="colleges"
-                             filters={filters}
-                             toggleFilter={toggleFilter}
-                           />
-                         </CollapsibleSection>
+                            <View>
+                             <CollapsibleSection title="Colleges">
+                               <MultiToggle
+                                 items={selectors.colleges ?? []}
+                                 category="colleges"
+                                 filters={filters}
+                                 toggleFilter={toggleFilter}
+                               />
+                             </CollapsibleSection>
 
-                         <CollapsibleSection title="Graduate Types">
-                           <MultiToggle
-                             items={selectors.graduateTypes}
-                             category="graduateTypes"
-                             filters={filters}
-                             toggleFilter={toggleFilter}
-                           />
-                         </CollapsibleSection>
+                             <CollapsibleSection title="Graduate Types">
+                               <MultiToggle
+                                 items={selectors.graduateTypes ?? []}
+                                 category="graduateTypes"
+                                 filters={filters}
+                                 toggleFilter={toggleFilter}
+                               />
+                             </CollapsibleSection>
 
-                         <CollapsibleSection title="Subjects">
-                           <MultiToggle
-                             items={selectors.subjects}
-                             category="subjects"
-                             filters={filters}
-                             toggleFilter={toggleFilter}
-                           />
-                         </CollapsibleSection>
+                             <CollapsibleSection title="Subjects">
+                               <MultiToggle
+                                 items={selectors.subjects ?? []}
+                                 category="subjects"
+                                 filters={filters}
+                                 toggleFilter={toggleFilter}
+                               />
+                             </CollapsibleSection>
 
-                         <CollapsibleSection title="Perspectives">
-                           <MultiToggle
-                             items={selectors.perspectives}
-                             category="perspectives"
-                             filters={filters}
-                             toggleFilter={toggleFilter}
-                           />
-                         </CollapsibleSection>
+                             <CollapsibleSection title="Perspectives">
+                               <MultiToggle
+                                 items={selectors.perspectives ?? []}
+                                 category="perspectives"
+                                 filters={filters}
+                                 toggleFilter={toggleFilter}
+                               />
+                             </CollapsibleSection>
+                          </View>
                        </ScrollView>
                      ) : (
                        <ActivityIndicator size="large" color="#F76902" style={{ marginTop: 20 }} />

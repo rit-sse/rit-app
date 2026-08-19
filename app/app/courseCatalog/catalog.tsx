@@ -24,6 +24,12 @@ export default function CatalogScreen() {
         name: "Course Catalog",
         link: "/courseCatalog/search",
     };
+
+    const course_saved: gridBox = {
+            imageID: "course_browser_icon",
+            name: "Course Saved",
+            link: "/courseCatalog/saved",
+        };
     return (
         <SafeAreaView className="flex-1 justify-center items-center" style={{padding:"20%", paddingLeft: 20}} >
 
@@ -87,6 +93,29 @@ export default function CatalogScreen() {
                         </View>
                      <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 20, color: "#000000"}}>Search All Courses</Text>
+                         <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#000000"}}>Browse All Courses At RIT</Text>
+                     </View>
+                     <Text style={{color: "#000000", fontSize: 40, paddingLeft: 70}}>></Text>
+                     {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
+                </TouchableOpacity>
+            </View>
+
+
+            <View className="w-full items-center h-[80%]" style={{buttonStyle, padding: 10,}}>
+                <TouchableOpacity title="saved"
+                        style={{backgroundColor: "#F5F5F5",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        flexDirection: "row", borderWidth: 2, borderColor: '#00000050',}} onPress={() => processQuickLink(course_saved)}>
+                        <View style={{ width: 60, height: 60 , padding: 10, paddingLeft: 10}}>
+                            <Image
+                                source={require("../../assets/icons/grid/academic-calendar.png")}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="contain"
+                              />
+                        </View>
+                     <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
+                        <Text style={{buttonStyle, fontWeight: "bold", fontSize: 20, color: "#000000"}}>saved All Courses</Text>
                          <Text style={{buttonStyle, fontWeight: "bold", fontSize: 12, color: "#000000"}}>Browse All Courses At RIT</Text>
                      </View>
                      <Text style={{color: "#000000", fontSize: 40, paddingLeft: 70}}>></Text>
