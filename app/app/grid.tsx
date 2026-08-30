@@ -51,20 +51,19 @@ export default function Grid() {
       imageID: "hours",
       name: "Building Hours",
       link: "/widgetlab/building-hours/"
+    },
+    {
+      imageID: "course_browser_icon",
+      name: "Course Catalog",
+      link: "/courseCatalog/catalog",
     }
   ]
 
   const special_Dining: gridBox = {
     imageID: "dining_icon",
     name: "Dining & Menus",
-    link: "/dining/search",
+    link: "/dining/search"
   };
-
-  const course_catalog: gridBox = {
-      imageID: "course_browser_icon",
-      name: "Course Catalog",
-      link: "/courseCatalog/catalog",
-      };
 
   function processQuickLink(gridItem: gridBox) {
     console.log("Processing quick link for: " + gridItem.name);
@@ -99,8 +98,8 @@ export default function Grid() {
           <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">
             Dining & Menus
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableOpacity> */ }
+        {/* <TouchableOpacity
           activeOpacity={0.8}
           className="w-[85%] h-24 rounded-lg overflow-hidden"
           onPress={() => processQuickLink(course_catalog)}
@@ -124,7 +123,7 @@ export default function Grid() {
           <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">
             Dining & Menus
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <FlatList
           data={GRID_DATA}
           numColumns={3}
