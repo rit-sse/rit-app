@@ -188,7 +188,9 @@ export default function ResultsScreen() {
                         returnKeyType="search" // Changes the keyboard return key to say "Search"
                                   onSubmitEditing={() => searchCourses(query)}
                                 />
-                    <View style={{ flexDirection: "column" }}> <Button title="->" color="#000" onPress={() => searchCourses(query)}/> </View>
+                    <View style={{ flexDirection: "column" }}>
+                        <Button title="->" color="#000" onPress={() => searchCourses(query)}/>
+                    </View>
                     <TouchableOpacity
                         style={styles.filterButton}
                         onPress={() => setShowFilters(true)}

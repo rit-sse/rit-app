@@ -9,4 +9,5 @@ export const resourceController: { [key: string]: any } = {
     "search": require("../assets/icons/search.png"),
     "chevron-right-white": require("../assets/icons/chevron-right-white.png"),
     "calendar-orange": require("../assets/icons/calendar-orange.png"),
+    "chevron-right-black": require("../assets/icons/chevron-right-black.png"),
 };

@@ -42,7 +42,7 @@ export default function CatalogScreen() {
         </View>
         {/*Mandatory back button*/}
 
-            <View style={styles.categoryButton, {padding: 10}}>
+            <View style={[styles.categoryButton, {padding: 10}]}>
                 {/*Title*/}
                 <View>
                     <Text style={styles.PageTitle}>Catalog Browser</Text>
@@ -76,29 +76,32 @@ export default function CatalogScreen() {
                     </View>
                      {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
                 </TouchableOpacity>
-            </View>
-            <View style={{padding: 10,}}>
-                <TouchableOpacity title="Search All Courses"
-                        style={[{backgroundColor: "#F5F5F5", borderWidth: 2, borderColor: '#00000050'}, styles.categorybox]} onPress={() => processQuickLink(course_catalog)}>
-                        <View style={styles.iconImg}>
-                            <Image
-                                source={require("../../assets/icons/grid/academic-calendar.png")}
-                                style={{ width: "100%", height: "100%" }}
-                                resizeMode="contain"
-                              />
-                        </View>
+                <TouchableOpacity className="border-[2px] border-[rgba(0,0,0,0.2)] rounded-lg p-4 flex-row items-center mb-4 justify-between" onPress={() => openLink(course_catalog.link, routeNavigator)}
+                        // style={[{backgroundColor: "#000000"}, styles.categorybox]} onPress={() => processQuickLink(course_catalog)}
+                        >
+                    <View className="flex-row items-center justify-between">
+                        <View style={styles.iconSemester}>
+                        <Image
+                            source={resourceController["calendar-orange"]}
+                            style={{ width: "100%", height: "100%" }}
+                            resizeMode="contain"
+                            />
+                    </View>
                      <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
-                        <Text style={[styles.categoryTitle, {color: "#000000"}]}>Search All Courses</Text>
-                         <Text style={[styles.categorySubTitle, {color: "#000000"}]}>Browse All Courses At RIT</Text>
+                        <Text style={[{color: "black"}, styles.categoryTitle]}>By Semester</Text>
+                         <Text style={[{color: "rgba(0,0,0,0.7)"}, styles.categorySubTitle]}>Search course by semester!</Text>
                      </View>
-                     <Text style={{color: "#000000", fontSize: 40, paddingLeft: 70}}>></Text>
+                    </View>
+                    <View>
+                        <Image
+                            source={resourceController["chevron-right-black"]}
+                            className="w-[40px] h-[35px] opacity-[60%]"
+                            resizeMode="stretch"
+                            />
+                    </View>
                      {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
                 </TouchableOpacity>
-            </View>
-
-
-            <View style={{padding: 10,}}>
-                <TouchableOpacity title="Search All Courses"
+                {/* <TouchableOpacity title="Search All Courses"
                         style={[{backgroundColor: "#F5F5F5", borderWidth: 2, borderColor: '#00000050'}, styles.categorybox]} onPress={() => processQuickLink(course_saved)}>
                         <View style={styles.iconImg}>
                             <Image
@@ -112,9 +115,9 @@ export default function CatalogScreen() {
                          <Text style={[styles.categorySubTitle, {color: "#000000"}]}>Courses that you saved!</Text>
                      </View>
                      <Text style={{color: "#000000", fontSize: 40, paddingLeft: 70}}>></Text>
-                     {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
+
         </SafeAreaView>
     );
 }
@@ -134,6 +137,7 @@ export default function CatalogScreen() {
                                 flexDirection: "row",},
         iconImg: { width: 60, height: 60 , padding: 10, paddingLeft: 10},
         iconSearch: { width: 50, height: 50 , padding: 10, marginRight: 10, backgroundColor: "#F76902", borderRadius: 10, justifyContent: "center", alignItems: "center"},
+        iconSemester: { width: 50, height: 50 , padding: 10, marginRight: 10, backgroundColor: "#f7680274", borderRadius: 10, justifyContent: "center", alignItems: "center"},
         categoryTitle: {justifyContent: "center", fontWeight: "bold", fontSize: 20},
         categorySubTitle: {justifyContent: "center", fontSize: 14},
     });
