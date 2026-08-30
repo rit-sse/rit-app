@@ -6,7 +6,7 @@ import { resourceController } from "@/components/resourcefetch";
 
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { storeRecentlyView, gridBox, openLink } from "@/lib/utils";
+import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 /**
  * Quick Grid section of the app
  *
@@ -54,6 +54,17 @@ export default function Grid() {
     }
   ]
 
+  const special_Dining: gridBox = {
+    imageID: "dining_icon",
+    name: "Dining & Menus",
+    link: "/dining/search",
+  };
+
+  const course_catalog: gridBox = {
+      imageID: "course_browser_icon",
+      name: "Course Catalog",
+      link: "/courseCatalog/catalog",
+      };
 
   function processQuickLink(gridItem: gridBox) {
     console.log("Processing quick link for: " + gridItem.name);
@@ -61,7 +72,6 @@ export default function Grid() {
     openLink(gridItem.link, routeNavigator);
     storeRecentlyView(gridItem);
   }
-
   return (
     <SafeAreaView className="flex-1 justify-center items-center">
       <View className="w-full  items-center h-[80%]">
@@ -89,7 +99,32 @@ export default function Grid() {
           <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">
             Dining & Menus
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="w-[85%] h-24 rounded-lg overflow-hidden"
+          onPress={() => processQuickLink(course_catalog)}
+        >
+          <LinearGradient
+            colors={["#F76902", "#f7680271"]}
+            start={{ x: 0.0, y: 0.5 }}
+            end={{ x: 1.0, y: 0.5 }}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              borderRadius: 8,
+              zIndex: 1,
+            }}
+          />
+          <Image
+            source={require("../assets/icons/grid/course-browser.png")}
+            className="w-full h-full rounded-lg absolute z-0"
+          />
+          <Text className="absolute z-20 text-white font-bold bottom-2.5 left-2.5 text-2xl">
+            Dining & Menus
+          </Text>
+        </TouchableOpacity>
         <FlatList
           data={GRID_DATA}
           numColumns={3}

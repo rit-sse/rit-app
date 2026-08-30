@@ -104,7 +104,8 @@ export default function Index() {
     fetch(buildApiUrl("/news"))
       .then((response) => response.json())
       .then((data) => setNews(data["data"]))
-      .catch((error) => console.error("Error fetching news:", error));
+      .catch((error) => console.error("Error fetching news:", error))
+
   }, []);
 
   return (
@@ -188,7 +189,7 @@ export default function Index() {
           </Text>
           <ScrollView
             horizontal={true}
-            style={{ width: "100%" }}
+            style={{ width: "100%"}}
             showsHorizontalScrollIndicator={false}
           >
             {/* {

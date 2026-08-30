@@ -19,7 +19,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
+// import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -37,8 +37,8 @@ import BuildingRow from "@/components/map/BuildingRow";
 import BuildingCard from "@/components/map/BuildingCard";
 import SearchBar from "@/components/map/SearchBar";
 
-const MAPBOX_PUBLIC_ACCESS_TOKEN =
-  process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
+// const MAPBOX_PUBLIC_ACCESS_TOKEN =
+//   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
 
 Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
 

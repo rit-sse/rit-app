@@ -13,15 +13,28 @@ export default function DiningSearch() {
     const [restaurants, setRestaurantsData] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
+//     useEffect(() => {
+//         fetch(buildApiUrl("/dining"))
+//             .then(response => response.json())
+//             .then(data => {
+//                 setRestaurantsData(data["data"]["data"]);
+//                 setLoaded(true);
+//             })
+//             .catch(error => console.error("Error fetching restaurant data:", error));
+//     }, []);
     useEffect(() => {
-        fetch(buildApiUrl("/dining"))
-            .then(response => response.json())
-            .then(data => {
-                setRestaurantsData(data["data"]["data"]);
-                setLoaded(true);
-            })
-            .catch(error => console.error("Error fetching restaurant data:", error));
-    }, []);
+            fetch(buildApiUrl("/dining"))
+                .then(response => {
+                    let text = response.text();
+                    console.log(text);
+                    return text;
+                })
+                .then(data => {
+                    setRestaurantsData(data["data"]["data"]);
+                    setLoaded(true);
+                })
+                .catch(error => console.error("Error fetching restaurant data:", error));
+        }, []);
 
     return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingTop: 60, backgroundColor: "white" }}>
