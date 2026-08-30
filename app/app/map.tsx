@@ -19,7 +19,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-// import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
+import Mapbox, { Camera, MapView } from "@rnmapbox/maps";
 import DragUp from "./DragUp";
 import GLOBAL from "./globals";
 import { buildApiUrl } from "@/lib/api";
@@ -40,7 +40,7 @@ import SearchBar from "@/components/map/SearchBar";
 // const MAPBOX_PUBLIC_ACCESS_TOKEN =
 //   process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";
 
-Mapbox.setAccessToken(MAPBOX_PUBLIC_ACCESS_TOKEN);
+Mapbox.setAccessToken(process.env["MAPBOX_PUBLIC_ACCESS_TOKEN"] ?? "");
 
 // This project's tsc resolves @rnmapbox/maps through its web type stub (no
 // `moduleSuffixes` configured), which doesn't declare ShapeSource/LineLayer/

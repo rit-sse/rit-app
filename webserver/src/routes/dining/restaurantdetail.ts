@@ -41,38 +41,35 @@ export async function GET(req: Request, res: Response) {
 
         let chefPriorParse = JSON.parse(findChefDataLine?.split("`")[1] || "{}");
         let chefData: {
-            "event_id": number,
-            "event_name": string,
-            "event_type": string | null,
             "date": string,
-            "menus": {
-                "category": string,
+            "chefs": {
                 "name": string,
-                "name_note": string,
-                "description": string
+                "description": string,
+                "start_time": string,
             }[]
-        }[] = chefPriorParse[Object.keys(chefPriorParse)[0]];
+        } = chefPriorParse[Object.keys(chefPriorParse)[0]];
 
         const today = new Date();
         const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
-        chefData = chefData.map((chef: {
-            "event_id": number,
-            "event_name": string,
-            "event_type": string | null,
-            "date": string,
-            "menus": {
-                "category": string,
-                "name": string,
-                "name_note": string,
-                "description": string
-            }[]
-        }) => {
-            let chefDate = new Date(chef.date);
-            if (yesterday <= chefDate) {
-                return chef;
-            }
-        }).filter(chef => chef !== undefined);
-        restaurantData.visitingchefs = chefData;
+        
+        // chefData = chefData{"chefs"}.map((chef: {
+        //     "event_id": number,
+        //     "event_name": string,
+        //     "event_type": string | null,
+        //     "date": string,
+        //     "menus": {
+        //         "category": string,
+        //         "name": string,
+        //         "name_note": string,
+        //         "description": string
+        //     }[]
+        // }) => {
+        //     let chefDate = new Date(chef.date);
+        //     if (yesterday <= chefDate) {
+        //         return chef;
+        //     }
+        // }).filter(chef => chef !== undefined);
+        restaurantData.visitingchefs = chefData["chefs"];
     }
 
     const $ = cheerio.load(html);

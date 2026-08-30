@@ -38,6 +38,9 @@ export default function RestaurantContainer(props: {
                 setClosestRelevantHour("Closed");
                 break;
             }
+            if(restaurantHours[hours].includes("strong")) {
+                continue;
+            }
             let addTwelveOpen = openTime.includes("pm") && !openTime.includes("12") ? 12 : 0;
             let addTwelveClose = closeTime.includes("pm") && !closeTime.includes("12") ? 12 : 0;
             let [openHour, openMinute] = openTime.split(":").map(e => parseInt(e));

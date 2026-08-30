@@ -25,7 +25,7 @@ export default function DiningSearch() {
     useEffect(() => {
             fetch(buildApiUrl("/dining"))
                 .then(response => {
-                    let text = response.text();
+                    let text = response.json();
                     console.log(text);
                     return text;
                 })

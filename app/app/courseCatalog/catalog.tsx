@@ -5,6 +5,7 @@ import { buildApiUrl } from "@/lib/api";
 import BackChevron from "../../components/svgs/BackChevron"
 import { storeRecentlyView, gridBox, openLink, processQuickLink } from "@/lib/utils";
 import { useRouter, useLocalSearchParams  } from "expo-router";
+import { resourceController } from "@/components/resourcefetch";
 
 export default function CatalogScreen() {
 
@@ -50,20 +51,29 @@ export default function CatalogScreen() {
                 {/*Title*/}
 
 
-                <TouchableOpacity title="Search All Courses"
-                        style={[{backgroundColor: "#000000"}, styles.categorybox]} onPress={() => processQuickLink(course_catalog)}>
-                        <View style={styles.iconImg}>
-                            <Image
-                                source={require("../../assets/icons/grid/course-browser.png")}
-                                style={{ width: "100%", height: "100%" }}
-                                resizeMode="contain"
-                              />
-                        </View>
+                <TouchableOpacity className="bg-black rounded-lg p-4 flex-row items-center mb-4 justify-between" onPress={() => openLink(course_catalog.link, routeNavigator)}
+                        // style={[{backgroundColor: "#000000"}, styles.categorybox]} onPress={() => processQuickLink(course_catalog)}
+                        >
+                    <View className="flex-row items-center justify-between">
+                        <View style={styles.iconSearch}>
+                        <Image
+                            source={resourceController["search"]}
+                            style={{ width: "100%", height: "100%" }}
+                            resizeMode="contain"
+                            />
+                    </View>
                      <View style={{paddingTop: "5%", paddingBottom: "5%"}}>
                         <Text style={[{color: "#F5F5F5"}, styles.categoryTitle]}>Search All Courses</Text>
                          <Text style={[{color: "#F5F5F5"}, styles.categorySubTitle]}>Browse All Courses At RIT</Text>
                      </View>
-                     <Text style={{color: "#F5F5F5", fontSize: 40, paddingLeft: 70}}>></Text>
+                    </View>
+                    <View>
+                        <Image
+                            source={resourceController["chevron-right-white"]}
+                            className="w-[40px] h-[35px] opacity-[60%]"
+                            resizeMode="stretch"
+                            />
+                    </View>
                      {/*<BackChevron style={{ width: 30, height: 30, transform: [{ scaleX: -1 }] , color: "#F5F5F5" }} color="#000"/>*/}
                 </TouchableOpacity>
             </View>
@@ -118,11 +128,12 @@ export default function CatalogScreen() {
         ritFontColor: {color: "#F76902"},
         categoryButton: {justifyContent: "center"},
         PageTitle: {color: "#000000", fontSize: 35, fontWeight: "bold"},
-        PageSubTitle: {color: "#7B7878", fontSize: 16, addingTop: 1, paddingTop: 10, paddingBottom: 15},
+        PageSubTitle: {color: "#7B7878", fontSize: 16, paddingTop: 1, paddingTop: 10, paddingBottom: 15},
         categorybox: {borderRadius: 15,
                                 alignItems: "center",
                                 flexDirection: "row",},
         iconImg: { width: 60, height: 60 , padding: 10, paddingLeft: 10},
+        iconSearch: { width: 50, height: 50 , padding: 10, marginRight: 10, backgroundColor: "#F76902", borderRadius: 10, justifyContent: "center", alignItems: "center"},
         categoryTitle: {justifyContent: "center", fontWeight: "bold", fontSize: 20},
         categorySubTitle: {justifyContent: "center", fontSize: 14},
     });

@@ -295,7 +295,6 @@ export default function Menu() {
                 <View
                   key={index}
                   style={{
-                    height: 80,
                     width: "100%",
                     backgroundColor: "rgba(0,0,0,.05)",
                     borderRadius: 5,

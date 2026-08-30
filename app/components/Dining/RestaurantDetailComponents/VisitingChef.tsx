@@ -4,8 +4,9 @@ export default function VisitingChef({ chef }: {
     chef: {
         name: string,
         category: string,
-        name_note: string,
-        description: string
+        description: string,
+        start_time: string,
+        end_time: string,
     }
 }) {
     return (
@@ -27,7 +28,7 @@ export default function VisitingChef({ chef }: {
                     <Text style={{ fontSize: 20, fontWeight: "700", color: "#111" }}>{chef.name}</Text>
                     <Text style={{ fontSize: 15, color: "#111" }}>{chef.description}</Text>
                 </View>
-                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#111" }}>{chef.name_note}</Text>
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#111" }}>{chef.start_time} - {chef.end_time}</Text>
             </View>
         </View>
     )

@@ -50,8 +50,9 @@ export default function RestaurantPage({ route }: { route: any }) {
     {
       name: string;
       category: string;
-      name_note: string;
       description: string;
+      start_time: string;
+      end_time: string;
     }[]
   >([]);
 
@@ -90,7 +91,7 @@ export default function RestaurantPage({ route }: { route: any }) {
           data["data"]["visitingchefs"].length > 0
         ) {
           setVisitingChefsAreHere(true);
-          setChefs(data["data"]["visitingchefs"][0]["menus"]);
+          setChefs(data["data"]["visitingchefs"]);
         }
       })
       .catch((error) =>

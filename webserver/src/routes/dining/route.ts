@@ -57,6 +57,7 @@ const fetchDining = async () => {
             $storeScrape(el).find('div[class="day-column"]').map((_k, dayEl) => {
                 const dayName = $storeScrape(dayEl).find('div[class="day-name"]').text().trim();
                 const hours = $storeScrape(dayEl).find('div[class="day-hours"]').html()?.split("<br>");
+                if(hours?.includes("strong")) return;
                 if (!r.hoursOfOperations) r.hoursOfOperations = {};
                 if (!Object.keys(r.hoursOfOperations).includes(dayName)) {
                     r.hoursOfOperations[dayName] = hours?.map((e) => e.trim()) || [];
